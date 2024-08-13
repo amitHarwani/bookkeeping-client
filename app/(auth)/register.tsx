@@ -1,36 +1,30 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    ActivityIndicator,
-} from "react-native";
-import React, { Ref, useEffect, useMemo, useRef, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { i18n } from "../_layout";
-import { commonStyles } from "@/utils/common_styles";
-import { Formik, FormikProps } from "formik";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { ReactQueryKeys } from "@/constants/reactquerykeys";
-import SysAdminService from "@/services/sysadmin/sysadmin_service";
-import Input from "@/components/custom/basic/Input";
-import { capitalizeText } from "@/utils/common_utils";
 import CustomButton from "@/components/custom/basic/CustomButton";
 import Dropdown from "@/components/custom/basic/Dropdown";
-import { RegisterForm } from "@/constants/types";
-import { RegisterFormValidation } from "@/utils/schema_validations";
-import { Country } from "@/services/sysadmin/sysadmin_types";
-import * as Yup from "yup";
-import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
+import Input from "@/components/custom/basic/Input";
+import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
+import { ReactQueryKeys } from "@/constants/reactquerykeys";
+import { AppRoutes } from "@/constants/routes";
+import { SecureStoreKeys } from "@/constants/securestorekeys";
+import { RegisterForm } from "@/constants/types";
 import { ApiError } from "@/services/api_error";
+import SysAdminService from "@/services/sysadmin/sysadmin_service";
+import { Country } from "@/services/sysadmin/sysadmin_types";
 import UserService from "@/services/user/user_service";
 import { useAppDispatch } from "@/store";
 import { logIn } from "@/store/AuthSlice";
-import { Href, router } from "expo-router";
-import { AppRoutes } from "@/constants/routes";
+import { commonStyles } from "@/utils/common_styles";
+import { capitalizeText } from "@/utils/common_utils";
+import { RegisterFormValidation } from "@/utils/schema_validations";
 import { setValueInSecureStore } from "@/utils/securestore";
-import { SecureStoreKeys } from "@/constants/securestorekeys";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Href, router } from "expo-router";
+import { Formik } from "formik";
+import React, { useEffect, useMemo, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { i18n } from "../_layout";
+import Checkbox from "@/components/custom/basic/Checkbox";
 
 const Register = () => {
     const dispatch = useAppDispatch();
@@ -45,6 +39,7 @@ const Register = () => {
             country: undefined,
             mobileNumber: "",
             phoneCode: "",
+            termsAgreed: false,
         };
     }, []);
 
@@ -152,7 +147,7 @@ const Register = () => {
                     <Text style={commonStyles.mainHeading}>
                         {i18n.t("signUp")}
                     </Text>
-                    
+
                     {errorMessage && <ErrorMessage message={errorMessage} />}
                     <Formik
                         initialValues={initialFormValues}
@@ -304,6 +299,37 @@ const Register = () => {
                                     }
                                 />
 
+                                <Checkbox
+                                    onChange={(_, isChecked) => {
+                                        setFieldTouched("termsAgreed", true);
+                                        setFieldValue("termsAgreed", isChecked);
+                                    }}
+                                    descriptionComponent={
+                                        <View>
+                                            <Text
+                                                style={
+                                                    styles.termsAndConditionsText
+                                                }
+                                            >
+                                                {i18n.t(
+                                                    "iHaveReadAndAgreeWithThe"
+                                                )}
+                                            </Text>
+                                            <Text style={commonStyles.linkText}>
+                                                {i18n.t("termsAndConditions")}
+                                            </Text>
+                                        </View>
+                                    }
+                                    errorMessage={
+                                        touched.termsAgreed &&
+                                        errors.termsAgreed
+                                            ? errors.termsAgreed
+                                            : null
+                                    }
+                                    data={{}}
+                                    description=""
+                                />
+
                                 <CustomButton
                                     text={i18n.t("signUp")}
                                     onPress={handleSubmit}
@@ -331,6 +357,11 @@ const styles = StyleSheet.create({
     mobileNumberContainer: {
         flexDirection: "row",
         columnGap: 6,
+    },
+    termsAndConditionsText: {
+        textTransform: "capitalize",
+        fontSize: 12,
+        color: "#71727A",
     },
 });
 

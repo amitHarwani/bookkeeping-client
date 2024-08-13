@@ -21,6 +21,7 @@ import { setValueInSecureStore } from "@/utils/securestore";
 import { SecureStoreKeys } from "@/constants/securestorekeys";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
+import CustomLink from "@/components/custom/basic/CustomLink";
 
 const Login = () => {
     const dispatch = useAppDispatch();
@@ -147,12 +148,9 @@ const Login = () => {
                                     {i18n.t("dontHaveAnAccount")}
                                 </Text>
                                 <Link
-                                    style={[
-                                        styles.registerHelperText,
-                                        styles.registerLink,
-                                    ]}
+                                    style={commonStyles.linkText}
                                     replace={true}
-                                    href={{ pathname: AppRoutes.register }}
+                                    href={`${AppRoutes.register}` as Href}
                                 >
                                     {i18n.t("registerHere")}
                                 </Link>
@@ -191,9 +189,5 @@ const styles = StyleSheet.create({
         textTransform: "capitalize",
         fontFamily: fonts.Inter_Regular,
         fontSize: 12,
-    },
-    registerLink: {
-        color: "blue",
-        textDecorationLine: "underline",
     },
 });

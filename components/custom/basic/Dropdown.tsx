@@ -15,10 +15,8 @@ import dropdownIcon from "@/assets/images/dropdown_icon.png";
 import CustomModal from "./CustomModal";
 import CustomButton from "./CustomButton";
 import { commonStyles } from "@/utils/common_styles";
+import { GenericObject } from "@/constants/types";
 
-type GenericObject = {
-    [key: string]: any;
-};
 
 interface DropdownProps {
     label: string;
@@ -93,7 +91,7 @@ const Dropdown = ({
                 >
                     {selectedItem?.[textKey] || i18n.t("select")}
                 </Text>
-                <Image source={dropdownIcon} />
+                <Image source={dropdownIcon} style={styles.dropdownIcon} />
             </Pressable>
             {errorMessage && (
                 <Text style={styles.errorText}>{errorMessage}</Text>
@@ -175,6 +173,10 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+    },
+    dropdownIcon: {
+        width: 12,
+        height: 12
     },
     errorDropdownButton: {
         borderColor: "#FF616D"

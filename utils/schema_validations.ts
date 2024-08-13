@@ -19,5 +19,6 @@ export const RegisterFormValidation = Yup.object().shape({
                 return true;
             }
             return false;
-        })
+        }),
+    termsAgreed: Yup.boolean().isTrue("please agree with the terms & conditions")
 })

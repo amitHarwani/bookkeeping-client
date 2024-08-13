@@ -2,6 +2,7 @@ import { fonts } from "@/constants/fonts";
 import { StyleSheet } from "react-native";
 
 export const commonStyles = StyleSheet.create({
+    /* Modal */
     mainHeading: {
         fontFamily: fonts.Inter_Black,
         fontSize: 24,
@@ -27,6 +28,7 @@ export const commonStyles = StyleSheet.create({
         marginTop: 8,
     },
 
+    /* Options List */
     optionContainer: {
         paddingHorizontal: 12,
         paddingVertical: 16,
@@ -46,5 +48,14 @@ export const commonStyles = StyleSheet.create({
         fontFamily: fonts.Inter_Regular,
         textTransform: "capitalize",
         color: "#000000",
-    }
+    },
+
+    /* Link Style */
+    linkText: {
+        textTransform: "capitalize",
+        fontFamily: fonts.Inter_Regular,
+        fontSize: 12,
+        color: "blue",
+        textDecorationLine: "underline",
+    },
 })

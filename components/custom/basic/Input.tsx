@@ -83,7 +83,7 @@ const Input = ({
                 {isPasswordType && (
                     <Pressable
                         onPress={() => setIsPasswordVisible((prev) => !prev)}
-                        style={styles.passwordIcon}
+                        style={styles.passwordIconContainer}
                     >
                         <Image
                             source={
@@ -91,6 +91,7 @@ const Input = ({
                                     ? hidePasswordIcon
                                     : showPasswordIcon
                             }
+                            style={styles.passwordIcon}
                         />
                     </Pressable>
                 )}
@@ -134,8 +135,12 @@ const styles = StyleSheet.create({
         fontFamily: fonts.Inter_Regular,
         fontSize: 14,
     },
-    passwordIcon: {
+    passwordIconContainer: {
         marginRight: 14,
+    },
+    passwordIcon: {
+        width: 16,
+        height: 16
     },
     errorText: {
         fontSize: 12,

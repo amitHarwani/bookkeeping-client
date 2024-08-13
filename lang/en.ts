@@ -17,5 +17,7 @@ export default {
     ok: "ok",
     code: "code",
     mobileNumber: "mobile number",
-    enterNumber: "enter number"
+    enterNumber: "enter number",
+    iHaveReadAndAgreeWithThe: "i have read and agree with the ",
+    termsAndConditions: "terms and conditions"
 }
