@@ -7,5 +7,44 @@ export const commonStyles = StyleSheet.create({
         fontSize: 24,
         color: "#000000",
         textTransform: "capitalize"
+    },
+    modalEndMenuContainer: {
+        backgroundColor: "#FFFFFF",
+        paddingHorizontal: 16,
+        paddingVertical: 24,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+        rowGap: 16,
+    },
+    modalEndMenuHeading: {
+        fontFamily: fonts.Inter_Black,
+        fontSize: 16,
+        textTransform: "capitalize",
+    },
+    modalEndActionsContainer: {
+        flexDirection: "row",
+        columnGap: 8,
+        marginTop: 8,
+    },
+
+    optionContainer: {
+        paddingHorizontal: 12,
+        paddingVertical: 16,
+        borderRadius: 12
+    },
+    selectedOptionContainer: {
+        backgroundColor: "#F8F9FE",
+    },
+    optionText: {
+        fontSize: 14,
+        fontFamily: fonts.Inter_Regular,
+        textTransform: "capitalize",
+        color: "#71727A",
+    },
+    selectedOptionText: {
+        fontSize: 14,
+        fontFamily: fonts.Inter_Regular,
+        textTransform: "capitalize",
+        color: "#000000",
     }
 })

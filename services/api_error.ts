@@ -6,9 +6,9 @@ export class ApiErrorResponse {
         public stack: string
     ) {}
 }
-export class ApiError {
+export class ApiError extends Error {
     constructor(
         public errorMessage: string,
         public errorResponse?: ApiErrorResponse
-    ) {}
+    ) {super()}
 }

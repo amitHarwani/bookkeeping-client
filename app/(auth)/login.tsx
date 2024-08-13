@@ -41,6 +41,7 @@ const Login = () => {
                                 )}
                                 onChangeText={handleChange("email")}
                                 onBlur={handleBlur("email")}
+                                value={values.email}
                             />
                             <Input
                                 label={i18n.t("password")}
@@ -50,6 +51,7 @@ const Login = () => {
                                 onChangeText={handleChange("password")}
                                 onBlur={handleBlur("password")}
                                 isPasswordType={true}
+                                value={values.password}
                             />
 
                             <View style={styles.registerHelperContainer}>

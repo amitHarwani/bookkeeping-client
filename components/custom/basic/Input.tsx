@@ -2,6 +2,7 @@ import { fonts } from "@/constants/fonts";
 import React, { useState } from "react";
 import {
     Image,
+    KeyboardTypeOptions,
     NativeSyntheticEvent,
     Pressable,
     StyleSheet,
@@ -20,6 +21,10 @@ interface InputProps {
     onChangeText?(text: string): void;
     onBlur?(e: NativeSyntheticEvent<TextInputFocusEventData>): void;
     isPasswordType?: boolean;
+    keyboardType?: KeyboardTypeOptions
+    value: string;
+    extraContainerStyles?: Object;
+    errorMessage?: string | null;
 }
 const Input = ({
     label,
@@ -27,35 +32,59 @@ const Input = ({
     onChangeText,
     onBlur,
     isPasswordType = false,
+    value,
+    extraContainerStyles,
+    errorMessage,
+    keyboardType
 }: InputProps) => {
+
+    /* Password visibility state for password inputs */
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
+    /* For custom styling when input is in focus */
+    const [isFocussed, setIsFocussed] = useState(false);
+
+    /* Change handler: Calling the passed function */
     const inputChangeHandler = (text: string) => {
         if (typeof onChangeText === "function") {
             onChangeText(text);
         }
     };
 
+    /* Blur handler: Set is focussed to false, and calling the parent function */
     const blurHandler = (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        setIsFocussed(false);
         if (typeof onBlur === "function") {
             onBlur(e);
         }
     };
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, extraContainerStyles]}>
             <Text style={styles.label}>{label}</Text>
-            <View style={styles.inputContainer}>
+            <View
+                style={[
+                    styles.inputContainer,
+                    isFocussed && styles.focussedInputContainer,
+                    !!errorMessage && styles.errorInputContainer,
+                ]}
+            >
                 <TextInput
                     style={styles.input}
                     placeholder={placeholder}
                     onChangeText={inputChangeHandler}
                     onBlur={blurHandler}
+                    onFocus={() => setIsFocussed(true)}
+                    value={value}
                     secureTextEntry={
                         isPasswordType && !isPasswordVisible ? true : false
                     }
+                    keyboardType={keyboardType ? keyboardType : "default"}
                 />
                 {isPasswordType && (
-                    <Pressable onPress={() => setIsPasswordVisible((prev) => !prev)} style={styles.passwordIcon}>
+                    <Pressable
+                        onPress={() => setIsPasswordVisible((prev) => !prev)}
+                        style={styles.passwordIcon}
+                    >
                         <Image
                             source={
                                 isPasswordVisible
@@ -66,6 +95,9 @@ const Input = ({
                     </Pressable>
                 )}
             </View>
+            {errorMessage && (
+                <Text style={styles.errorText}>{errorMessage}</Text>
+            )}
         </View>
     );
 };
@@ -79,12 +111,7 @@ const styles = StyleSheet.create({
     label: {
         fontFamily: fonts.Inter_Bold,
         fontSize: 12,
-        textTransform: "capitalize"
-    },
-    input: {
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        flex: 1,
+        textTransform: "capitalize",
     },
     inputContainer: {
         flexDirection: "row",
@@ -94,7 +121,26 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1,
     },
+    focussedInputContainer: {
+        borderColor: "#006FFD",
+    },
+    errorInputContainer: {
+        borderColor: "#FF616D"
+    },
+    input: {
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        flex: 1,
+        fontFamily: fonts.Inter_Regular,
+        fontSize: 14,
+    },
     passwordIcon: {
-        marginRight: 14
-    }
+        marginRight: 14,
+    },
+    errorText: {
+        fontSize: 12,
+        fontFamily: fonts.Inter_Medium,
+        color: "#FF616D",
+        textTransform: "capitalize"
+    },
 });

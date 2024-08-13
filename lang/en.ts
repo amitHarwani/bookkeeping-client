@@ -6,5 +6,16 @@ export default {
     enterPassword: "enter password",
     dontHaveAnAccount: "don't have an account,",
     registerHere: "register here",
-    signUp: "sign up"
+    signUp: "sign up",
+    fullName: "full name",
+    enterFullName: "enter full name",
+    confirmPassword: "confirm password",
+    select: "select",
+    country: "country",
+    selectCountry: "select country",
+    cancel: "cancel",
+    ok: "ok",
+    code: "code",
+    mobileNumber: "mobile number",
+    enterNumber: "enter number"
 }
