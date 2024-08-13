@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     checkboxContainer: {
         flexDirection: "row",
         columnGap: 12,
+        alignItems: "center"
     },
     checkboxButton: {
         width: 24,

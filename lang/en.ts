@@ -19,5 +19,6 @@ export default {
     mobileNumber: "mobile number",
     enterNumber: "enter number",
     iHaveReadAndAgreeWithThe: "i have read and agree with the ",
-    termsAndConditions: "terms and conditions"
+    termsAndConditions: "terms and conditions",
+    searchBy: "search by"
 }

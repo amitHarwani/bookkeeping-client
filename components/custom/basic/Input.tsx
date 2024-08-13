@@ -21,7 +21,7 @@ interface InputProps {
     onChangeText?(text: string): void;
     onBlur?(e: NativeSyntheticEvent<TextInputFocusEventData>): void;
     isPasswordType?: boolean;
-    keyboardType?: KeyboardTypeOptions
+    keyboardType?: KeyboardTypeOptions;
     value: string;
     extraContainerStyles?: Object;
     errorMessage?: string | null;
@@ -35,9 +35,8 @@ const Input = ({
     value,
     extraContainerStyles,
     errorMessage,
-    keyboardType
+    keyboardType,
 }: InputProps) => {
-
     /* Password visibility state for password inputs */
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -60,7 +59,7 @@ const Input = ({
     };
     return (
         <View style={[styles.container, extraContainerStyles]}>
-            <Text style={styles.label}>{label}</Text>
+            {label && <Text style={styles.label}>{label}</Text>}
             <View
                 style={[
                     styles.inputContainer,
@@ -126,7 +125,7 @@ const styles = StyleSheet.create({
         borderColor: "#006FFD",
     },
     errorInputContainer: {
-        borderColor: "#FF616D"
+        borderColor: "#FF616D",
     },
     input: {
         paddingHorizontal: 16,
@@ -140,12 +139,12 @@ const styles = StyleSheet.create({
     },
     passwordIcon: {
         width: 16,
-        height: 16
+        height: 16,
     },
     errorText: {
         fontSize: 12,
         fontFamily: fonts.Inter_Medium,
         color: "#FF616D",
-        textTransform: "capitalize"
+        textTransform: "capitalize",
     },
 });

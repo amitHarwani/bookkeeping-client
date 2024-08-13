@@ -6,9 +6,16 @@ import {
     Pressable,
     StyleSheet,
     Text,
+    TextInput,
     View,
 } from "react-native";
-import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+import React, {
+    ChangeEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 import { i18n } from "@/app/_layout";
 import { fonts } from "@/constants/fonts";
 import dropdownIcon from "@/assets/images/dropdown_icon.png";
@@ -16,7 +23,8 @@ import CustomModal from "./CustomModal";
 import CustomButton from "./CustomButton";
 import { commonStyles } from "@/utils/common_styles";
 import { GenericObject } from "@/constants/types";
-
+import { capitalizeText } from "@/utils/common_utils";
+import Input from "./Input";
 
 interface DropdownProps {
     label: string;
@@ -24,6 +32,7 @@ interface DropdownProps {
     textKey: string;
     onChange?(item?: GenericObject): void;
     value?: GenericObject;
+    isSearchable?: boolean;
     extraContainerStyles?: Object;
     errorMessage?: string | null;
 }
@@ -33,6 +42,7 @@ const Dropdown = ({
     textKey,
     onChange,
     value,
+    isSearchable,
     extraContainerStyles,
     errorMessage,
 }: DropdownProps) => {
@@ -40,11 +50,26 @@ const Dropdown = ({
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
     const [tempSelectedItem, setTempSelectedItem] = useState<GenericObject>();
 
+    const [searchInput, setSearchInput] = useState("");
+
+    /* Filtering data by searchInput, if dropdown isSearchable */
+    const filteredData = useMemo(() => {
+        if (searchInput && isSearchable) {
+            return data?.filter((item) => {
+                if (item[textKey].toString().includes(searchInput)) {
+                    return true;
+                }
+                return false;
+            });
+        }
+        return data;
+    }, [isSearchable, searchInput, data]);
+
     /* Toggles options menu */
-    const toggleOptionsMenu = useCallback(
-        () => setIsOptionsShown((prev) => !prev),
-        [isOptionsShown]
-    );
+    const toggleOptionsMenu = useCallback(() => {
+        setIsOptionsShown((prev) => !prev);
+        setSearchInput("");
+    }, [isOptionsShown]);
 
     /* Select Item temporarily in the modal */
     const selectItem = (item: GenericObject) => {
@@ -80,7 +105,10 @@ const Dropdown = ({
         <View style={[styles.container, extraContainerStyles]}>
             <Text style={styles.labelText}>{label}</Text>
             <Pressable
-                style={[styles.dropdownButton, !!errorMessage && styles.errorDropdownButton]}
+                style={[
+                    styles.dropdownButton,
+                    !!errorMessage && styles.errorDropdownButton,
+                ]}
                 onPress={toggleOptionsMenu}
             >
                 <Text
@@ -105,9 +133,20 @@ const Dropdown = ({
                         <Text style={commonStyles.modalEndMenuHeading}>
                             {i18n.t("selectCountry")}
                         </Text>
+
+                        {isSearchable && (
+                            <Input
+                                label=""
+                                value={searchInput}
+                                onChangeText={(text) => setSearchInput(text)}
+                                placeholder={`${capitalizeText(
+                                    i18n.t("searchBy")
+                                )} ${textKey}`}
+                            />
+                        )}
                         <View>
                             <FlatList
-                                data={data}
+                                data={filteredData}
                                 renderItem={({ item }) => (
                                     <Pressable
                                         key={item[textKey]}
@@ -176,10 +215,10 @@ const styles = StyleSheet.create({
     },
     dropdownIcon: {
         width: 12,
-        height: 12
+        height: 12,
     },
     errorDropdownButton: {
-        borderColor: "#FF616D"
+        borderColor: "#FF616D",
     },
     dropdownButtonText: {
         fontFamily: fonts.Inter_Regular,
@@ -193,6 +232,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontFamily: fonts.Inter_Medium,
         color: "#FF616D",
-        textTransform: "capitalize"
+        textTransform: "capitalize",
     },
 });
