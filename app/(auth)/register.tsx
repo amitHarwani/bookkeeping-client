@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { i18n } from "../_layout";
 import { commonStyles } from "@/utils/common_styles";
 import { Formik, FormikProps } from "formik";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import SysAdminService from "@/services/sysadmin/sysadmin_service";
 import Input from "@/components/custom/basic/Input";
@@ -24,8 +24,17 @@ import * as Yup from "yup";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import { ApiError } from "@/services/api_error";
+import UserService from "@/services/user/user_service";
+import { useAppDispatch } from "@/store";
+import { logIn } from "@/store/AuthSlice";
+import { Href, router } from "expo-router";
+import { AppRoutes } from "@/constants/routes";
+import { setValueInSecureStore } from "@/utils/securestore";
+import { SecureStoreKeys } from "@/constants/securestorekeys";
 
 const Register = () => {
+    const dispatch = useAppDispatch();
+
     /* Initial form values */
     const initialFormValues: RegisterForm = useMemo(() => {
         return {
@@ -55,7 +64,7 @@ const Register = () => {
 
     /* Fetching all the countries */
     const {
-        isFetching,
+        isFetching: isFetchingCountriesList,
         data: countriesListResponse,
         error: countriesListError,
     } = useQuery({
@@ -63,6 +72,13 @@ const Register = () => {
         queryFn: SysAdminService.getAllCountries,
         refetchOnMount: true,
         retry: false,
+    });
+
+    /* To register a user */
+    const registerUserMutation = useMutation({
+        mutationFn: (userRegistrationForm: RegisterForm) => {
+            return UserService.registerUser(userRegistrationForm);
+        },
     });
 
     /* List of all countries from the API response */
@@ -73,7 +89,15 @@ const Register = () => {
         return [];
     }, [countriesListResponse]);
 
-    /* Extracting error message from countries api call */
+    /* Show overlay loading spinner, when making api calls*/
+    const showLoadingSpinner = useMemo(() => {
+        if (isFetchingCountriesList || registerUserMutation.isPending) {
+            return true;
+        }
+        return false;
+    }, [isFetchingCountriesList, registerUserMutation.isPending]);
+
+    /* Extracting error message from countries api call, or registerUser api call */
     const errorMessage = useMemo(() => {
         if (countriesListError) {
             const apiErrorType = countriesListError as ApiError;
@@ -81,24 +105,60 @@ const Register = () => {
                 apiErrorType.errorResponse?.message || apiErrorType.errorMessage
             );
         }
+        if (registerUserMutation.error) {
+            const apiErrorType = registerUserMutation.error as ApiError;
+            return (
+                apiErrorType.errorResponse?.message || apiErrorType.errorMessage
+            );
+        }
         return null;
-    }, [countriesListError]);
+    }, [countriesListError, registerUserMutation.error]);
+
+    useEffect(() => {
+        /* On success of registerUser */
+        if (registerUserMutation.data) {
+            /* Response data */
+            const responseData = registerUserMutation.data;
+            if (responseData.success) {
+                /* Update redux store */
+                dispatch(
+                    logIn({
+                        user: responseData.data.user,
+                        accessToken: responseData.data.accessToken,
+                    })
+                );
+
+                /* Set Value in secure store */
+                setValueInSecureStore(
+                    SecureStoreKeys.accessToken,
+                    responseData.data.accessToken as string
+                );
+                setValueInSecureStore(
+                    SecureStoreKeys.userDetails,
+                    JSON.stringify(responseData.data.user)
+                );
+
+                /* Move to /add-company */
+                router.replace(`${AppRoutes.addCompany}` as Href);
+            }
+        }
+    }, [registerUserMutation.isSuccess]);
 
     return (
         <SafeAreaView>
             <ScrollView>
-                {isFetching && <LoadingSpinnerOverlay />}
+                {showLoadingSpinner && <LoadingSpinnerOverlay />}
                 <View style={styles.container}>
-                    {errorMessage && <ErrorMessage message={errorMessage} />}
                     <Text style={commonStyles.mainHeading}>
                         {i18n.t("signUp")}
                     </Text>
-
+                    
+                    {errorMessage && <ErrorMessage message={errorMessage} />}
                     <Formik
                         initialValues={initialFormValues}
                         validationSchema={RegisterFormValidation}
                         onSubmit={(values) => {
-                            console.log("Submitted Values", values);
+                            registerUserMutation.mutate(values);
                         }}
                     >
                         {({
@@ -262,6 +322,7 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 32,
         paddingTop: 74,
+        paddingBottom: 12,
         rowGap: 24,
     },
     formContainer: {

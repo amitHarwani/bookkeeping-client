@@ -14,6 +14,9 @@ import React, { useEffect } from "react";
 import { I18n } from "i18n-js";
 import { getLocales } from "expo-localization";
 import en from "@/lang/en";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
+import store from "@/store";
 
 // Prevent Splash Screen Auto Hide
 SplashScreen.preventAutoHideAsync();
@@ -22,9 +25,14 @@ const translations = { en: en }; /* Translation files */
 
 export const i18n = new I18n(translations); /* Initializing i18n */
 
-i18n.locale = getLocales()[0]?.languageCode ?? "en"; /* Selected Language, Defaults to en */
+i18n.locale =
+    getLocales()[0]?.languageCode ??
+    "en"; /* Selected Language, Defaults to en */
 
-i18n.enableFallback = true; /* Enabling fallback to other languages incase a key is missing */
+i18n.enableFallback =
+    true; /* Enabling fallback to other languages incase a key is missing */
+
+const queryClient = new QueryClient(); /* React query client */
 
 const RootLayout = () => {
     /* Loading Inter Fonts */
@@ -51,10 +59,15 @@ const RootLayout = () => {
     }
 
     return (
-        <Stack screenOptions={{headerShown: false}}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(auth)" />
-        </Stack>
+        <QueryClientProvider client={queryClient}>
+            <Provider store={store}>
+                <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="index" />
+                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="(main)" />
+                </Stack>
+            </Provider>
+        </QueryClientProvider>
     );
 };
 
