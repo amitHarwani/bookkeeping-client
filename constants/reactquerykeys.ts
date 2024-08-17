@@ -1,3 +1,6 @@
 export enum ReactQueryKeys {
-    allCountries = "allCountries"
+    allCountries = "allCountries",
+    allCompanies = "allCompanies",
+    company = "company",
+    taxDetailsOfCountry="taxDetailsOfCountry"
 }

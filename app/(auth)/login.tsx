@@ -84,7 +84,7 @@ const Login = () => {
                 );
 
                 /* Move to dashboard */
-                router.replace(`${AppRoutes.dashboard}` as Href);
+                router.replace(`${AppRoutes.viewAllCompanies}` as Href);
             }
         }
     }, [loginMutation.isSuccess]);

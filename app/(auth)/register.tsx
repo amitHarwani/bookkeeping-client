@@ -18,13 +18,14 @@ import { capitalizeText } from "@/utils/common_utils";
 import { RegisterFormValidation } from "@/utils/schema_validations";
 import { setValueInSecureStore } from "@/utils/securestore";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Href, router } from "expo-router";
+import { Href, Link, router } from "expo-router";
 import { Formik } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { i18n } from "../_layout";
 import Checkbox from "@/components/custom/basic/Checkbox";
+import { fonts } from "@/constants/fonts";
 
 const Register = () => {
     const dispatch = useAppDispatch();
@@ -65,8 +66,7 @@ const Register = () => {
     } = useQuery({
         queryKey: [ReactQueryKeys.allCountries],
         queryFn: SysAdminService.getAllCountries,
-        refetchOnMount: true,
-        retry: false,
+        staleTime: Infinity
     });
 
     /* To register a user */
@@ -134,7 +134,7 @@ const Register = () => {
                 );
 
                 /* Move to /add-company */
-                router.replace(`${AppRoutes.addCompany}` as Href);
+                router.replace(`${AppRoutes.viewAllCompanies}` as Href);
             }
         }
     }, [registerUserMutation.isSuccess]);
@@ -330,6 +330,19 @@ const Register = () => {
                                     description=""
                                 />
 
+                                <View style={styles.haveAnAccountContainer}>
+                                    <Text style={styles.haveAnAccountText}>
+                                        {i18n.t("alreadyHaveAnAccount")}
+                                    </Text>
+                                    <Link
+                                        style={commonStyles.linkText}
+                                        replace={true}
+                                        href={`${AppRoutes.login}` as Href}
+                                    >
+                                        {i18n.t("loginHere")}
+                                    </Link>
+                                </View>
+
                                 <CustomButton
                                     text={i18n.t("signUp")}
                                     onPress={handleSubmit}
@@ -363,6 +376,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#71727A",
     },
+    haveAnAccountContainer: {
+        flexDirection: "row",
+        columnGap: 2
+    },
+    haveAnAccountText: {
+        textTransform: "capitalize",
+        fontFamily: fonts.Inter_Regular,
+        fontSize: 12
+    }
 });
 
 export default Register;

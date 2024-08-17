@@ -28,17 +28,12 @@ const App = () => {
         const userDetails = JSON.parse(
             getValueFromSecureStore(SecureStoreKeys.userDetails) as string
         );
-        // const resetFunc = async () => {
-        //   await deleteItemAsync(SecureStoreKeys.accessToken);
-        //   await deleteItemAsync(SecureStoreKeys.userDetails);
-        // }
-        // resetFunc();
 
         /* Updating redux store */
         dispatch(logIn({ user: userDetails, accessToken: accessToken }));
 
         /* Go to dashboard */
-        return <Redirect href={`${AppRoutes.dashboard}` as Href} />;
+        return <Redirect href={`${AppRoutes.viewAllCompanies}` as Href} />;
     } else {
         /* Move to log in */
         return <Redirect href={`${AppRoutes.login}` as Href} />;

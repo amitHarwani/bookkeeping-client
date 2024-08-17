@@ -6,7 +6,7 @@ interface AuthSliceStateType {
     user?: User;
     accessToken?: string;
 }
-const initialState = {
+const initialState: AuthSliceStateType = {
     isLoggedIn: false,
     user: undefined,
     accessToken: "",

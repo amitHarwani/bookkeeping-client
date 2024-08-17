@@ -21,7 +21,8 @@ export default ErrorMessage;
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
-        columnGap: 4
+        columnGap: 4,
+        alignItems: "center"
     },
     errorMessageText: {
         fontSize: 14,

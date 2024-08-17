@@ -1,12 +1,22 @@
 import { LoginForm, RegisterForm } from "@/constants/types";
 import { asyncHandler } from "../async_handler";
 import axios from "axios";
-import { LoginResponse, RegisterUserResponse } from "./user_types";
+import {
+    GetAllCompaniesResponse,
+    GetCompanyResponse,
+    LoginResponse,
+    RefreshTokenResponse,
+    RegisterUserResponse,
+} from "./user_types";
 import { ApiResponse } from "../api_response";
 export class UserService {
     private hostPath = process.env.EXPO_PUBLIC_USER_SERVICE;
-    private registerUserPath = "auth/register";
-    private loginPath = "auth/login";
+    public registerUserPath = "auth/register";
+    public loginPath = "auth/login";
+    public logoutPath = "auth/logout";
+    public refreshTokenPath = "auth/refresh-token";
+    public getAllCompaniesPath = "company/get-accessible-companies";
+    public getCompanyPath = "company/get-company";
 
     registerUser = async (userForm: RegisterForm) => {
         return await asyncHandler<RegisterUserResponse>(() => {
@@ -33,6 +43,41 @@ export class UserService {
                     email: loginForm.email,
                     password: loginForm.password,
                 }
+            );
+        });
+    };
+
+    refreshToken = async (refreshToken: string) => {
+        return await asyncHandler<RefreshTokenResponse>(() => {
+            return axios.post<ApiResponse<RefreshTokenResponse>>(
+                `${this.hostPath}/${this.refreshTokenPath}`,
+                {
+                    refreshToken,
+                }
+            );
+        });
+    };
+
+    logout = async () => {
+        return await asyncHandler<{ message: string }>(() => {
+            return axios.post<ApiResponse<{ message: string }>>(
+                `${this.hostPath}/${this.logoutPath}`
+            );
+        });
+    };
+
+    getAllCompanies = async () => {
+        return await asyncHandler<GetAllCompaniesResponse>(() => {
+            return axios.get<ApiResponse<GetAllCompaniesResponse>>(
+                `${this.hostPath}/${this.getAllCompaniesPath}`
+            );
+        });
+    };
+
+    getCompany = async (companyId: number) => {
+        return await asyncHandler<GetCompanyResponse>(() => {
+            return axios.get<ApiResponse<GetCompanyResponse>>(
+                `${this.hostPath}/${this.getCompanyPath}/${companyId}`
             );
         });
     };

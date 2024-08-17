@@ -16,6 +16,8 @@ import { getLocales } from "expo-localization";
 import en from "@/lang/en";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
+import "@/services/request_interceptors";
+import "@/services/response_interceptors";
 import store from "@/store";
 
 // Prevent Splash Screen Auto Hide
@@ -32,7 +34,7 @@ i18n.locale =
 i18n.enableFallback =
     true; /* Enabling fallback to other languages incase a key is missing */
 
-const queryClient = new QueryClient(); /* React query client */
+export const queryClient = new QueryClient(); /* React query client */
 
 const RootLayout = () => {
     /* Loading Inter Fonts */
@@ -64,7 +66,7 @@ const RootLayout = () => {
                 <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="index" />
                     <Stack.Screen name="(auth)" />
-                    <Stack.Screen name="(main)" />
+                    <Stack.Screen name="(company)" />
                 </Stack>
             </Provider>
         </QueryClientProvider>

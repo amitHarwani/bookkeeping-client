@@ -1,6 +1,7 @@
 export enum AppRoutes {
     login = "login",
     register = "register",
-    addCompany = "add-company",
-    dashboard = "dashboard"
+    viewAllCompanies = "view-all-companies",
+    companySettings = "company-settings",
+    addCompany = "add-company"
 }

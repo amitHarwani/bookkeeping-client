@@ -58,4 +58,10 @@ export const commonStyles = StyleSheet.create({
         color: "blue",
         textDecorationLine: "underline",
     },
+
+    borderedImageIcon: {
+        borderWidth: 1.5,
+        borderColor: "#006FFD",
+        borderRadius: 12
+    }
 })
