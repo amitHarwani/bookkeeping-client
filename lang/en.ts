@@ -36,5 +36,6 @@ export default {
     questionMark: "?",
     number: "number",
     enterRegistrationNumber: "enter registration number",
-    missingTaxDetails: "missing tax details"
+    missingTaxDetails: "missing tax details",
+    localDayStartTime: "local day start time"
 }

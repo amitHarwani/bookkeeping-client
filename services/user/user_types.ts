@@ -54,9 +54,7 @@ export class RefreshTokenResponse {
         public user: User,
         public accessToken: string,
         public refreshToken: string
-    ){
-
-    }
+    ) {}
 }
 export class GetAllCompaniesResponse {
     constructor(public companies: Array<CompanyWithTaxDetails>) {}
@@ -64,4 +62,11 @@ export class GetAllCompaniesResponse {
 
 export class GetCompanyResponse {
     constructor(public company: CompanyWithTaxDetails) {}
+}
+
+export class AddCompanyResponse {
+    constructor(
+        public company: CompanyWithTaxDetails,
+        public message: string
+    ) {}
 }

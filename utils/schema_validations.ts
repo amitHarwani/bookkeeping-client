@@ -61,13 +61,13 @@ export const AddCompanyFormValidation = Yup.object().shape({
         "local day start time is required"
     ),
     decimalRoundTo: Yup.number()
-        .required("decimal round to is required")
         .min(1, "Min round to is 1")
-        .max(4, "Max round to is 4"),
+        .max(4, "Max round to is 4")
+        .required("decimal round to is required"),
+
     taxDetails: Yup.lazy((value) => {
         return Yup.object(
             Object.keys(value).reduce((schema, key) => {
-
                 schema[key] = Yup.object().shape({
                     taxId: Yup.number().required("missing tax details"),
                     registrationNumber: Yup.string()

@@ -9,7 +9,7 @@ import { AddCompanyFormValidation } from "@/utils/schema_validations";
 import CustomButton from "@/components/custom/basic/CustomButton";
 import Input from "@/components/custom/basic/Input";
 import Dropdown from "@/components/custom/basic/Dropdown";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import SysAdminService from "@/services/sysadmin/sysadmin_service";
 import { Country } from "@/services/sysadmin/sysadmin_types";
@@ -18,6 +18,7 @@ import CustomDateTimePicker from "@/components/custom/basic/CustomDateTimePicker
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import TaxInputItem from "@/components/custom/business/TaxInputItem";
+import UserService from "@/services/user/user_service";
 
 const AddCompany = () => {
     const initialFormValues: AddCompanyForm = useMemo(() => {
@@ -28,7 +29,7 @@ const AddCompany = () => {
             localDayStartTime: "",
             mobileNumber: "",
             phoneCode: "",
-            decimalRoundTo: 1,
+            decimalRoundTo: 2,
             taxDetails: {},
         };
     }, []);
@@ -77,6 +78,18 @@ const AddCompany = () => {
         enabled: false,
     });
 
+    /* Mutation to add a country */
+    const addCountryMutation = useMutation({
+        mutationFn: ({
+            companyDetails,
+            mainBranchId,
+        }: {
+            companyDetails: AddCompanyForm;
+            mainBranchId?: number;
+        }) => UserService.addCompany(companyDetails, mainBranchId),
+    });
+
+    /* All countries from response */
     const allCountries = useMemo(() => {
         if (countriesListResponse) {
             return countriesListResponse?.data.countries;
@@ -84,6 +97,7 @@ const AddCompany = () => {
         return [];
     }, [countriesListResponse]);
 
+    /* Tax Details from response */
     const taxDetails = useMemo(() => {
         if (taxDetailsResponse) {
             return taxDetailsResponse.data.taxDetails;
@@ -93,7 +107,11 @@ const AddCompany = () => {
 
     /* Loading spinner overlay when making api requests */
     const showLoadingSpinner = useMemo(() => {
-        return isFetchingCountriesList || isFetchingTaxDetails;
+        return (
+            isFetchingCountriesList ||
+            isFetchingTaxDetails ||
+            addCountryMutation.isPending
+        );
     }, [isFetchingCountriesList, isFetchingTaxDetails]);
 
     /* API Error Message */
@@ -102,15 +120,24 @@ const AddCompany = () => {
             return getApiErrorMessage(countriesListError);
         } else if (taxDetailsError) {
             return getApiErrorMessage(taxDetailsError);
+        } else if (addCountryMutation.error) {
+            return getApiErrorMessage(addCountryMutation.error);
         }
         return null;
-    }, [countriesListError, taxDetailsError]);
+    }, [countriesListError, taxDetailsError, addCountryMutation.error]);
 
+    /* Fetch tax details once selectedCountry changes */
     useEffect(() => {
         if (selectedCountry) {
             refetchTaxDetails();
         }
     }, [selectedCountry]);
+
+    useEffect(() => {
+        if(addCountryMutation.isSuccess && addCountryMutation.data.success){
+            /* Success */
+        }
+    }, [addCountryMutation.isSuccess])
 
     return (
         <SafeAreaView>
@@ -128,7 +155,10 @@ const AddCompany = () => {
                         initialValues={initialFormValues}
                         validationSchema={AddCompanyFormValidation}
                         onSubmit={(values) => {
-                            console.log("Submitted Values", values);
+                            addCountryMutation.mutate({
+                                companyDetails: values,
+                                mainBranchId: undefined,
+                            });
                         }}
                     >
                         {({
@@ -247,6 +277,7 @@ const AddCompany = () => {
 
                                 <CustomDateTimePicker
                                     mode="time"
+                                    label={i18n.t("localDayStartTime")}
                                     onChange={(selectedTime) => {
                                         setFieldTouched(
                                             "localDayStartTime",
@@ -300,9 +331,11 @@ const AddCompany = () => {
                                             });
                                         }}
                                         onDeregistered={() => {
-                                            const temp = {...values.taxDetails}
+                                            const temp = {
+                                                ...values.taxDetails,
+                                            };
                                             delete temp[taxDetail.taxId];
-                                            setFieldValue("taxDetails",temp)
+                                            setFieldValue("taxDetails", temp);
                                         }}
                                         onChange={(registrationNumber) => {
                                             setFieldTouched("taxDetails", true);
@@ -322,6 +355,7 @@ const AddCompany = () => {
                                     text={i18n.t("addCompany")}
                                     onPress={handleSubmit}
                                     extraContainerStyles={{ marginTop: 8 }}
+                                    isDisabled={showLoadingSpinner}
                                 />
                             </View>
                         )}
@@ -339,7 +373,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
         paddingTop: 74,
         rowGap: 24,
-        paddingBottom: 12
+        paddingBottom: 12,
     },
     formContainer: {
         rowGap: 16,

@@ -4,6 +4,7 @@ export interface Country {
     phoneNumberCodes: string[] | null;
     currency: string;
     maxPhoneNumberDigits: number;
+    timezone: string
 }
 export class GetAllCountriesResponse {
     constructor(public countries: Country[]) {}

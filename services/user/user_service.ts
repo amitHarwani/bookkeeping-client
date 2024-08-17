@@ -1,7 +1,8 @@
-import { LoginForm, RegisterForm } from "@/constants/types";
+import { AddCompanyForm, LoginForm, RegisterForm } from "@/constants/types";
 import { asyncHandler } from "../async_handler";
 import axios from "axios";
 import {
+    AddCompanyResponse,
     GetAllCompaniesResponse,
     GetCompanyResponse,
     LoginResponse,
@@ -9,6 +10,9 @@ import {
     RegisterUserResponse,
 } from "./user_types";
 import { ApiResponse } from "../api_response";
+import momentTimezone from "moment-timezone";
+import { timeFormat24hr } from "@/constants/datetimes";
+
 export class UserService {
     private hostPath = process.env.EXPO_PUBLIC_USER_SERVICE;
     public registerUserPath = "auth/register";
@@ -17,6 +21,7 @@ export class UserService {
     public refreshTokenPath = "auth/refresh-token";
     public getAllCompaniesPath = "company/get-accessible-companies";
     public getCompanyPath = "company/get-company";
+    public addCompanyPath = "company/add-company";
 
     registerUser = async (userForm: RegisterForm) => {
         return await asyncHandler<RegisterUserResponse>(() => {
@@ -79,6 +84,37 @@ export class UserService {
             return axios.get<ApiResponse<GetCompanyResponse>>(
                 `${this.hostPath}/${this.getCompanyPath}/${companyId}`
             );
+        });
+    };
+
+    addCompany = async (
+        companyDetails: AddCompanyForm,
+        mainBranchId?: number
+    ) => {
+        /* Moment timezone object of localDayStartTime */
+        const dayStartTimeMoment = momentTimezone.tz(
+            companyDetails.localDayStartTime,
+            timeFormat24hr,
+            companyDetails.country?.timezone as string
+        );
+
+        /* Converting local day start time to utc */
+        const dayStartTimeInUTC = dayStartTimeMoment
+            .utc()
+            .format(timeFormat24hr);
+
+        return await asyncHandler<AddCompanyResponse>(() => {
+            return axios.post(`${this.hostPath}/${this.addCompanyPath}`, {
+                companyName: companyDetails.companyName,
+                countryId: companyDetails.country?.countryId,
+                address: companyDetails.address,
+                phoneNumber: `${companyDetails.phoneCode}${companyDetails.mobileNumber}`,
+                dayStartTime: dayStartTimeInUTC,
+                isMainBranch: mainBranchId == undefined ? true : false,
+                mainBranchId: mainBranchId == undefined ? null : mainBranchId,
+                taxDetails: Object.values(companyDetails.taxDetails as Object),
+                decimalRoundTo: companyDetails.decimalRoundTo
+            });
         });
     };
 }
