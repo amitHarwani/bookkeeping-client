@@ -3,6 +3,7 @@ import { asyncHandler } from "../async_handler";
 import axios from "axios";
 import {
     AddCompanyResponse,
+    GetAccessibleFeaturesOfCompanyResponse,
     GetAllCompaniesResponse,
     GetCompanyResponse,
     LoginResponse,
@@ -22,6 +23,8 @@ export class UserService {
     public getAllCompaniesPath = "company/get-accessible-companies";
     public getCompanyPath = "company/get-company";
     public addCompanyPath = "company/add-company";
+    public getAccessibleFeaturesOfCompanyPath =
+        "company/get-accessible-features-of-company";
 
     registerUser = async (userForm: RegisterForm) => {
         return await asyncHandler<RegisterUserResponse>(() => {
@@ -113,9 +116,19 @@ export class UserService {
                 isMainBranch: mainBranchId == undefined ? true : false,
                 mainBranchId: mainBranchId == undefined ? null : mainBranchId,
                 taxDetails: Object.values(companyDetails.taxDetails as Object),
-                decimalRoundTo: companyDetails.decimalRoundTo
+                decimalRoundTo: companyDetails.decimalRoundTo,
             });
         });
+    };
+
+    getAccessibleFeaturesOfCompany = async (companyId: number) => {
+        return await asyncHandler<GetAccessibleFeaturesOfCompanyResponse>(
+            () => {
+                return axios.get(
+                    `${this.hostPath}/${this.getAccessibleFeaturesOfCompanyPath}/${companyId}`
+                );
+            }
+        );
     };
 }
 

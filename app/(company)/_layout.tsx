@@ -6,8 +6,9 @@ const CompanyLayout = () => {
   return (
     <Stack screenOptions={{headerShown: false}}>
       <Stack.Screen name="view-all-companies" />
-      <Stack.Screen name="(company-config)" />
       <Stack.Screen name="add-company" />
+      <Stack.Screen name="(company-config)" />
+      <Stack.Screen name="(company-main)" />
     </Stack>
   )
 }

@@ -40,5 +40,11 @@ export default {
     localDayStartTime: "local day start time",
     success: "success",
     continue: "continue",
-    companyAddedSuccessfully: "company added successfully"
+    companyAddedSuccessfully: "company added successfully",
+    errorFetchingACL: "error fetching ACL",
+    comma: ", ",
+    contactSupport: "contact support",
+    logout: "logout",
+    switchCompany: "switch company",
+    logoutSuccessful: "logged out successfully"
 }

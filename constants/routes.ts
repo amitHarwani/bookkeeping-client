@@ -3,5 +3,6 @@ export enum AppRoutes {
     register = "register",
     viewAllCompanies = "view-all-companies",
     companySettings = "company-settings",
-    addCompany = "add-company"
+    addCompany = "add-company",
+    dashboard = "dashboard"
 }

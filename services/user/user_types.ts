@@ -70,3 +70,7 @@ export class AddCompanyResponse {
         public message: string
     ) {}
 }
+
+export class GetAccessibleFeaturesOfCompanyResponse {
+    constructor(public acl: number[]) {}
+}

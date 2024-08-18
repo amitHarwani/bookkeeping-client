@@ -15,7 +15,7 @@ import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import UserService from "@/services/user/user_service";
 import { ApiError } from "@/services/api_error";
 import CompanyListItem from "@/components/custom/business/CompanyListItem";
-import { useAppSelector } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import AddIcon from "@/assets/images/add_icon.png";
 import InfoMessage from "@/components/custom/basic/InfoMessage";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
@@ -23,25 +23,28 @@ import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import { Href, router } from "expo-router";
 import { AppRoutes } from "@/constants/routes";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
+import { CompanyWithTaxDetails } from "@/services/user/user_types";
+import { selectCompany } from "@/store/CompanySlice";
 
 const ViewAllCompanies = () => {
     const userDetails = useAppSelector((state) => state.auth.user);
+    const dispatch = useAppDispatch();
 
     /* Getting all the companies accessible by the user */
     const {
         isFetching: fetchingCompaniesList,
         data: companiesListResponse,
         error: companiesListError,
-        refetch: refetchCompaniesList
+        refetch: refetchCompaniesList,
     } = useQuery({
         queryKey: [ReactQueryKeys.allCompanies],
         queryFn: UserService.getAllCompanies,
         refetchOnMount: true,
-        refetchOnWindowFocus: true
+        refetchOnWindowFocus: true,
     });
 
     useRefreshOnFocus(refetchCompaniesList);
-    
+
     /* Companies list from API Response */
     const companiesList = useMemo(() => {
         if (companiesListResponse) {
@@ -70,6 +73,13 @@ const ViewAllCompanies = () => {
         return null;
     }, [companiesListError]);
 
+    /* On click of company */
+    const companyPressHandler = (company: CompanyWithTaxDetails) => {
+        /* Set selected company in redux store and route to dashboard */
+        dispatch(selectCompany({ company: company }));
+        router.push(`${AppRoutes.dashboard}` as Href);
+    };
+
     return (
         <SafeAreaView>
             <View style={styles.container}>
@@ -81,21 +91,25 @@ const ViewAllCompanies = () => {
                 {apiErrorMessage && <ErrorMessage message={apiErrorMessage} />}
 
                 {companiesList && (
-                    <FlatList
-                        data={companiesList}
-                        renderItem={({ item }) => (
-                            <CompanyListItem
-                                companyDetails={item}
-                                companyPressHandler={() => {}}
-                                settingsPressHandler={(companyId) => {
-                                    router.push(
-                                        `${AppRoutes.companySettings}/${companyId}` as Href
-                                    );
-                                }}
-                            />
-                        )}
-                        keyExtractor={(item) => item.companyId.toString()}
-                    />
+                    <View style={styles.companiesListContainer}>
+                        <FlatList
+                            data={companiesList}
+                            renderItem={({ item }) => (
+                                <CompanyListItem
+                                    companyDetails={item}
+                                    companyPressHandler={(_) => {
+                                        companyPressHandler(item);
+                                    }}
+                                    settingsPressHandler={(companyId) => {
+                                        router.push(
+                                            `${AppRoutes.companySettings}/${companyId}` as Href
+                                        );
+                                    }}
+                                />
+                            )}
+                            keyExtractor={(item) => item.companyId.toString()}
+                        />
+                    </View>
                 )}
 
                 {Array.isArray(companiesList) &&
@@ -132,6 +146,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
         paddingTop: 74,
         rowGap: 24,
+    },
+    companiesListContainer: {
+        backgroundColor: "#F8F9FE",
+        borderRadius: 16,
     },
     addIconBtn: {
         alignSelf: "center",
