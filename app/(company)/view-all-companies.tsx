@@ -22,6 +22,7 @@ import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverl
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import { Href, router } from "expo-router";
 import { AppRoutes } from "@/constants/routes";
+import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 
 const ViewAllCompanies = () => {
     const userDetails = useAppSelector((state) => state.auth.user);
@@ -31,12 +32,16 @@ const ViewAllCompanies = () => {
         isFetching: fetchingCompaniesList,
         data: companiesListResponse,
         error: companiesListError,
+        refetch: refetchCompaniesList
     } = useQuery({
         queryKey: [ReactQueryKeys.allCompanies],
         queryFn: UserService.getAllCompanies,
         refetchOnMount: true,
+        refetchOnWindowFocus: true
     });
 
+    useRefreshOnFocus(refetchCompaniesList);
+    
     /* Companies list from API Response */
     const companiesList = useMemo(() => {
         if (companiesListResponse) {

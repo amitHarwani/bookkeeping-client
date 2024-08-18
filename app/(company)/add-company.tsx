@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { commonStyles } from "@/utils/common_styles";
 import { i18n } from "../_layout";
@@ -19,6 +19,8 @@ import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverl
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import TaxInputItem from "@/components/custom/business/TaxInputItem";
 import UserService from "@/services/user/user_service";
+import SuccessModal from "@/components/custom/business/SuccessModal";
+import { router } from "expo-router";
 
 const AddCompany = () => {
     const initialFormValues: AddCompanyForm = useMemo(() => {
@@ -38,6 +40,9 @@ const AddCompany = () => {
     const [selectedCountry, setSelectedCountry] = useState<
         Country | undefined
     >();
+
+    /* Whether success modal is shown */
+    const [isSuccessModalShown, setIsSuccessModalShown] = useState(false);
 
     /* phoneCodes list of the selected country  */
     const codesOfSelectedCountry = useMemo(() => {
@@ -134,14 +139,29 @@ const AddCompany = () => {
     }, [selectedCountry]);
 
     useEffect(() => {
-        if(addCountryMutation.isSuccess && addCountryMutation.data.success){
+        if (addCountryMutation.isSuccess && addCountryMutation.data.success) {
             /* Success */
+            setIsSuccessModalShown(true);
         }
-    }, [addCountryMutation.isSuccess])
+    }, [addCountryMutation.isSuccess]);
+
+    /* Go back to previous screen */
+    const goBack = useCallback(() => {
+        router.back();
+    }, [])
 
     return (
         <SafeAreaView>
             <ScrollView>
+                <SuccessModal
+                    isSuccessModalShown={isSuccessModalShown}
+                    description={i18n.t("companyAddedSuccessfully")}
+                    onSuccessModalClose={() => {
+                        setIsSuccessModalShown(false);
+                    }}
+                    primaryActionButtonText={i18n.t("continue")}
+                    primaryActionButtonHandler={goBack}
+                />
                 <View style={styles.container}>
                     {showLoadingSpinner && <LoadingSpinnerOverlay />}
                     <Text style={commonStyles.mainHeading}>
