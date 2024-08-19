@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import AuthSlice from "./AuthSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import CompanySlice from "./CompanySlice";
+import PlatformFeaturesSlice from "./PlatformFeaturesSlice";
 
 
 const store = configureStore({
     reducer: {
         auth: AuthSlice.reducer,
-        company: CompanySlice.reducer
+        company: CompanySlice.reducer,
+        platformFeatures: PlatformFeaturesSlice.reducer
     }
 })
 

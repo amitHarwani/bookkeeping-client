@@ -13,6 +13,7 @@ import {
 } from "react-native";
 
 import showPasswordIcon from "@/assets/images/show_password_icon.png";
+import searchIcon from "@/assets/images/search_icon.png";
 import hidePasswordIcon from "@/assets/images/hide_password_icon.png";
 
 interface InputProps {
@@ -25,6 +26,7 @@ interface InputProps {
     value: string;
     extraContainerStyles?: Object;
     errorMessage?: string | null;
+    isSearchIconVisible?: boolean
 }
 const Input = ({
     label,
@@ -36,6 +38,7 @@ const Input = ({
     extraContainerStyles,
     errorMessage,
     keyboardType,
+    isSearchIconVisible = false
 }: InputProps) => {
     /* Password visibility state for password inputs */
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -67,6 +70,9 @@ const Input = ({
                     !!errorMessage && styles.errorInputContainer,
                 ]}
             >
+                {isSearchIconVisible && 
+                    <Image source={searchIcon} style={styles.searchIcon} resizeMode="contain" />
+                }
                 <TextInput
                     style={styles.input}
                     placeholder={placeholder}
@@ -120,6 +126,10 @@ const styles = StyleSheet.create({
         borderColor: "#C5C6CC",
         borderRadius: 12,
         borderWidth: 1,
+    },
+    searchIcon: {
+        width: 24,
+        height: 24
     },
     focussedInputContainer: {
         borderColor: "#006FFD",

@@ -363,6 +363,8 @@ const styles = StyleSheet.create({
         paddingTop: 74,
         paddingBottom: 12,
         rowGap: 24,
+        flex: 1,
+        backgroundColor: "#FFFFFF"
     },
     formContainer: {
         rowGap: 16,

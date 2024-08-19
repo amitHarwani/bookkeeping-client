@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
         height: "100%",
         justifyContent: "center",
         rowGap: 24,
+        backgroundColor: "#FFFFFF"
     },
     formContainer: {
         rowGap: 16,

@@ -151,7 +151,7 @@ const AddCompany = () => {
     }, [])
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.mainContainer}>
             <ScrollView>
                 <SuccessModal
                     isSuccessModalShown={isSuccessModalShown}
@@ -389,6 +389,10 @@ const AddCompany = () => {
 export default AddCompany;
 
 const styles = StyleSheet.create({
+    mainContainer: {
+        flex: 1,
+        backgroundColor: "#FFFFFF"
+    },
     container: {
         paddingHorizontal: 32,
         paddingTop: 74,

@@ -2,6 +2,7 @@ import { asyncHandler } from "../async_handler";
 import axios from "axios";
 import {
     GetAllCountriesResponse,
+    GetAllFeaturesResponse,
     GetTaxDetailsOfCountryResponse,
 } from "./sysadmin_types";
 import { ApiResponse } from "../api_response";
@@ -9,6 +10,7 @@ import { ApiResponse } from "../api_response";
 class SystemAdminService {
     getAllCountriesPath = "get-all-countries";
     getTaxDetailsOfCountryPath = "get-taxdetails-of-country";
+    getAllFeaturesPath = "get-all-features";
     hostPath = process.env.EXPO_PUBLIC_SYSADMIN_SERVICE;
 
     getAllCountries = async () => {
@@ -24,6 +26,17 @@ class SystemAdminService {
             return axios.get<ApiResponse<GetTaxDetailsOfCountryResponse>>(
                 `${this.hostPath}/${this.getTaxDetailsOfCountryPath}/${countryId}`
             );
+        });
+    };
+
+    getAllEnabledFeatures = async () => {
+        return await asyncHandler<GetAllFeaturesResponse>(() => {
+            return axios.post(`${this.hostPath}/${this.getAllFeaturesPath}`, {
+                query: {
+                    isEnabled: true,
+                    isSystemAdminFeature: false,
+                },
+            });
         });
     };
 }

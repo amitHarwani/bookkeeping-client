@@ -4,7 +4,7 @@ export interface Country {
     phoneNumberCodes: string[] | null;
     currency: string;
     maxPhoneNumberDigits: number;
-    timezone: string
+    timezone: string;
 }
 export class GetAllCountriesResponse {
     constructor(public countries: Country[]) {}
@@ -20,8 +20,17 @@ export interface TaxDetail {
     isRegistrationOptional: boolean | null;
 }
 export class GetTaxDetailsOfCountryResponse {
-    constructor(
-        public taxDetails: TaxDetail[],
-        public countryId: number
-    ) {}
+    constructor(public taxDetails: TaxDetail[], public countryId: number) {}
+}
+
+export interface PlatformFeature {
+    featureId: number;
+    featureName: string;
+    isEnabled: boolean | null;
+    isSystemAdminFeature: boolean | null;
+    dependentFeatureId: number | null;
+}
+
+export class GetAllFeaturesResponse {
+    constructor(public features: PlatformFeature[]) {}
 }

@@ -81,7 +81,7 @@ const ViewAllCompanies = () => {
     };
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ backgroundColor: "#FFFFFF", flex: 1 }}>
             <View style={styles.container}>
                 {showLoadingSpinner && <LoadingSpinnerOverlay />}
                 <Text style={commonStyles.mainHeading}>
@@ -106,6 +106,9 @@ const ViewAllCompanies = () => {
                                         );
                                     }}
                                 />
+                            )}
+                            ItemSeparatorComponent={() => (
+                                <View style={styles.companySeparator} />
                             )}
                             keyExtractor={(item) => item.companyId.toString()}
                         />
@@ -148,8 +151,10 @@ const styles = StyleSheet.create({
         rowGap: 24,
     },
     companiesListContainer: {
-        backgroundColor: "#F8F9FE",
         borderRadius: 16,
+    },
+    companySeparator: {
+        height: 10
     },
     addIconBtn: {
         alignSelf: "center",

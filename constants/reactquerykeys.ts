@@ -3,5 +3,6 @@ export enum ReactQueryKeys {
     allCompanies = "allCompanies",
     company = "company",
     taxDetailsOfCountry="taxDetailsOfCountry",
-    userACLForCompany="userACLForCompany"
+    userACLForCompany="userACLForCompany",
+    enabledPlatformFeatures="enabledPlatformFeatures"
 }

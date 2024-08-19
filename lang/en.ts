@@ -46,5 +46,9 @@ export default {
     contactSupport: "contact support",
     logout: "logout",
     switchCompany: "switch company",
-    logoutSuccessful: "logged out successfully"
+    logoutSuccessful: "logged out successfully",
+    errorFetchingTaxDetails: "error fetching tax details",
+    error: "error",
+    dashboard: "dashboard",
+    items: "items"
 }
