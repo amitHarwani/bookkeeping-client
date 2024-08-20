@@ -1,36 +1,45 @@
 import { i18n } from "@/app/_layout";
+import HamburgerIcon from "@/assets/images/hamburger_icon.png";
+import LogoutIcon from "@/assets/images/logout_icon.png";
 import CustomButton from "@/components/custom/basic/CustomButton";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
+import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
 import { fonts } from "@/constants/fonts";
+import { ReactQueryKeys } from "@/constants/reactquerykeys";
+import { AppRoutes } from "@/constants/routes";
+import { SecureStoreKeys } from "@/constants/securestorekeys";
+import SystemAdminService from "@/services/sysadmin/sysadmin_service";
+import { PlatformFeature, TaxDetail } from "@/services/sysadmin/sysadmin_types";
 import UserService from "@/services/user/user_service";
 import { useAppDispatch, useAppSelector } from "@/store";
+import { logOut } from "@/store/AuthSlice";
+import {
+    setCountryDetails,
+    setTaxDetailsOfCountry,
+    setUserACL,
+} from "@/store/CompanySlice";
+import { setPlatformFeatures } from "@/store/PlatformFeaturesSlice";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
+import { isFeatureAccessible } from "@/utils/feature_access_helper";
+import { deleteValueFromSecureStore } from "@/utils/securestore";
 import {
     DrawerContentScrollView,
-    DrawerItem,
     DrawerItemList,
 } from "@react-navigation/drawer";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Href, router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import React, { useEffect, useMemo } from "react";
 import {
+    Image,
     Pressable,
+    StyleSheet,
     Text,
     ToastAndroid,
-    View,
-    StyleSheet,
-    Image,
     TouchableOpacity,
+    View,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import LogoutIcon from "@/assets/images/logout_icon.png";
-import { AppRoutes } from "@/constants/routes";
-import { logOut } from "@/store/AuthSlice";
-import { deleteValueFromSecureStore } from "@/utils/securestore";
-import { SecureStoreKeys } from "@/constants/securestorekeys";
-import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
-import HamburgerIcon from "@/assets/images/hamburger_icon.png";
 
 const CustomDrawer = (props) => {
     const dispatch = useAppDispatch();
@@ -124,8 +133,198 @@ const CompanyMainLayout = () => {
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
     );
+
+    const dispatch = useAppDispatch();
+
+    /* useQuery for fetching userACL for the company */
+    const {
+        isFetching: fetchingACL,
+        data: userACL,
+        error: errorFetchingACL,
+        refetch: fetchUserACL,
+    } = useQuery({
+        queryKey: [
+            ReactQueryKeys.userACLForCompany,
+            selectedCompany?.companyId,
+        ],
+        queryFn: () =>
+            UserService.getAccessibleFeaturesOfCompany(
+                selectedCompany?.companyId as number
+            ),
+        enabled: false,
+    });
+
+    /* useQuery for fetching taxdetails of the country where the company is located */
+    const {
+        isFetching: fetchingTaxDetailsOfCountry,
+        data: taxDetailsOfCountry,
+        error: errorFetchingTaxDetailsOfCountry,
+        refetch: fetchTaxDetailsOfCountry,
+    } = useQuery({
+        queryKey: [
+            ReactQueryKeys.taxDetailsOfCountry,
+            selectedCompany?.countryId,
+        ],
+        queryFn: () =>
+            SystemAdminService.getTaxDetailsOfCountry(
+                selectedCompany?.countryId as number
+            ),
+        enabled: false,
+    });
+
+    /* Fetching platform features */
+    const {
+        isFetching: fetchingEnabledFeatures,
+        data: enabledFeaturesData,
+        error: errorFetchingEnabledFeatures,
+    } = useQuery({
+        queryKey: [ReactQueryKeys.enabledPlatformFeatures],
+        queryFn: () => SystemAdminService.getAllEnabledFeatures(),
+    });
+
+    /* Fetching country details of the selected company */
+    const {
+        isFetching: fetchingCountryDetails,
+        data: countryDetails,
+        error: errorFetchingCountryDetails,
+        refetch: fetchCountryDetails,
+    } = useQuery({
+        queryKey: [ReactQueryKeys.country, selectedCompany?.countryId],
+        queryFn: () =>
+            SystemAdminService.getCountryById(
+                selectedCompany?.countryId as number
+            ),
+        enabled: false,
+    });
+
+    /* Fetch userACL & tax, country details of country if selected company is their in redux store */
+    useEffect(() => {
+        if (selectedCompany && selectedCompany.companyId && !fetchingACL) {
+            fetchUserACL();
+        }
+        if (
+            selectedCompany &&
+            selectedCompany.countryId &&
+            !fetchingTaxDetailsOfCountry
+        ) {
+            fetchTaxDetailsOfCountry();
+        }
+        if (
+            selectedCompany &&
+            selectedCompany.countryId &&
+            !fetchingCountryDetails
+        ) {
+            fetchCountryDetails();
+        }
+    }, [selectedCompany]);
+
+    /* Set User ACL In redux store after fetch */
+    useEffect(() => {
+        if (userACL && userACL.success) {
+            /* Forming key value obj, where key is featureId and value is true, for fast retrieval */
+            const userACLObj: { [featureId: number]: boolean } = {};
+            userACL.data.acl.forEach((feature) => {
+                userACLObj[feature] = true;
+            });
+            dispatch(setUserACL({ acl: userACLObj }));
+        }
+    }, [userACL]);
+
+    /* Setting tax details of country in redux store */
+    useEffect(() => {
+        if (taxDetailsOfCountry && taxDetailsOfCountry.success) {
+            const taxDetails = taxDetailsOfCountry.data.taxDetails;
+
+            /* Forming key value pairs: where key is taxId and value is TaxDetail object, for fast retrieval */
+            const taxDetailsObj: { [taxId: string]: TaxDetail } = {};
+            taxDetails.forEach((tax) => {
+                taxDetailsObj[tax.taxId] = tax;
+            });
+
+            dispatch(
+                setTaxDetailsOfCountry({ taxDetailsOfCountry: taxDetailsObj })
+            );
+        }
+    }, [taxDetailsOfCountry]);
+
+    /* Setting enabled featues in redux store */
+    useEffect(() => {
+        if (enabledFeaturesData && enabledFeaturesData.success) {
+            const enabledFeaturesObj: { [featureId: number]: PlatformFeature } =
+                {};
+
+            /* Forming key value pairs: where key is fetureId and value is PlatformFeature object, for fast retrieval */
+            enabledFeaturesData.data.features.forEach((feature) => {
+                enabledFeaturesObj[feature.featureId] = feature;
+            });
+
+            dispatch(
+                setPlatformFeatures({ platformFeatures: enabledFeaturesObj })
+            );
+        }
+    }, [enabledFeaturesData]);
+
+    /* Setting country details in redux */
+    useEffect(() => {
+        if (countryDetails && countryDetails.success) {
+            dispatch(setCountryDetails({country: countryDetails.data.country}));
+        }
+    }, [countryDetails]);
+
+    /* Loading spinner when fetching ACL */
+    const showLoadingSpinner = useMemo(() => {
+        return fetchingACL ||
+            fetchingTaxDetailsOfCountry ||
+            fetchingEnabledFeatures ||
+            fetchingCountryDetails
+            ? true
+            : false;
+    }, [
+        fetchingACL,
+        fetchingTaxDetailsOfCountry,
+        fetchingEnabledFeatures,
+        fetchingCountryDetails,
+    ]);
+
+    /* Going back if there is an error when making initial API Calls */
+    useEffect(() => {
+        let message = "";
+        if (errorFetchingACL) {
+            message = capitalizeText(
+                `${i18n.t("errorFetchingACL")}${i18n.t("comma")}${i18n.t(
+                    "contactSupport"
+                )}`
+            );
+        }
+        if (errorFetchingTaxDetailsOfCountry) {
+            message = capitalizeText(
+                `${i18n.t("errorFetchingTaxDetails")}${i18n.t("comma")}${i18n.t(
+                    "contactSupport"
+                )}`
+            );
+        }
+        if (errorFetchingEnabledFeatures || errorFetchingCountryDetails) {
+            message = capitalizeText(
+                `${i18n.t("error")}${i18n.t("comma")}${i18n.t(
+                    "contactSupport"
+                )}`
+            );
+        }
+        if (message) {
+            ToastAndroid.show(message, ToastAndroid.LONG);
+            router.back();
+        }
+    }, [
+        errorFetchingACL,
+        errorFetchingTaxDetailsOfCountry,
+        errorFetchingEnabledFeatures,
+        errorFetchingCountryDetails,
+    ]);
+
     return (
         <>
+            {showLoadingSpinner && <LoadingSpinnerOverlay />}
+
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <Drawer
                     drawerContent={CustomDrawer}
@@ -171,9 +370,16 @@ const CompanyMainLayout = () => {
                             headerTitle: () => (
                                 <CustomNavHeader
                                     mainHeading={i18n.t("items")}
-                                    subHeading={selectedCompany?.companyName || ""}
+                                    subHeading={
+                                        selectedCompany?.companyName || ""
+                                    }
                                 />
                             ),
+                            drawerItemStyle: {
+                                display: isFeatureAccessible(7)
+                                    ? "flex"
+                                    : "none",
+                            },
                         }}
                     />
                 </Drawer>

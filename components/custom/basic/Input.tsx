@@ -17,7 +17,7 @@ import searchIcon from "@/assets/images/search_icon.png";
 import hidePasswordIcon from "@/assets/images/hide_password_icon.png";
 
 interface InputProps {
-    label: string;
+    label?: string;
     placeholder: string;
     onChangeText?(text: string): void;
     onBlur?(e: NativeSyntheticEvent<TextInputFocusEventData>): void;
@@ -25,8 +25,10 @@ interface InputProps {
     keyboardType?: KeyboardTypeOptions;
     value: string;
     extraContainerStyles?: Object;
+    extraInputStyles?: Object;
     errorMessage?: string | null;
-    isSearchIconVisible?: boolean
+    isSearchIconVisible?: boolean;
+    isDisabled?: boolean
 }
 const Input = ({
     label,
@@ -36,9 +38,11 @@ const Input = ({
     isPasswordType = false,
     value,
     extraContainerStyles,
+    extraInputStyles,
     errorMessage,
     keyboardType,
-    isSearchIconVisible = false
+    isSearchIconVisible = false,
+    isDisabled = false
 }: InputProps) => {
     /* Password visibility state for password inputs */
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -62,7 +66,7 @@ const Input = ({
     };
     return (
         <View style={[styles.container, extraContainerStyles]}>
-            {label && <Text style={styles.label}>{label}</Text>}
+            <Text style={styles.label}>{label ? label : ""}</Text>
             <View
                 style={[
                     styles.inputContainer,
@@ -74,7 +78,7 @@ const Input = ({
                     <Image source={searchIcon} style={styles.searchIcon} resizeMode="contain" />
                 }
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, extraInputStyles]}
                     placeholder={placeholder}
                     onChangeText={inputChangeHandler}
                     onBlur={blurHandler}
@@ -84,6 +88,7 @@ const Input = ({
                         isPasswordType && !isPasswordVisible ? true : false
                     }
                     keyboardType={keyboardType ? keyboardType : "default"}
+                    editable={!isDisabled}
                 />
                 {isPasswordType && (
                     <Pressable
@@ -128,8 +133,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     searchIcon: {
-        width: 24,
-        height: 24
+        width: 18,
+        height: 18,
+        marginLeft: 16
     },
     focussedInputContainer: {
         borderColor: "#006FFD",

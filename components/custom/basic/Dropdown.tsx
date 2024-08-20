@@ -35,6 +35,8 @@ interface DropdownProps {
     isSearchable?: boolean;
     extraContainerStyles?: Object;
     errorMessage?: string | null;
+    customActionButtonText?: string;
+    customActionButtonHandler?(): void;
 }
 const Dropdown = ({
     label,
@@ -45,6 +47,8 @@ const Dropdown = ({
     isSearchable,
     extraContainerStyles,
     errorMessage,
+    customActionButtonText,
+    customActionButtonHandler,
 }: DropdownProps) => {
     const [isOptionsShown, setIsOptionsShown] = useState(false);
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
@@ -171,6 +175,14 @@ const Dropdown = ({
                                 keyExtractor={(item) => item[textKey]}
                             />
                         </View>
+                        {customActionButtonText &&
+                            customActionButtonHandler && (
+                                <CustomButton
+                                    text={customActionButtonText}
+                                    onPress={customActionButtonHandler}
+                                    isSecondaryButton={true}
+                                />
+                            )}
 
                         <View style={commonStyles.modalEndActionsContainer}>
                             <CustomButton

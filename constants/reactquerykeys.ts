@@ -4,5 +4,8 @@ export enum ReactQueryKeys {
     company = "company",
     taxDetailsOfCountry="taxDetailsOfCountry",
     userACLForCompany="userACLForCompany",
-    enabledPlatformFeatures="enabledPlatformFeatures"
+    enabledPlatformFeatures="enabledPlatformFeatures",
+    items= "items",
+    country = "country",
+    units = "units"
 }

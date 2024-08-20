@@ -34,3 +34,7 @@ export interface PlatformFeature {
 export class GetAllFeaturesResponse {
     constructor(public features: PlatformFeature[]) {}
 }
+
+export class GetCountryByIdResponse {
+    constructor(public country: Country) {}
+}

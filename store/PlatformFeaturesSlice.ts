@@ -5,7 +5,7 @@ import { number } from "yup";
 interface PlatformFeaturesSliceType {
     platformFeatures: { [featureId: number]: PlatformFeature };
 }
-const initialState = {
+const initialState: PlatformFeaturesSliceType = {
     platformFeatures: {},
 };
 const PlatformFeaturesSlice = createSlice({

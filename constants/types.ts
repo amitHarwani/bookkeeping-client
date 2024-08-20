@@ -1,3 +1,4 @@
+import { Unit } from "@/services/inventory/inventory_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
 
 export type GenericObject = {
@@ -28,4 +29,15 @@ export interface AddCompanyForm {
     localDayStartTime: string;
     decimalRoundTo: number,
     taxDetails?: {[taxId: number]: { taxId: number; registrationNumber: string }};
+}
+
+
+export interface AddItemForm {
+    itemName: string;
+    unit: Unit | null
+    defaultSellingPrice: number | null;
+    defaultPurchasePrice: number | null;
+    stock: number | null;
+    minStockToMaintain: number | null;
+    isActive: boolean
 }
