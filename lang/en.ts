@@ -68,5 +68,7 @@ export default {
     addUnit: "add unit",
     unitName: "unit name",
     enterUnitName: "enter unit name",
-    errorFetchingUnits: "error fetching units"
+    errorFetchingUnits: "error fetching units",
+    unitNameIsRequired: "unit name is required",
+    itemAddedSuccessfully: "item added successfully"
 }

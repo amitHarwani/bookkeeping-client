@@ -79,3 +79,13 @@ export const AddCompanyFormValidation = Yup.object().shape({
         );
     }),
 });
+
+export const AddItemFormValidation = Yup.object().shape({
+    itemName: Yup.string().trim().required("item name is required"),
+    unit: Yup.object().required("unit is required"),
+    defaultSellingPrice: Yup.number().required("default selling price is required"),
+    defaultPurchasePrice: Yup.number().required("default purchase price is required"),
+    stock: Yup.number().required("stock is required"),
+    minStockToMaintain: Yup.number().required("min stock to maintain is required"),
+    isActive: Yup.boolean().required("is active is required")
+})

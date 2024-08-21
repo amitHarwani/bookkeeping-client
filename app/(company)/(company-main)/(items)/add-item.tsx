@@ -4,8 +4,8 @@ import RadioButton from "@/components/custom/basic/RadioButton";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import { AddItemForm } from "@/constants/types";
 import { useAppSelector } from "@/store";
-import { capitalizeText } from "@/utils/common_utils";
-import { useQuery } from "@tanstack/react-query";
+import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Formik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, ToastAndroid, View } from "react-native";
@@ -14,19 +14,26 @@ import Dropdown from "@/components/custom/basic/Dropdown";
 import AddUnit from "@/components/custom/business/AddUnit";
 import { router } from "expo-router";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
+import { AddItemFormValidation } from "@/utils/schema_validations";
+import ErrorMessage from "@/components/custom/basic/ErrorMessage";
+import CustomButton from "@/components/custom/basic/CustomButton";
 
 const AddItem = () => {
+    /* Company State & Selected company from redux */
     const companyState = useAppSelector((state) => state.company);
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
     );
 
+    /* Add unit modal's visibility */
     const [isAddUnitModalShown, setIsAddUnitModalShown] = useState(false);
 
+    /* Toggle add unit modal function */
     const toggleAddUnitModal = useCallback(() => {
         setIsAddUnitModalShown((prev) => !prev);
     }, [isAddUnitModalShown]);
 
+    /* Initial values */
     const initialFormValues: AddItemForm = useMemo(() => {
         return {
             itemName: "",
@@ -39,6 +46,7 @@ const AddItem = () => {
         };
     }, []);
 
+    /* Data for isActive field */
     const isActiveRadioButtonData = useMemo(() => {
         return [
             { textKey: "yes", value: true },
@@ -46,20 +54,33 @@ const AddItem = () => {
         ];
     }, []);
 
+    /* To fetch all the units of the company */
     const {
         isFetching: fetchingUnits,
         data: unitsData,
         error: errorFetchingUnits,
+        refetch: refetchUnits,
     } = useQuery({
         queryKey: [ReactQueryKeys.units, selectedCompany?.companyId],
         queryFn: () =>
             InventoryService.getAllUnits(selectedCompany?.companyId as number),
     });
 
-    const showLoadingSpinner = useMemo(() => {
-        return fetchingUnits ? true : false;
-    }, [fetchingUnits]);
+    /* Add Item Mutation */
+    const addItemMutation = useMutation({
+        mutationFn: (itemForm: AddItemForm) =>
+            InventoryService.addItem(
+                itemForm,
+                selectedCompany?.companyId as number
+            ),
+    });
 
+    /* Loading spinner visibility */
+    const showLoadingSpinner = useMemo(() => {
+        return fetchingUnits || addItemMutation.isPending ? true : false;
+    }, [fetchingUnits, addItemMutation.isPending]);
+
+    /* Error fetching units: Show a toast message, and go back */
     useEffect(() => {
         if (errorFetchingUnits) {
             ToastAndroid.show(
@@ -74,10 +95,21 @@ const AddItem = () => {
         }
     }, [errorFetchingUnits]);
 
+    /* Api Error Message */
     const apiErrorMessage = useMemo(() => {
+        if (addItemMutation.error) {
+            return getApiErrorMessage(addItemMutation.error);
+        }
         return null;
-    }, []);
+    }, [addItemMutation.error]);
 
+    /* On Add Item Success: Show a toast message and go back */
+    useEffect(() => {
+        if(addItemMutation.isSuccess && addItemMutation.data.success){
+            ToastAndroid.show(`${i18n.t("itemAddedSuccessfully")}`, ToastAndroid.LONG);
+            router.back();
+        }
+    }, [addItemMutation.isSuccess])
 
     return (
         <ScrollView style={styles.mainContainer}>
@@ -85,7 +117,8 @@ const AddItem = () => {
             <View style={styles.container}>
                 <Formik
                     initialValues={initialFormValues}
-                    onSubmit={(values) => console.log("Add Item", values)}
+                    validationSchema={AddItemFormValidation}
+                    onSubmit={(values) => addItemMutation.mutate(values)}
                 >
                     {({
                         handleChange,
@@ -98,6 +131,9 @@ const AddItem = () => {
                         errors,
                     }) => (
                         <View style={styles.formContainer}>
+                            {apiErrorMessage && (
+                                <ErrorMessage message={apiErrorMessage} />
+                            )}
                             <Input
                                 label={i18n.t("itemName")}
                                 placeholder={capitalizeText(
@@ -119,7 +155,10 @@ const AddItem = () => {
                                     value={companyState.country?.currency || ""}
                                     isDisabled={true}
                                     placeholder=""
-                                    extraContainerStyles={{ flexGrow: 0.1 }}
+                                    extraContainerStyles={{
+                                        flexGrow: 0.1,
+                                        height: 58,
+                                    }}
                                 />
                                 <Input
                                     value={
@@ -149,6 +188,7 @@ const AddItem = () => {
                                     value={companyState.country?.currency || ""}
                                     isDisabled={true}
                                     placeholder=""
+                                    extraContainerStyles={{ height: 58 }}
                                 />
                                 <Input
                                     value={
@@ -184,13 +224,21 @@ const AddItem = () => {
                                 value={values.unit ? values.unit : undefined}
                                 customActionButtonText={i18n.t("addNewUnit")}
                                 customActionButtonHandler={toggleAddUnitModal}
+                                extraOptionTextSyles={{ textTransform: "none" }}
+                                errorMessage={
+                                    touched.unit && errors.unit
+                                        ? errors.unit
+                                        : null
+                                }
                             />
 
-                            <AddUnit
-                                visible={isAddUnitModalShown}
-                                toggleAddUnitModal={toggleAddUnitModal}
-                            />
-
+                            {isAddUnitModalShown && (
+                                <AddUnit
+                                    visible={isAddUnitModalShown}
+                                    toggleAddUnitModal={toggleAddUnitModal}
+                                    onUnitAdded={() => refetchUnits()}
+                                />
+                            )}
                             <Input
                                 label={i18n.t("startingStock")}
                                 value={values.stock?.toString() || ""}
@@ -248,6 +296,13 @@ const AddItem = () => {
                                         ? isActiveRadioButtonData[0]
                                         : isActiveRadioButtonData[1]
                                 }
+                            />
+
+                            <CustomButton
+                                text={i18n.t("addItem")}
+                                onPress={handleSubmit}
+                                isDisabled={showLoadingSpinner}
+                                extraContainerStyles={{ marginTop: 8 }}
                             />
                         </View>
                     )}

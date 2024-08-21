@@ -34,6 +34,7 @@ interface DropdownProps {
     value?: GenericObject;
     isSearchable?: boolean;
     extraContainerStyles?: Object;
+    extraOptionTextSyles?: Object;
     errorMessage?: string | null;
     customActionButtonText?: string;
     customActionButtonHandler?(): void;
@@ -46,6 +47,7 @@ const Dropdown = ({
     value,
     isSearchable,
     extraContainerStyles,
+    extraOptionTextSyles,
     errorMessage,
     customActionButtonText,
     customActionButtonHandler,
@@ -166,6 +168,7 @@ const Dropdown = ({
                                                 tempSelectedItem === item
                                                     ? commonStyles.selectedOptionText
                                                     : commonStyles.optionText,
+                                                extraOptionTextSyles,
                                             ]}
                                         >
                                             {item[textKey]}

@@ -1,11 +1,13 @@
 import { asyncHandler } from "../async_handler";
 import axios from "axios";
 import {
+    AddItemResponse,
     AddUnitResponse,
     GetAllItemsResponse,
     GetAllUnitsResponse,
 } from "./inventory_types";
 import { ApiResponse } from "../api_response";
+import { AddItemForm } from "@/constants/types";
 
 class InventoryService {
     hostPath = process.env.EXPO_PUBLIC_INVENTORY_SERVICE;
@@ -51,6 +53,24 @@ class InventoryService {
                 {
                     unitName,
                     companyId,
+                }
+            );
+        });
+    };
+
+    addItem = async (itemForm: AddItemForm, companyId: number) => {
+        return await asyncHandler<AddItemResponse>(() => {
+            return axios.post<ApiResponse<AddItemResponse>>(
+                `${this.hostPath}/${this.addItemPath}`,
+                {
+                    companyId: companyId,
+                    isActive: itemForm.isActive,
+                    itemName: itemForm.itemName,
+                    unitId: itemForm.unit?.unitId,
+                    stock: Number(itemForm.stock),
+                    minStockToMaintain: Number(itemForm.minStockToMaintain),
+                    defaultSellingPrice: Number(itemForm.defaultSellingPrice),
+                    defaultPurchasePrice: Number(itemForm.defaultPurchasePrice),
                 }
             );
         });

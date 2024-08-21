@@ -1,0 +1,4 @@
+export enum PLATFORM_FEATURES {
+    GET_ITEMS = 7,
+    ADD_UPTATE_ITEM = 8
+}

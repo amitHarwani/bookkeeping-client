@@ -42,3 +42,7 @@ export class GetAllUnitsResponse {
 export class AddUnitResponse {
     constructor(public unit: Unit, public message: string) {}
 }
+
+export class AddItemResponse {
+    constructor(public item: Item, public message: string) {}
+}

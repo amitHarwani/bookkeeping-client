@@ -4,6 +4,7 @@ import LogoutIcon from "@/assets/images/logout_icon.png";
 import CustomButton from "@/components/custom/basic/CustomButton";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
+import { PLATFORM_FEATURES } from "@/constants/features";
 import { fonts } from "@/constants/fonts";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import { AppRoutes } from "@/constants/routes";
@@ -267,7 +268,9 @@ const CompanyMainLayout = () => {
     /* Setting country details in redux */
     useEffect(() => {
         if (countryDetails && countryDetails.success) {
-            dispatch(setCountryDetails({country: countryDetails.data.country}));
+            dispatch(
+                setCountryDetails({ country: countryDetails.data.country })
+            );
         }
     }, [countryDetails]);
 
@@ -376,7 +379,9 @@ const CompanyMainLayout = () => {
                                 />
                             ),
                             drawerItemStyle: {
-                                display: isFeatureAccessible(7)
+                                display: isFeatureAccessible(
+                                    PLATFORM_FEATURES.GET_ITEMS
+                                )
                                     ? "flex"
                                     : "none",
                             },
