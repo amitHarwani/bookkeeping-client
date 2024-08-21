@@ -24,6 +24,7 @@ class InventoryService {
             pageSize: number;
             companyId: number;
             cursor?: { itemId: number; updatedAt: string };
+            query?: {isActive?: boolean, isStockLow?: boolean}
         };
     }) => {
         return await asyncHandler<GetAllItemsResponse>(() => {
@@ -33,6 +34,7 @@ class InventoryService {
                     pageSize: pageParam.pageSize,
                     companyId: pageParam.companyId,
                     cursor: pageParam?.cursor,
+                    query: pageParam?.query
                 }
             );
         });
@@ -67,6 +69,7 @@ class InventoryService {
                     isActive: itemForm.isActive,
                     itemName: itemForm.itemName,
                     unitId: itemForm.unit?.unitId,
+                    unitName: itemForm.unit?.unitName,
                     stock: Number(itemForm.stock),
                     minStockToMaintain: Number(itemForm.minStockToMaintain),
                     defaultSellingPrice: Number(itemForm.defaultSellingPrice),

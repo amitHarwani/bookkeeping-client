@@ -70,5 +70,9 @@ export default {
     enterUnitName: "enter unit name",
     errorFetchingUnits: "error fetching units",
     unitNameIsRequired: "unit name is required",
-    itemAddedSuccessfully: "item added successfully"
+    itemAddedSuccessfully: "item added successfully",
+    filter: "filter",
+    selectItemType: "select item type",
+    filterByLowStockItems: "filter by low stock items",
+    apply: "apply"
 }

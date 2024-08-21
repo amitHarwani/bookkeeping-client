@@ -11,6 +11,7 @@ export interface Item {
     itemId: number;
     itemName: string;
     unitId: number;
+    unitName: string;
     defaultSellingPrice: string | null;
     defaultPurchasePrice: string | null;
     stock: string;
@@ -45,4 +46,9 @@ export class AddUnitResponse {
 
 export class AddItemResponse {
     constructor(public item: Item, public message: string) {}
+}
+
+export interface FilterItemsQuery {
+    isActive?: boolean; 
+    isStockLow?: boolean
 }

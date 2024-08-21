@@ -41,3 +41,8 @@ export interface AddItemForm {
     minStockToMaintain: number | null;
     isActive: boolean
 }
+
+export interface FilterItemForm {
+    itemType: {all: boolean, isActive: boolean};
+    filterByStockLow: boolean;
+}
