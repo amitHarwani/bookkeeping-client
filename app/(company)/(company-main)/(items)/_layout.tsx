@@ -17,7 +17,7 @@ const ItemsLayout = () => {
 
     useEffect(() => {
         /* Hiding the drawer header when pathname is addItem */
-        if (pathName.includes(`${AppRoutes.addItem}`)) {
+        if (pathName.includes(`${AppRoutes.addItem}`) || pathName.includes(`${AppRoutes.getItem}`)) {
             navigator.setOptions({ headerShown: false });
         } 
         else {
@@ -52,6 +52,10 @@ const ItemsLayout = () => {
                         />
                     ),
                 }}
+            />
+
+            <Stack.Screen 
+                name="get-item/[itemId]"
             />
         </Stack>
     );

@@ -6,6 +6,7 @@ import {
     FilterItemsQuery,
     GetAllItemsResponse,
     GetAllUnitsResponse,
+    GetItemResponse,
 } from "./inventory_types";
 import { ApiResponse } from "../api_response";
 import { AddItemForm } from "@/constants/types";
@@ -13,6 +14,7 @@ import { AddItemForm } from "@/constants/types";
 class InventoryService {
     hostPath = process.env.EXPO_PUBLIC_INVENTORY_SERVICE;
     getAllItemsPath = "item/get-all-items";
+    getItemPath = "item/get-item";
     addItemPath = "item/add-item";
     updateItemPath = "item/update-item";
     getAllUnitsPath = "unit/get-all-units";
@@ -25,7 +27,7 @@ class InventoryService {
             pageSize: number;
             companyId: number;
             cursor?: { itemId: number; updatedAt: string };
-            query?: FilterItemsQuery
+            query?: FilterItemsQuery;
         };
     }) => {
         return await asyncHandler<GetAllItemsResponse>(() => {
@@ -35,7 +37,18 @@ class InventoryService {
                     pageSize: pageParam.pageSize,
                     companyId: pageParam.companyId,
                     cursor: pageParam?.cursor,
-                    query: pageParam?.query
+                    query: pageParam?.query,
+                }
+            );
+        });
+    };
+
+    getItem = async (itemId: number, companyId: number) => {
+        return await asyncHandler<GetItemResponse>(() => {
+            return axios.get<ApiResponse<GetItemResponse>>(
+                `${this.hostPath}/${this.getItemPath}`,
+                {
+                    params: { itemId: itemId, companyId: companyId },
                 }
             );
         });

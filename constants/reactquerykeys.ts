@@ -7,5 +7,6 @@ export enum ReactQueryKeys {
     enabledPlatformFeatures="enabledPlatformFeatures",
     items= "items",
     country = "country",
-    units = "units"
+    units = "units",
+    getItem = "getItem"
 }

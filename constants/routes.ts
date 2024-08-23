@@ -5,5 +5,6 @@ export enum AppRoutes {
     companySettings = "company-settings",
     addCompany = "add-company",
     dashboard = "dashboard",
-    addItem = "add-item"
+    addItem = "add-item",
+    getItem = "get-item"
 }

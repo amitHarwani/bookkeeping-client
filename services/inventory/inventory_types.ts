@@ -49,7 +49,11 @@ export class AddItemResponse {
 }
 
 export interface FilterItemsQuery {
-    isActive?: boolean; 
+    isActive?: boolean;
     isStockLow?: boolean;
-    itemNameSearchQuery?: string
+    itemNameSearchQuery?: string;
+}
+
+export class GetItemResponse {
+    constructor(public item: Item) {}
 }

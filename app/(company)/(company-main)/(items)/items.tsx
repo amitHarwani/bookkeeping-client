@@ -226,7 +226,16 @@ const Items = () => {
                     data={itemsData?.pages
                         .map((item) => item.data.items)
                         .flat()}
-                    renderItem={({ item }) => <InventoryListItem item={item} />}
+                    renderItem={({ item }) => (
+                        <InventoryListItem
+                            item={item}
+                            onPress={(item) =>
+                                router.push(
+                                    `${AppRoutes.getItem}/${item.itemId}` as Href
+                                )
+                            }
+                        />
+                    )}
                     keyExtractor={(item) => item.itemId.toString()}
                     ItemSeparatorComponent={() => (
                         <View style={styles.itemSeparator} />
