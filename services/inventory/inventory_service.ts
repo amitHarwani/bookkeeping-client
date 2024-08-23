@@ -3,6 +3,7 @@ import axios from "axios";
 import {
     AddItemResponse,
     AddUnitResponse,
+    FilterItemsQuery,
     GetAllItemsResponse,
     GetAllUnitsResponse,
 } from "./inventory_types";
@@ -24,7 +25,7 @@ class InventoryService {
             pageSize: number;
             companyId: number;
             cursor?: { itemId: number; updatedAt: string };
-            query?: {isActive?: boolean, isStockLow?: boolean}
+            query?: FilterItemsQuery
         };
     }) => {
         return await asyncHandler<GetAllItemsResponse>(() => {

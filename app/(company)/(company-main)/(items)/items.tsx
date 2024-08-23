@@ -7,7 +7,13 @@ import {
     Text,
     View,
 } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import Input from "@/components/custom/basic/Input";
 import { i18n } from "@/app/_layout";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
@@ -33,22 +39,18 @@ import RadioButton from "@/components/custom/basic/RadioButton";
 import { commonStyles } from "@/utils/common_styles";
 
 const Items = () => {
+    /* Selected company from redux */
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
     );
 
-    const initialFilterItemForm: FilterItemForm = useMemo(() => {
-        return {
-            itemType: { all: true, isActive: false },
-            filterByStockLow: false,
-        };
-    }, []);
-
+    /* item type radio button data for filtering items */
     const itemTypeRadioButtonData = useMemo(
         () => [{ key: "all" }, { key: "active" }, { key: "inactive" }],
         []
     );
 
+    /* filter by low stock radio button data for filtering items */
     const filterByStockLowRadioButtonData = useMemo(
         () => [
             { key: "yes", value: true },
@@ -57,12 +59,24 @@ const Items = () => {
         []
     );
 
+    /* Current state of filters */
     const [filtersState, setFiltersState] = useState<FilterItemsQuery>({});
 
     /* Search Input state */
     const [searchInput, setSearchInput] = useState("");
 
-    /* Use Infinite query to get  */
+    /* Search Query State, fills data from search input once search button is clicked */
+    const [searchQuery, setSearchQuery] = useState("");
+
+    /* Visibility of filters modal */
+    const [isFiltersModalShown, setIsFiltersModalShown] = useState(false);
+
+    /* Toggle filters modal visibility */
+    const toggleFiltersModal = useCallback(() => {
+        setIsFiltersModalShown((prev) => !prev);
+    }, [isFiltersModalShown]);
+
+    /* Use Infinite query to get items by filters and search query  */
     const {
         data: itemsData,
         error: errorFetchingItemsData,
@@ -73,13 +87,16 @@ const Items = () => {
         isPending,
         refetch: refetchItems,
     } = useInfiniteQuery({
-        queryKey: [ReactQueryKeys.items],
+        queryKey: [ReactQueryKeys.items, filtersState, searchQuery],
         queryFn: InventoryService.getAllItems,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,
             cursor: undefined,
-            query: filtersState
+            query: {
+                ...filtersState,
+                itemNameSearchQuery: searchQuery,
+            },
         },
         getNextPageParam: (lastPage, pages) => {
             if (lastPage.data.nextPageCursor) {
@@ -87,14 +104,18 @@ const Items = () => {
                     pageSize: 20,
                     companyId: selectedCompany?.companyId,
                     cursor: lastPage.data.nextPageCursor,
-                    query: filtersState
+                    query: {
+                        ...filtersState,
+                        itemNameSearchQuery: searchQuery,
+                    },
                 };
             }
             return null;
         },
+        enabled: false,
     });
 
-    /* Refresh when the screen comes back to focus */
+    /* Refetch Items when the screen comes back to focus */
     useRefreshOnFocus(refetchItems);
 
     /* Search input change handler */
@@ -110,25 +131,49 @@ const Items = () => {
         }
     };
 
+    /* Filter form submit handler */
     const filterFormSubmitHandler = (values: FilterItemForm) => {
-        let newFiltersState:FilterItemsQuery = {};
-        if(!values.itemType.all && values.itemType.isActive){
+        /* New filters state */
+        let newFiltersState: FilterItemsQuery = {};
+
+        /* If all is not selected, then filtering by isActive state */
+        if (!values.itemType.all && values.itemType.isActive) {
             newFiltersState.isActive = true;
-        }
-        else if(!values.itemType.all && !values.itemType.isActive){
+        } else if (!values.itemType.all && !values.itemType.isActive) {
             newFiltersState.isActive = false;
         }
 
-        if(values.filterByStockLow){
+        /* if only the stock low items need to be shown */
+        if (values.filterByStockLow) {
             newFiltersState.isStockLow = true;
         }
+
+        /* Setting the filters state */
         setFiltersState(newFiltersState);
-    }
+
+        /* Hiding the filters modal */
+        toggleFiltersModal();
+    };
+
+    /* on click of search button */
+    const searchHandler = () => {
+        /* Set search query state to searchInput state */
+        setSearchQuery(searchInput);
+    };
+
+    /* Once search query or filters state changes */
+    useEffect(() => {
+        /* If fetching is not in progress */
+        if (!isFetching) {
+            /* fetch items  */
+            refetchItems();
+        }
+    }, [filtersState, searchQuery]);
 
     /* Show loading spinner until first page data arrives */
     const showLoadingSpinner = useMemo(() => {
-        return isPending ? true : false;
-    }, [isPending]);
+        return isPending && isFetching ? true : false;
+    }, [isPending, isFetching]);
 
     /* Error message from API */
     const apiErrorMessage = useMemo(() => {
@@ -141,15 +186,25 @@ const Items = () => {
         <View style={styles.container}>
             {showLoadingSpinner && <LoadingSpinnerOverlay />}
             {apiErrorMessage && <ErrorMessage message={apiErrorMessage} />}
-            <Input
-                placeholder={capitalizeText(i18n.t("searchByItemName"))}
-                isSearchIconVisible={true}
-                extraInputStyles={{ paddingVertical: 10 }}
-                value={searchInput}
-                onChangeText={searchInputChangeHandler}
-            />
+            <View style={styles.searchContainer}>
+                <Input
+                    placeholder={capitalizeText(i18n.t("searchByItemName"))}
+                    isSearchIconVisible={true}
+                    extraInputStyles={{ paddingVertical: 10 }}
+                    value={searchInput}
+                    onChangeText={searchInputChangeHandler}
+                    extraContainerStyles={{ flex: 1 }}
+                    keepLabelSpace={false}
+                />
+                <CustomButton
+                    text={i18n.t("search")}
+                    onPress={searchHandler}
+                    extraContainerStyles={{ flex: 0.28, paddingVertical: 10 }}
+                    extraTextStyles={{ fontSize: 12 }}
+                />
+            </View>
             <View style={styles.actionsContainer}>
-                <FilterButton onPress={() => {}} />
+                <FilterButton onPress={toggleFiltersModal} />
                 {isFeatureAccessible(PLATFORM_FEATURES.ADD_UPTATE_ITEM) && (
                     <CustomButton
                         text={i18n.t("addItem")}
@@ -184,14 +239,32 @@ const Items = () => {
             </View>
 
             <CustomModal
-                visible={true}
-                onRequestClose={() => {}}
+                visible={isFiltersModalShown}
+                onRequestClose={toggleFiltersModal}
                 extraModalStyles={{ justifyContent: "flex-end" }}
                 children={
                     <View>
                         <Formik
-                            initialValues={initialFilterItemForm}
-                            onSubmit={() => {}}
+                            initialValues={{
+                                itemType: {
+                                    all:
+                                        typeof filtersState?.isActive !=
+                                        "boolean"
+                                            ? true
+                                            : false,
+                                    isActive:
+                                        typeof filtersState?.isActive ===
+                                            "boolean" &&
+                                        filtersState?.isActive === true
+                                            ? true
+                                            : false,
+                                },
+                                filterByStockLow:
+                                    filtersState?.isStockLow === true
+                                        ? true
+                                        : false,
+                            }}
+                            onSubmit={filterFormSubmitHandler}
                         >
                             {({ values, setFieldValue, handleSubmit }) => (
                                 <View
@@ -280,6 +353,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 24,
         rowGap: 16,
+    },
+    searchContainer: {
+        flexDirection: "row",
+        columnGap: 12,
     },
     actionsContainer: {
         flexDirection: "row",

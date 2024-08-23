@@ -50,5 +50,6 @@ export class AddItemResponse {
 
 export interface FilterItemsQuery {
     isActive?: boolean; 
-    isStockLow?: boolean
+    isStockLow?: boolean;
+    itemNameSearchQuery?: string
 }

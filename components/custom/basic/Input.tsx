@@ -18,6 +18,7 @@ import hidePasswordIcon from "@/assets/images/hide_password_icon.png";
 
 interface InputProps {
     label?: string;
+    keepLabelSpace?: boolean;
     placeholder: string;
     onChangeText?(text: string): void;
     onBlur?(e: NativeSyntheticEvent<TextInputFocusEventData>): void;
@@ -32,6 +33,7 @@ interface InputProps {
 }
 const Input = ({
     label,
+    keepLabelSpace = true,
     placeholder,
     onChangeText,
     onBlur,
@@ -66,7 +68,7 @@ const Input = ({
     };
     return (
         <View style={[styles.container, extraContainerStyles]}>
-            <Text style={styles.label}>{label ? label : ""}</Text>
+           {keepLabelSpace && <Text style={styles.label}>{label ? label : ""}</Text>}
             <View
                 style={[
                     styles.inputContainer,

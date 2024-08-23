@@ -74,5 +74,6 @@ export default {
     filter: "filter",
     selectItemType: "select item type",
     filterByLowStockItems: "filter by low stock items",
-    apply: "apply"
+    apply: "apply",
+    search: "search"
 }
