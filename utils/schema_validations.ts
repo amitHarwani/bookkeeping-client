@@ -83,9 +83,20 @@ export const AddCompanyFormValidation = Yup.object().shape({
 export const AddItemFormValidation = Yup.object().shape({
     itemName: Yup.string().trim().required("item name is required"),
     unit: Yup.object().required("unit is required"),
-    defaultSellingPrice: Yup.number().required("default selling price is required"),
-    defaultPurchasePrice: Yup.number().required("default purchase price is required"),
+    defaultSellingPrice: Yup.number().optional().nullable().typeError("invalid default selling price"),
+    defaultPurchasePrice: Yup.number().optional().nullable().typeError("invalid default purchase price"),
     stock: Yup.number().required("stock is required"),
-    minStockToMaintain: Yup.number().required("min stock to maintain is required"),
+    minStockToMaintain: Yup.number().optional().nullable().typeError("invalid min stock to maintain"),
     isActive: Yup.boolean().required("is active is required")
 })
+
+export const UpdateItemFormValidation = Yup.object().shape({
+    itemName: Yup.string().trim().required("item name is required"),
+    unit: Yup.object().required("unit is required"),
+    defaultSellingPrice: Yup.number().optional().nullable().typeError("invalid default selling price"),
+    defaultPurchasePrice: Yup.number().optional().nullable().typeError("invalid default purchase price"),
+    stock: Yup.number().required("stock is required"),
+    minStockToMaintain: Yup.number().optional().nullable().typeError("invalid min stock to maintain"),
+    isActive: Yup.boolean().required("is active is required")
+})
+

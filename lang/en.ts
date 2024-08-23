@@ -58,8 +58,8 @@ export default {
     defaultSellingPrice: "default selling price",
     price: "price",
     defaultPurchasePrice: "default purchase price",
-    startingStock: "starting stock",
-    enterStartingStock: "enter starting stock",
+    stock: "stock",
+    enterStock: "enter stock",
     minStockToMaintain: "min stock to maintain",
     enterMinStock: "enter min stock",
     isActive: "is active ?",
@@ -76,5 +76,6 @@ export default {
     filterByLowStockItems: "filter by low stock items",
     apply: "apply",
     search: "search",
-    errorFetchingItem: "error fetching item"
+    errorFetchingItem: "error fetching item",
+    updateItem: "update item"
 }

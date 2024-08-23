@@ -11,7 +11,7 @@ const InventoryListItem = ({ item, onPress }: InventoryListItemProps) => {
     return (
         <Pressable onPress={() => onPress(item)}>
             <View style={styles.itemContainer}>
-                <Text style={styles.itemName}>{item.itemName}</Text>
+                <Text style={styles.itemName} numberOfLines={2}>{item.itemName}</Text>
                 <Text
                     style={styles.itemStock}
                 >{`${item.stock} ${item.unitName}`}</Text>
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     itemName: {
         fontFamily: fonts.Inter_Regular,
         fontSize: 14,
+        maxWidth: "75%"
     },
     itemStock: {
         fontFamily: fonts.Inter_Regular,

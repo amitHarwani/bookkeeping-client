@@ -46,3 +46,13 @@ export interface FilterItemForm {
     itemType: {all: boolean, isActive: boolean};
     filterByStockLow: boolean;
 }
+
+export interface UpdateItemForm {
+    itemName: string;
+    unit: Unit | null;
+    defaultSellingPrice: number | null;
+    defaultPurchasePrice: number | null;
+    stock: number | null;
+    minStockToMaintain: number | null;
+    isActive: boolean;   
+}

@@ -63,5 +63,11 @@ export const commonStyles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: "#006FFD",
         borderRadius: 12
+    },
+
+    /* Edit Icon */
+    editIcon: {
+        width: 24, 
+        height: 24
     }
 })

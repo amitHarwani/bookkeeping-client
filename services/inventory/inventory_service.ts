@@ -7,9 +7,10 @@ import {
     GetAllItemsResponse,
     GetAllUnitsResponse,
     GetItemResponse,
+    UpdateItemResponse,
 } from "./inventory_types";
 import { ApiResponse } from "../api_response";
-import { AddItemForm } from "@/constants/types";
+import { AddItemForm, UpdateItemForm } from "@/constants/types";
 
 class InventoryService {
     hostPath = process.env.EXPO_PUBLIC_INVENTORY_SERVICE;
@@ -90,6 +91,27 @@ class InventoryService {
                     defaultPurchasePrice: Number(itemForm.defaultPurchasePrice),
                 }
             );
+        });
+    };
+
+    updateItem = async (
+        itemId: number,
+        companyId: number,
+        itemDetails: UpdateItemForm
+    ) => {
+        return await asyncHandler<UpdateItemResponse>(() => {
+            return axios.put(`${this.hostPath}/${this.updateItemPath}`, {
+                itemId: itemId,
+                companyId: companyId,
+                isActive: itemDetails.isActive,
+                itemName: itemDetails.itemName,
+                unitId: itemDetails.unit?.unitId,
+                unitName: itemDetails.unit?.unitName,
+                stock: Number(itemDetails.stock),
+                minStockToMaintain: Number(itemDetails.minStockToMaintain),
+                defaultSellingPrice: Number(itemDetails.defaultSellingPrice),
+                defaultPurchasePrice: Number(itemDetails.defaultPurchasePrice),
+            });
         });
     };
 }

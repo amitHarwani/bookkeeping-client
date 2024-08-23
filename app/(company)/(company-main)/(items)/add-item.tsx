@@ -41,7 +41,7 @@ const AddItem = () => {
             defaultPurchasePrice: null,
             defaultSellingPrice: null,
             minStockToMaintain: null,
-            stock: null,
+            stock: 0,
             unit: null,
         };
     }, []);
@@ -240,12 +240,12 @@ const AddItem = () => {
                                 />
                             )}
                             <Input
-                                label={i18n.t("startingStock")}
+                                label={i18n.t("stock")}
                                 value={values.stock?.toString() || ""}
                                 onChangeText={handleChange("stock")}
                                 onBlur={handleBlur("stock")}
                                 placeholder={capitalizeText(
-                                    i18n.t("enterStartingStock")
+                                    i18n.t("enterStock")
                                 )}
                                 errorMessage={
                                     touched.stock && errors.stock

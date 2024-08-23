@@ -38,6 +38,7 @@ interface DropdownProps {
     errorMessage?: string | null;
     customActionButtonText?: string;
     customActionButtonHandler?(): void;
+    isDisabled?: boolean
 }
 const Dropdown = ({
     label,
@@ -51,6 +52,7 @@ const Dropdown = ({
     errorMessage,
     customActionButtonText,
     customActionButtonHandler,
+    isDisabled = false
 }: DropdownProps) => {
     const [isOptionsShown, setIsOptionsShown] = useState(false);
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
@@ -116,6 +118,7 @@ const Dropdown = ({
                     !!errorMessage && styles.errorDropdownButton,
                 ]}
                 onPress={toggleOptionsMenu}
+                disabled={isDisabled}
             >
                 <Text
                     style={[
@@ -137,7 +140,7 @@ const Dropdown = ({
                 children={
                     <View style={commonStyles.modalEndMenuContainer}>
                         <Text style={commonStyles.modalEndMenuHeading}>
-                            {i18n.t("selectCountry")}
+                            {capitalizeText(`${i18n.t("select")} ${label}`)}
                         </Text>
 
                         {isSearchable && (

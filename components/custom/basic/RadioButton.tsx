@@ -19,6 +19,7 @@ interface RadioButtonProps {
     textKey: string;
     value?: GenericObject;
     errorMessage?: string | null;
+    isDisabled?: boolean
 }
 const RadioButton = ({
     label,
@@ -27,6 +28,7 @@ const RadioButton = ({
     textKey,
     value,
     errorMessage,
+    isDisabled = false
 }: RadioButtonProps) => {
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
 
@@ -57,6 +59,7 @@ const RadioButton = ({
                         <Pressable
                             onPress={() => selectItem(item)}
                             style={styles.radioButtonItemContainer}
+                            disabled={isDisabled}
                         >
                             <Image
                                 source={

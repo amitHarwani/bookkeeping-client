@@ -57,3 +57,7 @@ export interface FilterItemsQuery {
 export class GetItemResponse {
     constructor(public item: Item) {}
 }
+
+export class UpdateItemResponse {
+    constructor(public item: Item, public message: string) {}
+}
