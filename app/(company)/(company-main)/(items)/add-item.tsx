@@ -40,9 +40,10 @@ const AddItem = () => {
             isActive: true,
             defaultPurchasePrice: null,
             defaultSellingPrice: null,
-            minStockToMaintain: null,
+            minStockToMaintain: 0,
             stock: 0,
             unit: null,
+            priceOfCurrentStock: null,
         };
     }, []);
 
@@ -105,11 +106,14 @@ const AddItem = () => {
 
     /* On Add Item Success: Show a toast message and go back */
     useEffect(() => {
-        if(addItemMutation.isSuccess && addItemMutation.data.success){
-            ToastAndroid.show(`${i18n.t("itemAddedSuccessfully")}`, ToastAndroid.LONG);
+        if (addItemMutation.isSuccess && addItemMutation.data.success) {
+            ToastAndroid.show(
+                capitalizeText(`${i18n.t("itemAddedSuccessfully")}`),
+                ToastAndroid.LONG
+            );
             router.back();
         }
-    }, [addItemMutation.isSuccess])
+    }, [addItemMutation.isSuccess]);
 
     return (
         <ScrollView style={styles.mainContainer}>
@@ -240,12 +244,12 @@ const AddItem = () => {
                                 />
                             )}
                             <Input
-                                label={i18n.t("stock")}
+                                label={i18n.t("openingStock")}
                                 value={values.stock?.toString() || ""}
                                 onChangeText={handleChange("stock")}
                                 onBlur={handleBlur("stock")}
                                 placeholder={capitalizeText(
-                                    i18n.t("enterStock")
+                                    i18n.t("enterOpeningStock")
                                 )}
                                 errorMessage={
                                     touched.stock && errors.stock
@@ -255,6 +259,31 @@ const AddItem = () => {
                                 keyboardType="number-pad"
                                 extraContainerStyles={{ flexGrow: 1 }}
                             />
+
+                            {values?.stock && Number(values.stock) > 0 ? (
+                                <Input
+                                    label={i18n.t("unitPriceOfOpeningStock")}
+                                    placeholder={capitalizeText(
+                                        i18n.t("enterUnitPriceOfOpeningStock")
+                                    )}
+                                    value={
+                                        values?.priceOfCurrentStock?.toString() ||
+                                        ""
+                                    }
+                                    onChangeText={handleChange(
+                                        "priceOfCurrentStock"
+                                    )}
+                                    keyboardType="number-pad"
+                                    errorMessage={
+                                        touched.priceOfCurrentStock &&
+                                        errors.priceOfCurrentStock
+                                            ? errors.priceOfCurrentStock
+                                            : null
+                                    }
+                                />
+                            ) : (
+                                <></>
+                            )}
 
                             <Input
                                 label={i18n.t("minStockToMaintain")}
@@ -322,6 +351,7 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
         paddingTop: 24,
+        paddingBottom: 12,
     },
     formContainer: {
         rowGap: 16,

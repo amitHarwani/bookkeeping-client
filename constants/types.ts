@@ -39,7 +39,8 @@ export interface AddItemForm {
     defaultPurchasePrice: number | null;
     stock: number | null;
     minStockToMaintain: number | null;
-    isActive: boolean
+    isActive: boolean,
+    priceOfCurrentStock: number | null;
 }
 
 export interface FilterItemForm {
@@ -52,7 +53,6 @@ export interface UpdateItemForm {
     unit: Unit | null;
     defaultSellingPrice: number | null;
     defaultPurchasePrice: number | null;
-    stock: number | null;
     minStockToMaintain: number | null;
     isActive: boolean;   
 }

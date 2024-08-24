@@ -89,6 +89,17 @@ class InventoryService {
                     minStockToMaintain: Number(itemForm.minStockToMaintain),
                     defaultSellingPrice: Number(itemForm.defaultSellingPrice),
                     defaultPurchasePrice: Number(itemForm.defaultPurchasePrice),
+                    priceHistoryOfCurrentStock:
+                        Number(itemForm.stock) > 0
+                            ? [
+                                  {
+                                      stock: Number(itemForm.stock),
+                                      purchasePrice: Number(
+                                          itemForm.priceOfCurrentStock
+                                      ),
+                                  },
+                              ]
+                            : null,
                 }
             );
         });
@@ -107,7 +118,6 @@ class InventoryService {
                 itemName: itemDetails.itemName,
                 unitId: itemDetails.unit?.unitId,
                 unitName: itemDetails.unit?.unitName,
-                stock: Number(itemDetails.stock),
                 minStockToMaintain: Number(itemDetails.minStockToMaintain),
                 defaultSellingPrice: Number(itemDetails.defaultSellingPrice),
                 defaultPurchasePrice: Number(itemDetails.defaultPurchasePrice),

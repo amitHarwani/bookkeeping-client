@@ -87,7 +87,21 @@ export const AddItemFormValidation = Yup.object().shape({
     defaultPurchasePrice: Yup.number().optional().nullable().typeError("invalid default purchase price"),
     stock: Yup.number().required("stock is required"),
     minStockToMaintain: Yup.number().optional().nullable().typeError("invalid min stock to maintain"),
-    isActive: Yup.boolean().required("is active is required")
+    isActive: Yup.boolean().required("is active is required"),
+    priceOfCurrentStock: Yup.number().nullable().test("priceOfCurrentStock validator", "invalid unit price of opening stock", (value , context) => {
+        /* If opening stock is entered, price of current stock is required otherwise it can be null. */
+        const stockEntered = context?.options?.context?.stock ? Number(context?.options?.context?.stock) : 0;
+
+        if(stockEntered > 0 && value && !isNaN(Number(value))){
+            return true;
+        }
+        else if(stockEntered > 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    })
 })
 
 export const UpdateItemFormValidation = Yup.object().shape({
@@ -95,7 +109,6 @@ export const UpdateItemFormValidation = Yup.object().shape({
     unit: Yup.object().required("unit is required"),
     defaultSellingPrice: Yup.number().optional().nullable().typeError("invalid default selling price"),
     defaultPurchasePrice: Yup.number().optional().nullable().typeError("invalid default purchase price"),
-    stock: Yup.number().required("stock is required"),
     minStockToMaintain: Yup.number().optional().nullable().typeError("invalid min stock to maintain"),
     isActive: Yup.boolean().required("is active is required")
 })

@@ -144,7 +144,6 @@ const GetItem = () => {
         defaultPurchasePrice: null,
         defaultSellingPrice: null,
         minStockToMaintain: null,
-        stock: 0,
         unit: null,
     });
 
@@ -156,6 +155,7 @@ const GetItem = () => {
             let unitFound = unitsData.data.units.find(
                 (unit) => unit.unitId == item.unitId
             );
+
             setInitialFormValues({
                 itemName: item.itemName,
                 defaultSellingPrice: item.defaultSellingPrice
@@ -166,8 +166,7 @@ const GetItem = () => {
                     : null,
                 minStockToMaintain: item.minStockToMaintain
                     ? Number(item.minStockToMaintain)
-                    : null,
-                stock: item.stock ? Number(item.stock) : null,
+                    : 0,
                 isActive: item.isActive,
                 unit: unitFound ? unitFound : null,
             });
@@ -218,15 +217,14 @@ const GetItem = () => {
                     : null,
                 minStockToMaintain: updatedItem.minStockToMaintain
                     ? Number(updatedItem.minStockToMaintain)
-                    : null,
-                stock: updatedItem.stock ? Number(updatedItem.stock) : null,
+                    : 0,
                 isActive: updatedItem.isActive,
                 unit: unitFound ? unitFound : null,
             });
 
             /* Resetting the form to initial values */
             formik.resetForm();
-            
+
             /* Toggle edit */
             toggleEdit();
         }
@@ -278,6 +276,11 @@ const GetItem = () => {
                     {apiErrorMessage && (
                         <ErrorMessage message={apiErrorMessage} />
                     )}
+
+                    <View style={styles.stockContainer}>
+                        <Text>{`${capitalizeText(i18n.t("currentStock"))}`}</Text>
+                        <Text>{`${itemData?.data.item.stock} ${itemData?.data.item.unitName}`}</Text>
+                    </View>
                     <Input
                         label={i18n.t("itemName")}
                         placeholder={capitalizeText(i18n.t("enterItemName"))}
@@ -385,21 +388,6 @@ const GetItem = () => {
                             onUnitAdded={() => refetchUnits()}
                         />
                     )}
-                    <Input
-                        label={i18n.t("stock")}
-                        value={formik.values.stock?.toString() || ""}
-                        onChangeText={formik.handleChange("stock")}
-                        onBlur={formik.handleBlur("stock")}
-                        placeholder={capitalizeText(i18n.t("enterStock"))}
-                        errorMessage={
-                            formik.touched.stock && formik.errors.stock
-                                ? formik.errors.stock
-                                : null
-                        }
-                        keyboardType="number-pad"
-                        extraContainerStyles={{ flexGrow: 1 }}
-                        isDisabled={!isEditEnabled}
-                    />
 
                     <Input
                         label={i18n.t("minStockToMaintain")}
@@ -488,4 +476,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         columnGap: 6,
     },
+    stockContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between"
+    }
 });

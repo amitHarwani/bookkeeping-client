@@ -77,5 +77,10 @@ export default {
     apply: "apply",
     search: "search",
     errorFetchingItem: "error fetching item",
-    updateItem: "update item"
+    updateItem: "update item",
+    currentStock: "current stock",
+    openingStock: "opening stock",
+    enterOpeningStock: "enter opening stock",
+    unitPriceOfOpeningStock: "unit price of opening stock",
+    enterUnitPriceOfOpeningStock: "enter unit price of opening stock"
 }
