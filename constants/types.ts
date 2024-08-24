@@ -1,4 +1,4 @@
-import { Unit } from "@/services/inventory/inventory_types";
+import { Item, Unit } from "@/services/inventory/inventory_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
 
 export type GenericObject = {
@@ -55,4 +55,12 @@ export interface UpdateItemForm {
     defaultPurchasePrice: number | null;
     minStockToMaintain: number | null;
     isActive: boolean;   
+}
+
+export interface AdjustItemForm {
+    item: Item,
+    addStock: boolean,
+    stockAdjusted: number,
+    reason: string,
+    pricePerUnit: number | null
 }

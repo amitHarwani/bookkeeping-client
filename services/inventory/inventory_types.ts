@@ -61,3 +61,8 @@ export class GetItemResponse {
 export class UpdateItemResponse {
     constructor(public item: Item, public message: string) {}
 }
+
+
+export class AdjustItemResponse {
+    constructor(public item: Item, public message: string){}
+}

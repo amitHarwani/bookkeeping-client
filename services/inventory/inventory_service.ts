@@ -3,6 +3,7 @@ import axios from "axios";
 import {
     AddItemResponse,
     AddUnitResponse,
+    AdjustItemResponse,
     FilterItemsQuery,
     GetAllItemsResponse,
     GetAllUnitsResponse,
@@ -10,7 +11,7 @@ import {
     UpdateItemResponse,
 } from "./inventory_types";
 import { ApiResponse } from "../api_response";
-import { AddItemForm, UpdateItemForm } from "@/constants/types";
+import { AddItemForm, AdjustItemForm, UpdateItemForm } from "@/constants/types";
 
 class InventoryService {
     hostPath = process.env.EXPO_PUBLIC_INVENTORY_SERVICE;
@@ -20,6 +21,7 @@ class InventoryService {
     updateItemPath = "item/update-item";
     getAllUnitsPath = "unit/get-all-units";
     addUnitPath = "unit/add-unit";
+    adjustItemPath = "item/adjust-item";
 
     getAllItems = async ({
         pageParam,
@@ -121,6 +123,19 @@ class InventoryService {
                 minStockToMaintain: Number(itemDetails.minStockToMaintain),
                 defaultSellingPrice: Number(itemDetails.defaultSellingPrice),
                 defaultPurchasePrice: Number(itemDetails.defaultPurchasePrice),
+            });
+        });
+    };
+
+    adjustItem = async (adjustItemDetails: AdjustItemForm) => {
+        return await asyncHandler<AdjustItemResponse>(() => {
+            return axios.patch(`${this.hostPath}/${this.adjustItemPath}`, {
+                itemId: adjustItemDetails.item.itemId,
+                companyId: adjustItemDetails.item.companyId,
+                adjustmentType: adjustItemDetails.addStock ? "ADD" : "SUBTRACT",
+                reason: adjustItemDetails.reason,
+                pricePerUnit: Number(adjustItemDetails.pricePerUnit),
+                stockAdjusted: Number(adjustItemDetails.stockAdjusted),
             });
         });
     };

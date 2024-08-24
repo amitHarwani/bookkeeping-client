@@ -20,7 +20,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import InventoryService from "@/services/inventory/inventory_service";
 import { useAppSelector } from "@/store";
-import { i18n } from "@/app/_layout";
+import { i18n, queryClient } from "@/app/_layout";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
 import { UpdateItemForm } from "@/constants/types";
@@ -36,6 +36,8 @@ import RadioButton from "@/components/custom/basic/RadioButton";
 import CustomButton from "@/components/custom/basic/CustomButton";
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import { UpdateItemFormValidation } from "@/utils/schema_validations";
+import AdjustItem from "@/components/custom/business/AdjustItem";
+import { Item } from "@/services/inventory/inventory_types";
 
 const GetItem = () => {
     /* URL Params */
@@ -63,6 +65,9 @@ const GetItem = () => {
     /* Visibility of add unit modal */
     const [isAddUnitModalShown, setIsAddUnitModalShown] = useState(false);
 
+    /* Visibility of adjust item modal */
+    const [isAdjustItemModalShown, setIsAdjustItemModalShown] = useState(false);
+
     /* Toggle edit */
     const toggleEdit = useCallback(() => {
         setIsEditEnabled((prev) => !prev);
@@ -72,6 +77,11 @@ const GetItem = () => {
     const toggleAddUnitModal = useCallback(() => {
         setIsAddUnitModalShown((prev) => !prev);
     }, [isAddUnitModalShown]);
+
+    /* Toggle adjust item modal */
+    const toggleAdjustItemModal = useCallback(() => {
+        setIsAdjustItemModalShown((prev) => !prev);
+    }, [isAdjustItemModalShown]);
 
     /* Fetching Item data */
     const {
@@ -230,6 +240,16 @@ const GetItem = () => {
         }
     }, [updateItemMutation.isSuccess]);
 
+    /* On Item Adjusted, reset query data */
+    const onItemAdjusted = (updatedItem: Item) => {
+        queryClient.setQueryData(
+            [ReactQueryKeys.getItem, Number(updatedItem.itemId)],
+            {
+                data: { item: updatedItem },
+            }
+        );
+    };
+
     /* Show loading spinner when fetching item or units */
     const showLoadingSpinner = useMemo(() => {
         return updateItemMutation.isPending || fetchingItem || fetchingUnits
@@ -277,10 +297,20 @@ const GetItem = () => {
                         <ErrorMessage message={apiErrorMessage} />
                     )}
 
-                    <View style={styles.stockContainer}>
-                        <Text>{`${capitalizeText(i18n.t("currentStock"))}`}</Text>
-                        <Text>{`${itemData?.data.item.stock} ${itemData?.data.item.unitName}`}</Text>
-                    </View>
+                    {isFeatureAccessible(PLATFORM_FEATURES.ADJUST_ITEM) && !isEditEnabled && (
+                        <CustomButton
+                            text={i18n.t("adjustItem")}
+                            onPress={toggleAdjustItemModal}
+                            isSecondaryButton
+                            extraContainerStyles={{
+                                alignSelf: "flex-end",
+                                paddingVertical: 10,
+                                paddingHorizontal: 6,
+                            }}
+                            extraTextStyles={{ fontSize: 12 }}
+                        />
+                    )}
+
                     <Input
                         label={i18n.t("itemName")}
                         placeholder={capitalizeText(i18n.t("enterItemName"))}
@@ -452,6 +482,15 @@ const GetItem = () => {
                             />
                         </View>
                     )}
+
+                    {isAdjustItemModalShown && (
+                        <AdjustItem
+                            item={itemData?.data.item as Item}
+                            onItemAdjusted={onItemAdjusted}
+                            toggleAdjustItemModal={toggleAdjustItemModal}
+                            visible={isAdjustItemModalShown}
+                        />
+                    )}
                 </View>
             </View>
         </ScrollView>
@@ -476,8 +515,4 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         columnGap: 6,
     },
-    stockContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between"
-    }
 });

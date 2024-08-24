@@ -82,5 +82,13 @@ export default {
     openingStock: "opening stock",
     enterOpeningStock: "enter opening stock",
     unitPriceOfOpeningStock: "unit price of opening stock",
-    enterUnitPriceOfOpeningStock: "enter unit price of opening stock"
+    enterUnitPriceOfOpeningStock: "enter unit price of opening stock",
+    adjustItem: "adjust item",
+    selectAdjustmentType: "select adjustment type",
+    enterUnits: "enter units",
+    reason: "reason",
+    enterReason: "enter reason",
+    pricePerUnit: "price per unit",
+    enterPricePerUnit: "enter price per unit",
+    itemAdjustedSuccessfully: "item adjusted successfully"
 }

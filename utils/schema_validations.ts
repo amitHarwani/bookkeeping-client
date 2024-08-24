@@ -113,3 +113,38 @@ export const UpdateItemFormValidation = Yup.object().shape({
     isActive: Yup.boolean().required("is active is required")
 })
 
+
+export const AdjustItemFormValidation = Yup.object().shape({
+    item: Yup.object().required(),
+    addStock: Yup.boolean().required(),
+    stockAdjusted: Yup.number().test("stockAdjusted validator", "invalid stock adjusted value", (value, context) => {
+        /* Stock from item object */
+        const currentStock = context?.options?.context?.item?.stock ? Number(context?.options?.context?.item?.stock) : 0;
+        
+        /* Whether add is choosed */
+        const isAddStock = context?.options?.context?.addStock;
+
+        /* If no value is entered */
+        if(!value || value < 0) {
+            return false;
+        }
+        /* If adjustment type is subtraction, and value is less than current stock return false */
+        if(!isAddStock && (currentStock - value) < 0){
+            return false;
+        }
+        return true;
+    }),
+    reason: Yup.string().trim().required("reason is required"),
+    pricePerUnit: Yup.number().nullable().test("pricePerUnit adjustItem", "invalid price per unit entered", (value, context) => {
+         /* Whether add is choosen */
+         const isAddStock = context?.options?.context?.addStock;
+
+         /* If adding stock and value is not a number, return false */
+         if(isAddStock && isNaN(Number(value))){
+            return false;
+         }
+
+         return true;
+    })
+
+})
