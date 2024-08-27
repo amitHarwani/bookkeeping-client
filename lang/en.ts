@@ -108,7 +108,8 @@ export default {
     noItemsFound: "no items found",
     party: "party",
     errorFetchingParty: "error fetching party",
-    updateParty: "update party"
+    updateParty: "update party",
+    partyUpdatedSuccessfully: "party updated successfully"
 
 
 }

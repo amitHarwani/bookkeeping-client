@@ -264,6 +264,9 @@ const GetParty = () => {
             updatePartyMutation.data.success &&
             countriesData
         ) {
+
+            ToastAndroid.show(capitalizeText(i18n.t("partyUpdatedSuccessfully")), ToastAndroid.LONG);
+
             /* Resetting initial form values */
             setInitialFormValuesHelper(
                 updatePartyMutation.data.data.party,
@@ -392,6 +395,7 @@ const GetParty = () => {
                                 : null
                         }
                         isDisabled={!isEditEnabled}
+                        keyboardType="number-pad"
                     />
                     <Input
                         label={i18n.t("defaultPurchaseCreditAllowanceInDays")}
@@ -414,6 +418,8 @@ const GetParty = () => {
                                 : null
                         }
                         isDisabled={!isEditEnabled}
+                        keyboardType="number-pad"
+
                     />
                     {formik.values.country && (
                         <View style={styles.mobileNumberContainer}>
@@ -430,7 +436,13 @@ const GetParty = () => {
                                 }}
                                 extraContainerStyles={{
                                     flexGrow: 0.4,
-                                    maxHeight: 80,
+                                    height:
+                                        (formik.touched.phoneCode &&
+                                            formik.errors.phoneCode) ||
+                                        (formik.touched.phoneNumber &&
+                                            formik.errors.phoneNumber)
+                                            ? 80
+                                            : "auto",
                                 }}
                                 errorMessage={
                                     formik.touched.phoneCode &&

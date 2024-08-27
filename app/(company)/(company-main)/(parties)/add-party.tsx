@@ -247,6 +247,7 @@ const AddParty = () => {
                                         ? errors.defaultSaleCreditAllowanceInDays
                                         : null
                                 }
+                                keyboardType="number-pad"
                             />
                             <Input
                                 label={i18n.t(
@@ -268,6 +269,7 @@ const AddParty = () => {
                                         ? errors.defaultPurchaseCreditAllowanceInDays
                                         : null
                                 }
+                                keyboardType="number-pad"
                             />
                             {values.country && (
                                 <View style={styles.mobileNumberContainer}>
@@ -284,7 +286,13 @@ const AddParty = () => {
                                         }}
                                         extraContainerStyles={{
                                             flexGrow: 0.4,
-                                            maxHeight: 80,
+                                            height:
+                                                (touched.phoneCode &&
+                                                    errors.phoneCode) ||
+                                                (touched.phoneNumber &&
+                                                    errors.phoneNumber)
+                                                    ? 80
+                                                    : "auto",
                                         }}
                                         errorMessage={
                                             touched.phoneCode &&

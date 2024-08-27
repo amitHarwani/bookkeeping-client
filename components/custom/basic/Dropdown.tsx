@@ -112,7 +112,7 @@ const Dropdown = ({
     }, [value]);
 
     return (
-        <View style={[styles.container, isDisabled && styles.disabledContainer, extraContainerStyles]}>
+        <View style={[styles.container, extraContainerStyles]}>
             <Text style={styles.labelText}>{label}</Text>
             <Pressable
                 style={[
@@ -126,6 +126,7 @@ const Dropdown = ({
                     style={[
                         styles.dropdownButtonText,
                         !selectedItem && styles.placeholderText,
+                        isDisabled && styles.disabledText
                     ]}
                 >
                     {selectedItem?.[textKey] || i18n.t("select")}
@@ -225,8 +226,8 @@ const styles = StyleSheet.create({
     container: {
         rowGap: 8,
     },
-    disabledContainer: {
-        opacity: 0.5
+    disabledText: {
+        color: "#A9A9A9"
     },
     labelText: {
         fontFamily: fonts.Inter_Bold,
