@@ -90,5 +90,25 @@ export default {
     enterReason: "enter reason",
     pricePerUnit: "price per unit",
     enterPricePerUnit: "enter price per unit",
-    itemAdjustedSuccessfully: "item adjusted successfully"
+    itemAdjustedSuccessfully: "item adjusted successfully",
+    parties: "parties",
+    addParty: "add party",
+    searchByPartyName: "search by party name",
+    selectPartyType: "select party type",
+    partyName: "party name",
+    enterPartyName: "enter party name",
+    errorFetchingCountries: "error fetching countries",
+    defaultSaleCreditAllowanceInDays: "default sale credit allowance (in days)",
+    enterSaleCreditAllowance: "enter sale credit allowance",
+    defaultPurchaseCreditAllowanceInDays: "default purchase credit allowance (in days)",
+    enterPurchaseCreditAllowance: "enter purchase credit allowance",
+    phoneNumber: "phone number",
+    partyAddedSuccessfully: "party added successfully",
+    noPartiesFound: "no parties found",
+    noItemsFound: "no items found",
+    party: "party",
+    errorFetchingParty: "error fetching party",
+    updateParty: "update party"
+
+
 }

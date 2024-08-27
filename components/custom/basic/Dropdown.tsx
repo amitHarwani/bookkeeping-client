@@ -38,7 +38,8 @@ interface DropdownProps {
     errorMessage?: string | null;
     customActionButtonText?: string;
     customActionButtonHandler?(): void;
-    isDisabled?: boolean
+    customEqualsFunction?(obj1: GenericObject, obj2: GenericObject): boolean;
+    isDisabled?: boolean;
 }
 const Dropdown = ({
     label,
@@ -52,7 +53,8 @@ const Dropdown = ({
     errorMessage,
     customActionButtonText,
     customActionButtonHandler,
-    isDisabled = false
+    customEqualsFunction,
+    isDisabled = false,
 }: DropdownProps) => {
     const [isOptionsShown, setIsOptionsShown] = useState(false);
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
@@ -110,7 +112,7 @@ const Dropdown = ({
     }, [value]);
 
     return (
-        <View style={[styles.container, extraContainerStyles]}>
+        <View style={[styles.container, isDisabled && styles.disabledContainer, extraContainerStyles]}>
             <Text style={styles.labelText}>{label}</Text>
             <Pressable
                 style={[
@@ -161,8 +163,15 @@ const Dropdown = ({
                                         key={item[textKey]}
                                         style={[
                                             commonStyles.optionContainer,
-                                            tempSelectedItem === item &&
-                                                commonStyles.selectedOptionContainer,
+                                            typeof customEqualsFunction ===
+                                                "function" && tempSelectedItem
+                                                ? customEqualsFunction(
+                                                      tempSelectedItem,
+                                                      item
+                                                  ) &&
+                                                  commonStyles.selectedOptionContainer
+                                                : tempSelectedItem === item &&
+                                                  commonStyles.selectedOptionContainer,
                                         ]}
                                         onPress={() => selectItem(item)}
                                     >
@@ -216,6 +225,9 @@ const styles = StyleSheet.create({
     container: {
         rowGap: 8,
     },
+    disabledContainer: {
+        opacity: 0.5
+    },
     labelText: {
         fontFamily: fonts.Inter_Bold,
         fontSize: 12,
@@ -230,6 +242,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+        flex: 1
     },
     dropdownIcon: {
         width: 12,

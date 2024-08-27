@@ -6,5 +6,7 @@ export enum AppRoutes {
     addCompany = "add-company",
     dashboard = "dashboard",
     addItem = "add-item",
-    getItem = "get-item"
+    getItem = "get-item",
+    getParty = "get-party",
+    addParty = "add-party"
 }

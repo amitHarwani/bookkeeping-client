@@ -334,7 +334,6 @@ const CompanyMainLayout = () => {
                     screenOptions={({ navigation }) => ({
                         drawerActiveTintColor: "#006FFD",
                         drawerActiveBackgroundColor: "#FFFFFF",
-                        drawerItemStyle: { marginBottom: -5 },
                         headerStyle: {
                             backgroundColor: "#FFFFFF",
                             height: 100,
@@ -384,6 +383,30 @@ const CompanyMainLayout = () => {
                                 )
                                     ? "flex"
                                     : "none",
+                                marginTop: -10,
+                            },
+                        }}
+                    />
+
+                    <Drawer.Screen
+                        name="(parties)"
+                        options={{
+                            drawerLabel: capitalizeText(i18n.t("parties")),
+                            headerTitle: () => (
+                                <CustomNavHeader
+                                    mainHeading={i18n.t("parties")}
+                                    subHeading={
+                                        selectedCompany?.companyName || ""
+                                    }
+                                />
+                            ),
+                            drawerItemStyle: {
+                                display: isFeatureAccessible(
+                                    PLATFORM_FEATURES.GET_PARTIES
+                                )
+                                    ? "flex"
+                                    : "none",
+                                marginTop: -10,
                             },
                         }}
                     />

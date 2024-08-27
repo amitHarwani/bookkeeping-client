@@ -83,68 +83,139 @@ export const AddCompanyFormValidation = Yup.object().shape({
 export const AddItemFormValidation = Yup.object().shape({
     itemName: Yup.string().trim().required("item name is required"),
     unit: Yup.object().required("unit is required"),
-    defaultSellingPrice: Yup.number().optional().nullable().typeError("invalid default selling price"),
-    defaultPurchasePrice: Yup.number().optional().nullable().typeError("invalid default purchase price"),
+    defaultSellingPrice: Yup.number()
+        .optional()
+        .nullable()
+        .typeError("invalid default selling price"),
+    defaultPurchasePrice: Yup.number()
+        .optional()
+        .nullable()
+        .typeError("invalid default purchase price"),
     stock: Yup.number().required("stock is required"),
-    minStockToMaintain: Yup.number().optional().nullable().typeError("invalid min stock to maintain"),
+    minStockToMaintain: Yup.number()
+        .optional()
+        .nullable()
+        .typeError("invalid min stock to maintain"),
     isActive: Yup.boolean().required("is active is required"),
-    priceOfCurrentStock: Yup.number().nullable().test("priceOfCurrentStock validator", "invalid unit price of opening stock", (value , context) => {
-        /* If opening stock is entered, price of current stock is required otherwise it can be null. */
-        const stockEntered = context?.options?.context?.stock ? Number(context?.options?.context?.stock) : 0;
+    priceOfCurrentStock: Yup.number()
+        .nullable()
+        .test(
+            "priceOfCurrentStock validator",
+            "invalid unit price of opening stock",
+            (value, context) => {
+                /* If opening stock is entered, price of current stock is required otherwise it can be null. */
+                const stockEntered = context?.options?.context?.stock
+                    ? Number(context?.options?.context?.stock)
+                    : 0;
 
-        if(stockEntered > 0 && value && !isNaN(Number(value))){
-            return true;
-        }
-        else if(stockEntered > 0){
-            return false;
-        }
-        else{
-            return true;
-        }
-    })
-})
+                if (stockEntered > 0 && value && !isNaN(Number(value))) {
+                    return true;
+                } else if (stockEntered > 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        ),
+});
 
 export const UpdateItemFormValidation = Yup.object().shape({
     itemName: Yup.string().trim().required("item name is required"),
     unit: Yup.object().required("unit is required"),
-    defaultSellingPrice: Yup.number().optional().nullable().typeError("invalid default selling price"),
-    defaultPurchasePrice: Yup.number().optional().nullable().typeError("invalid default purchase price"),
-    minStockToMaintain: Yup.number().optional().nullable().typeError("invalid min stock to maintain"),
-    isActive: Yup.boolean().required("is active is required")
-})
-
+    defaultSellingPrice: Yup.number()
+        .optional()
+        .nullable()
+        .typeError("invalid default selling price"),
+    defaultPurchasePrice: Yup.number()
+        .optional()
+        .nullable()
+        .typeError("invalid default purchase price"),
+    minStockToMaintain: Yup.number()
+        .optional()
+        .nullable()
+        .typeError("invalid min stock to maintain"),
+    isActive: Yup.boolean().required("is active is required"),
+});
 
 export const AdjustItemFormValidation = Yup.object().shape({
     item: Yup.object().required(),
     addStock: Yup.boolean().required(),
-    stockAdjusted: Yup.number().test("stockAdjusted validator", "invalid stock adjusted value", (value, context) => {
-        /* Stock from item object */
-        const currentStock = context?.options?.context?.item?.stock ? Number(context?.options?.context?.item?.stock) : 0;
-        
-        /* Whether add is choosed */
-        const isAddStock = context?.options?.context?.addStock;
+    stockAdjusted: Yup.number().test(
+        "stockAdjusted validator",
+        "invalid stock adjusted value",
+        (value, context) => {
+            /* Stock from item object */
+            const currentStock = context?.options?.context?.item?.stock
+                ? Number(context?.options?.context?.item?.stock)
+                : 0;
 
-        /* If no value is entered */
-        if(!value || value < 0) {
-            return false;
+            /* Whether add is choosed */
+            const isAddStock = context?.options?.context?.addStock;
+
+            /* If no value is entered */
+            if (!value || value < 0) {
+                return false;
+            }
+            /* If adjustment type is subtraction, and value is less than current stock return false */
+            if (!isAddStock && currentStock - value < 0) {
+                return false;
+            }
+            return true;
         }
-        /* If adjustment type is subtraction, and value is less than current stock return false */
-        if(!isAddStock && (currentStock - value) < 0){
-            return false;
-        }
-        return true;
-    }),
+    ),
     reason: Yup.string().trim().required("reason is required"),
-    pricePerUnit: Yup.number().nullable().test("pricePerUnit adjustItem", "invalid price per unit entered", (value, context) => {
-         /* Whether add is choosen */
-         const isAddStock = context?.options?.context?.addStock;
+    pricePerUnit: Yup.number()
+        .nullable()
+        .test(
+            "pricePerUnit adjustItem",
+            "invalid price per unit entered",
+            (value, context) => {
+                /* Whether add is choosen */
+                const isAddStock = context?.options?.context?.addStock;
 
-         /* If adding stock and value is not a number, return false */
-         if(isAddStock && isNaN(Number(value))){
+                /* If adding stock and value is not a number, return false, as when adding a stock pricePerUnit is required */
+                if (isAddStock && isNaN(Number(value))) {
+                    return false;
+                }
+
+                return true;
+            }
+        ),
+});
+
+export const AddUpdatePartyValidation = Yup.object().shape({
+    partyName: Yup.string().trim().required("party name is required"),
+    defaultSaleCreditAllowanceInDays: Yup.number().required(
+        "default sale credit allowance is required"
+    ).typeError("invalid default sale allowance"),
+    defaultPurchaseCreditAllowanceInDays: Yup.number().required(
+        "default purchase credit allowance is required"
+    ).typeError("invalid default purchase allowance"),
+    country: Yup.object().required("country is required"),
+    phoneCode: Yup.string().required("phone code is required"),
+    phoneNumber: Yup.number()
+        .required("mobile number is required")
+        .test("length", "invalid phone number", (value, context) => {
+            /* Length of mobile number check */
+            if (
+                value.toString().length ==
+                context?.options?.context?.country?.maxPhoneNumberDigits
+            ) {
+                return true;
+            }
             return false;
-         }
-
-         return true;
-    })
-
-})
+        }),
+    taxDetails: Yup.lazy((value) => {
+        return Yup.object(
+            Object.keys(value).reduce((schema, key) => {
+                schema[key] = Yup.object().shape({
+                    taxId: Yup.number().required("missing tax details"),
+                    registrationNumber: Yup.string()
+                        .trim()
+                        .required("missing tax details"),
+                });
+                return schema;
+            }, {} as Record<string, Yup.AnySchema>)
+        );
+    }),
+});

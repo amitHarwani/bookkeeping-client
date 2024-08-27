@@ -8,5 +8,7 @@ export enum ReactQueryKeys {
     items= "items",
     country = "country",
     units = "units",
-    getItem = "getItem"
+    getItem = "getItem",
+    parties = "parties",
+    getParty = "getParty"
 }

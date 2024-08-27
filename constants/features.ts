@@ -1,5 +1,7 @@
 export enum PLATFORM_FEATURES {
     GET_ITEMS = 7,
     ADD_UPTATE_ITEM = 8,
-    ADJUST_ITEM = 9
+    ADJUST_ITEM = 9,
+    GET_PARTIES = 10,
+    ADD_UPDATE_PARTY = 11
 }

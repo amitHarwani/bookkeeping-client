@@ -13,8 +13,9 @@ interface TaxInputItemProps {
     onDeregistered?(): void;
     onChange?(taxRegistrationNumber: string): void;
     value?: { isTaxRegistered: boolean; registrationNumber: string };
+    isDisabled?: boolean
 }
-const TaxInputItem = ({ taxInfo, onRegistered,onDeregistered,  onChange, value }: TaxInputItemProps) => {
+const TaxInputItem = ({ taxInfo, onRegistered,onDeregistered,  onChange, value, isDisabled = false }: TaxInputItemProps) => {
     /* Whether the user has registered for this tax */
     const [isTaxRegistered, setIsTaxRegistered] = useState(false);
 
@@ -90,6 +91,7 @@ const TaxInputItem = ({ taxInfo, onRegistered,onDeregistered,  onChange, value }
                             ? radioButtonData[0]
                             : radioButtonData[1]
                     }
+                    isDisabled={isDisabled}
                 />
             )}
 
@@ -101,6 +103,7 @@ const TaxInputItem = ({ taxInfo, onRegistered,onDeregistered,  onChange, value }
                     )}`}
                     value={taxRegistrationNumber}
                     onChangeText={taxRegistrationNumberChangeHandler}
+                    isDisabled={isDisabled}
                 />
             )}
         </View>
