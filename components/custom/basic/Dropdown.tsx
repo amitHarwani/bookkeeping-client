@@ -33,6 +33,7 @@ interface DropdownProps {
     onChange?(item?: GenericObject): void;
     value?: GenericObject;
     isSearchable?: boolean;
+    searchPlaceholder?: string;
     extraContainerStyles?: Object;
     extraOptionTextSyles?: Object;
     errorMessage?: string | null;
@@ -40,6 +41,8 @@ interface DropdownProps {
     customActionButtonHandler?(): void;
     customEqualsFunction?(obj1: GenericObject, obj2: GenericObject): boolean;
     isDisabled?: boolean;
+    isDynamicSearchable?: boolean
+    onSearchChangeHandler?(text: string): void;
 }
 const Dropdown = ({
     label,
@@ -48,6 +51,7 @@ const Dropdown = ({
     onChange,
     value,
     isSearchable,
+    searchPlaceholder,
     extraContainerStyles,
     extraOptionTextSyles,
     errorMessage,
@@ -55,6 +59,8 @@ const Dropdown = ({
     customActionButtonHandler,
     customEqualsFunction,
     isDisabled = false,
+    isDynamicSearchable = false,
+    onSearchChangeHandler
 }: DropdownProps) => {
     const [isOptionsShown, setIsOptionsShown] = useState(false);
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
@@ -64,7 +70,7 @@ const Dropdown = ({
 
     /* Filtering data by searchInput, if dropdown isSearchable */
     const filteredData = useMemo(() => {
-        if (searchInput && isSearchable) {
+        if (searchInput && isSearchable && !isDynamicSearchable) {
             return data?.filter((item) => {
                 if (item[textKey].toString().includes(searchInput)) {
                     return true;
@@ -150,13 +156,18 @@ const Dropdown = ({
                             <Input
                                 label=""
                                 value={searchInput}
-                                onChangeText={(text) => setSearchInput(text)}
-                                placeholder={`${capitalizeText(
+                                onChangeText={(text) => {
+                                    setSearchInput(text);
+                                    if(isDynamicSearchable && typeof onSearchChangeHandler === "function"){
+                                        onSearchChangeHandler(text);
+                                    }
+                                }}
+                                placeholder={searchPlaceholder ? searchPlaceholder : `${capitalizeText(
                                     i18n.t("searchBy")
                                 )} ${textKey}`}
                             />
                         )}
-                        <View>
+                        <View style={styles.dropdownItemsContainer}>
                             <FlatList
                                 data={filteredData}
                                 renderItem={({ item }) => (
@@ -244,6 +255,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         flex: 1
+    },
+    dropdownItemsContainer: {
+        maxHeight: 250
     },
     dropdownIcon: {
         width: 12,

@@ -1,4 +1,4 @@
-import { TaxDetailsOfThirdPartyType } from "@/services/billing/billing_types";
+import { TaxDetailsOfThirdPartyType, ThirdParty } from "@/services/billing/billing_types";
 import { Item, Unit } from "@/services/inventory/inventory_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
 
@@ -87,3 +87,7 @@ export interface AddUpdatePartyTaxDetails {
     [taxId: number]: { taxId: number; registrationNumber: string };
 }
 
+
+export interface AddPurchaseForm {
+    party?: ThirdParty,
+}

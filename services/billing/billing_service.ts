@@ -27,6 +27,7 @@ class BillingService {
             query?: FilterPartiesQuery;
         };
     }) => {
+        console.log("Query Party Name Searched", pageParam?.query?.partyNameSearchQuery);
         return await asyncHandler<GetAllPartiesResponse>(() => {
             return axios.post<ApiResponse<GetAllPartiesResponse>>(
                 `${this.hostPath}/${this.getAllPartiesPath}`,

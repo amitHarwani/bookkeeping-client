@@ -107,9 +107,12 @@ export default {
     noPartiesFound: "no parties found",
     noItemsFound: "no items found",
     party: "party",
+    errorFetchingParties: "error fetching parties",
     errorFetchingParty: "error fetching party",
     updateParty: "update party",
-    partyUpdatedSuccessfully: "party updated successfully"
+    partyUpdatedSuccessfully: "party updated successfully",
+    purchases: "purchases",
+    addPurchase: "add purchase",
 
 
 }

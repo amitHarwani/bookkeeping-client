@@ -15,3 +15,13 @@ export const getApiErrorMessage = (error: Error): string => {
         (error as ApiError).errorMessage
     );
 };
+
+export const debounce = (func: () => void, timeout = 300) => {
+    let timer: NodeJS.Timeout;
+    return () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            func.apply(this);
+        }, timeout);
+    };
+};

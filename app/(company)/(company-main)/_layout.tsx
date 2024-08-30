@@ -410,6 +410,29 @@ const CompanyMainLayout = () => {
                             },
                         }}
                     />
+
+                    <Drawer.Screen
+                        name="(purchases)"
+                        options={{
+                            drawerLabel: capitalizeText(i18n.t("purchases")),
+                            headerTitle: () => (
+                                <CustomNavHeader
+                                    mainHeading={i18n.t("purchases")}
+                                    subHeading={
+                                        selectedCompany?.companyName || ""
+                                    }
+                                />
+                            ),
+                            drawerItemStyle: {
+                                display: isFeatureAccessible(
+                                    PLATFORM_FEATURES.GET_PURCHASES
+                                )
+                                    ? "flex"
+                                    : "none",
+                                marginTop: -10,
+                            },
+                        }}
+                    />
                 </Drawer>
             </GestureHandlerRootView>
         </>

@@ -69,5 +69,12 @@ export const commonStyles = StyleSheet.create({
     editIcon: {
         width: 24, 
         height: 24
-    }
+    },
+
+    /* Hamburger back icon */
+    hamburgerBackIcon: {
+        width: 24,
+        height: 24,
+        marginRight: 16,
+    },
 })

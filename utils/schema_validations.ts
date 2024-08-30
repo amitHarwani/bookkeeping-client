@@ -219,3 +219,8 @@ export const AddUpdatePartyValidation = Yup.object().shape({
         );
     }),
 });
+
+
+export const AddPurchaseFormValidation = Yup.object().shape({
+    party: Yup.object().required("party is required")
+})
