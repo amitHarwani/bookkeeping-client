@@ -102,7 +102,7 @@ const Purchases = () => {
         isPending,
         refetch: refetchPurchases,
     } = useInfiniteQuery({
-        queryKey: [ReactQueryKeys.purchases, filtersState, searchQuery],
+        queryKey: [ReactQueryKeys.purchases, selectedCompany?.companyId, filtersState, searchQuery],
         queryFn: BillingService.getAllPurchases,
         initialPageParam: {
             pageSize: 20,

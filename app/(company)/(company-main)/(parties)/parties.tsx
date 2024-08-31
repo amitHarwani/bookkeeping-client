@@ -72,7 +72,7 @@ const Parties = () => {
         isPending,
         refetch: refetchParties,
     } = useInfiniteQuery({
-        queryKey: [ReactQueryKeys.parties, filtersState, searchQuery],
+        queryKey: [ReactQueryKeys.parties, selectedCompany?.companyId, filtersState, searchQuery],
         queryFn: BillingService.getAllParties,
         initialPageParam: {
             pageSize: 20,

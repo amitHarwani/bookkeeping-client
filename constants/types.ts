@@ -1,4 +1,7 @@
-import { TaxDetailsOfThirdPartyType, ThirdParty } from "@/services/billing/billing_types";
+import {
+    TaxDetailsOfThirdPartyType,
+    ThirdParty,
+} from "@/services/billing/billing_types";
 import { Item, Unit } from "@/services/inventory/inventory_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
 
@@ -81,20 +84,31 @@ export interface AddUpdatePartyForm {
     isActive: boolean;
     taxDetails?: {
         [taxId: number]: { taxId: number; registrationNumber: string };
-    };}
+    };
+}
 
 export interface AddUpdatePartyTaxDetails {
     [taxId: number]: { taxId: number; registrationNumber: string };
 }
 
 export interface FilterPurchaseForm {
-    party?: ThirdParty,
-    purchaseType?: "ALL" | "CASH" | "CREDIT",
-    filterByDate?: boolean,
-    fromTransactionDateTime?: Date,
-    toTransactionDateTime?: Date,
-    getOnlyOverduePayments: boolean
+    party?: ThirdParty;
+    purchaseType?: "ALL" | "CASH" | "CREDIT";
+    filterByDate?: boolean;
+    fromTransactionDateTime?: Date;
+    toTransactionDateTime?: Date;
+    getOnlyOverduePayments: boolean;
 }
 export interface AddPurchaseForm {
-    party?: ThirdParty,
+    party?: ThirdParty;
+    items: {[itemId: number]: InvoiceItem}
+}
+
+export interface InvoiceItem {
+    item?: Item;
+    units: number;
+    pricePerUnit: number;
+    subtotal: string;
+    tax: string;
+    totalAfterTax: string;
 }

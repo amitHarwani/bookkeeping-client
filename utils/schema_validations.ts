@@ -236,6 +236,16 @@ export const FilterPurchaseFormValidation = Yup.object().shape({
     getOnlyOverduePayments: Yup.boolean()
 })
 
+export const AddUpdateInvoiceItemValidation = Yup.object().shape({
+    item: Yup.object().required("item is required"),
+    units: Yup.number().typeError("invalid unit").test("units", "unit must be greater than 0", (value) => {
+        if(Number(value) <= 0){
+            return false;
+        }
+        return true;
+    }),
+    pricePerUnit: Yup.number().typeError("invalid price"),
+})
 export const AddPurchaseFormValidation = Yup.object().shape({
     party: Yup.object().required("party is required")
 })

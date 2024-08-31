@@ -87,7 +87,7 @@ const Items = () => {
         isPending,
         refetch: refetchItems,
     } = useInfiniteQuery({
-        queryKey: [ReactQueryKeys.items, filtersState, searchQuery],
+        queryKey: [ReactQueryKeys.items, selectedCompany?.companyId, filtersState, searchQuery],
         queryFn: InventoryService.getAllItems,
         initialPageParam: {
             pageSize: 20,

@@ -70,7 +70,13 @@ const InvoicePartySelector = ({
             }
             return null;
         },
+        enabled: false,
     });
+
+    /* Fetch Parties on mount */
+    useEffect(() => {
+        refetchParties();
+    }, []);
 
     /* Error fetching parties, show a toast message and go back */
     useEffect(() => {

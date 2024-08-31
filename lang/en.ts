@@ -77,6 +77,7 @@ export default {
     apply: "apply",
     search: "search",
     errorFetchingItem: "error fetching item",
+    errorFetchingItems: "error fetching items",
     updateItem: "update item",
     currentStock: "current stock",
     openingStock: "opening stock",
@@ -124,6 +125,14 @@ export default {
     toTime: "to time",
     reset: "reset",
     filterByDate: "filter by date",
-    qm: "?"
+    qm: "?",
+    units: "units",
+    enterPrice: "enter price",
+    selectItem: "select item",
+    add: "add",
+    subtotal: "subtotal",
+    tax: "tax",
+    total: "total",
+    includeTax: "include tax"
 
 }

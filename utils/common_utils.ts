@@ -23,7 +23,7 @@ export const debounce = (func: () => void, timeout = 300) => {
     return () => {
         clearTimeout(timer);
         timer = setTimeout(() => {
-            func.apply(this);
+            func();
         }, timeout);
     };
 };
