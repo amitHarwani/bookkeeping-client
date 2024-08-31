@@ -5,6 +5,7 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import moment from "moment";
 import { fonts } from "@/constants/fonts";
+import { commonStyles } from "@/utils/common_styles";
 
 interface CustomDateTimePickerProps {
     label?: string;
@@ -20,7 +21,7 @@ const CustomDateTimePicker = ({
     onChange,
     mode,
     errorMessage,
-    extraContainerStyles
+    extraContainerStyles,
 }: CustomDateTimePickerProps) => {
     const [isDateTimePickerShown, setIsDateTimePickerShown] = useState(false);
 
@@ -68,16 +69,41 @@ const CustomDateTimePicker = ({
     }, [value]);
 
     return (
-        <View style={[styles.container, extraContainerStyles && extraContainerStyles]}>
-            {label && <Text style={styles.label}>{label}</Text>}
+        <View
+            style={[
+                styles.container,
+                extraContainerStyles && extraContainerStyles,
+            ]}
+        >
+            {label && (
+                <Text
+                    style={[
+                        commonStyles.textSmallBold,
+                        commonStyles.capitalize,
+                    ]}
+                >
+                    {label}
+                </Text>
+            )}
             <Pressable
-                style={[styles.dateTimeInput, !!errorMessage && styles.errorInput]}
+                style={[
+                    styles.dateTimeInput,
+                    !!errorMessage && styles.errorInput,
+                ]}
                 onPress={() => setIsDateTimePickerShown(true)}
             >
                 <Text>{valueShown}</Text>
             </Pressable>
             {errorMessage && (
-                <Text style={styles.errorText}>{errorMessage}</Text>
+                <Text
+                    style={[
+                        commonStyles.textSmallMedium,
+                        commonStyles.textError,
+                        commonStyles.capitalize,
+                    ]}
+                >
+                    {errorMessage}
+                </Text>
             )}
             {isDateTimePickerShown && (
                 <DateTimePicker
@@ -96,11 +122,6 @@ const styles = StyleSheet.create({
     container: {
         rowGap: 8,
     },
-    label: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        textTransform: "capitalize",
-    },
     dateTimeInput: {
         paddingHorizontal: 16,
         paddingVertical: 15.5,
@@ -113,10 +134,4 @@ const styles = StyleSheet.create({
     errorInput: {
         borderColor: "#FF616D",
     },
-    errorText: {
-        fontSize: 12,
-        fontFamily: fonts.Inter_Medium,
-        color: "#FF616D",
-        textTransform: "capitalize",
-    }
 });

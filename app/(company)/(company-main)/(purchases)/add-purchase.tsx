@@ -6,6 +6,7 @@ import InvoicePartySelector from "@/components/custom/widgets/InvoicePartySelect
 import { fonts } from "@/constants/fonts";
 import { AddPurchaseForm, InvoiceItem } from "@/constants/types";
 import { useAppSelector } from "@/store";
+import { commonStyles } from "@/utils/common_styles";
 import { AddPurchaseFormValidation } from "@/utils/schema_validations";
 import { useFormik } from "formik";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -90,7 +91,7 @@ const AddPurchase = () => {
                         }
                     />
 
-                    <Text style={styles.itemsHeading}>{i18n.t("items")}</Text>
+                    <Text style={[commonStyles.textSmallBold]}>{i18n.t("items")}</Text>
 
                     <FlatList
                         data={Object.values(formik.values.items)}
@@ -143,9 +144,5 @@ const styles = StyleSheet.create({
     },
     formContainer: {
         rowGap: 16,
-    },
-    itemsHeading: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-    },
+    }
 });

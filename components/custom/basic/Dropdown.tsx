@@ -41,7 +41,7 @@ interface DropdownProps {
     customActionButtonHandler?(): void;
     customEqualsFunction?(obj1: GenericObject, obj2: GenericObject): boolean;
     isDisabled?: boolean;
-    isDynamicSearchable?: boolean
+    isDynamicSearchable?: boolean;
     onSearchChangeHandler?(text: string): void;
 }
 const Dropdown = ({
@@ -60,7 +60,7 @@ const Dropdown = ({
     customEqualsFunction,
     isDisabled = false,
     isDynamicSearchable = false,
-    onSearchChangeHandler
+    onSearchChangeHandler,
 }: DropdownProps) => {
     const [isOptionsShown, setIsOptionsShown] = useState(false);
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
@@ -119,7 +119,9 @@ const Dropdown = ({
 
     return (
         <View style={[styles.container, extraContainerStyles]}>
-            <Text style={styles.labelText}>{label}</Text>
+            <Text style={[commonStyles.textSmallBold, commonStyles.capitalize]}>
+                {label}
+            </Text>
             <Pressable
                 style={[
                     styles.dropdownButton,
@@ -130,9 +132,10 @@ const Dropdown = ({
             >
                 <Text
                     style={[
-                        styles.dropdownButtonText,
+                        commonStyles.textMedium,
+                        commonStyles.capitalize,
                         !selectedItem && styles.placeholderText,
-                        isDisabled && styles.disabledText
+                        isDisabled && styles.disabledText,
                     ]}
                 >
                     {selectedItem?.[textKey] || i18n.t("select")}
@@ -140,7 +143,15 @@ const Dropdown = ({
                 <Image source={dropdownIcon} style={styles.dropdownIcon} />
             </Pressable>
             {errorMessage && (
-                <Text style={styles.errorText}>{errorMessage}</Text>
+                <Text
+                    style={[
+                        commonStyles.textSmallMedium,
+                        commonStyles.textError,
+                        commonStyles.capitalize,
+                    ]}
+                >
+                    {errorMessage}
+                </Text>
             )}
             <CustomModal
                 visible={isOptionsShown}
@@ -158,13 +169,21 @@ const Dropdown = ({
                                 value={searchInput}
                                 onChangeText={(text) => {
                                     setSearchInput(text);
-                                    if(isDynamicSearchable && typeof onSearchChangeHandler === "function"){
+                                    if (
+                                        isDynamicSearchable &&
+                                        typeof onSearchChangeHandler ===
+                                            "function"
+                                    ) {
                                         onSearchChangeHandler(text);
                                     }
                                 }}
-                                placeholder={searchPlaceholder ? searchPlaceholder : `${capitalizeText(
-                                    i18n.t("searchBy")
-                                )} ${textKey}`}
+                                placeholder={
+                                    searchPlaceholder
+                                        ? searchPlaceholder
+                                        : `${capitalizeText(
+                                              i18n.t("searchBy")
+                                          )} ${textKey}`
+                                }
                             />
                         )}
                         <View style={styles.dropdownItemsContainer}>
@@ -238,12 +257,7 @@ const styles = StyleSheet.create({
         rowGap: 8,
     },
     disabledText: {
-        color: "#A9A9A9"
-    },
-    labelText: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        textTransform: "capitalize",
+        color: "#A9A9A9",
     },
     dropdownButton: {
         paddingHorizontal: 16,
@@ -257,7 +271,7 @@ const styles = StyleSheet.create({
         // flex: 1
     },
     dropdownItemsContainer: {
-        maxHeight: 250
+        maxHeight: 250,
     },
     dropdownIcon: {
         width: 12,
@@ -266,18 +280,7 @@ const styles = StyleSheet.create({
     errorDropdownButton: {
         borderColor: "#FF616D",
     },
-    dropdownButtonText: {
-        fontFamily: fonts.Inter_Regular,
-        fontSize: 14,
-        textTransform: "capitalize",
-    },
     placeholderText: {
         color: "#8F9098",
-    },
-    errorText: {
-        fontSize: 12,
-        fontFamily: fonts.Inter_Medium,
-        color: "#FF616D",
-        textTransform: "capitalize",
-    },
+    }
 });

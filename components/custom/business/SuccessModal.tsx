@@ -5,6 +5,7 @@ import CustomModal from "../basic/CustomModal";
 import { fonts } from "@/constants/fonts";
 import CustomButton from "../basic/CustomButton";
 import TickMarkIcon from "@/assets/images/tick_mark_icon_blue.png";
+import { commonStyles } from "@/utils/common_styles";
 
 interface SuccessModalProps {
     isSuccessModalShown: boolean;
@@ -27,10 +28,24 @@ const SuccessModal = ({
             extraModalStyles={{ justifyContent: "center" }}
             children={
                 <View style={styles.container}>
-                    <Text style={styles.heading}>{i18n.t("success")}</Text>
+                    <Text
+                        style={[
+                            commonStyles.textMediumBlack,
+                            commonStyles.capitalize,
+                        ]}
+                    >
+                        {i18n.t("success")}
+                    </Text>
                     <View style={styles.descriptionContainer}>
                         <Image source={TickMarkIcon} style={styles.tickmark} />
-                        <Text style={styles.description}>{description}</Text>
+                        <Text
+                            style={[
+                                commonStyles.textMediumMid,
+                                commonStyles.capitalize,
+                            ]}
+                        >
+                            {description}
+                        </Text>
                     </View>
                     <CustomButton
                         onPress={primaryActionButtonHandler}
@@ -59,20 +74,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         rowGap: 16,
     },
-    heading: {
-        fontFamily: fonts.Inter_Black,
-        fontSize: 16,
-        textTransform: "capitalize",
-    },
     descriptionContainer: {
         flexDirection: "row",
         columnGap: 8,
         alignItems: "center",
-    },
-    description: {
-        fontFamily: fonts.Inter_Medium,
-        fontSize: 14,
-        textTransform: "capitalize",
     },
     tickmark: {
         width: 24,

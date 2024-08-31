@@ -3,6 +3,7 @@ import React from "react";
 import FilterIcon from "@/assets/images/filter_icon.png";
 import { i18n } from "@/app/_layout";
 import { fonts } from "@/constants/fonts";
+import { commonStyles } from "@/utils/common_styles";
 
 interface FilterButtonProps {
     onPress(): void;
@@ -27,7 +28,13 @@ const FilterButton = ({
                 resizeMode="contain"
                 style={styles.filterIcon}
             />
-            <Text style={[styles.filterText, extraTextStyles]}>
+            <Text
+                style={[
+                    commonStyles.textSmall,
+                    commonStyles.capitalize,
+                    extraTextStyles,
+                ]}
+            >
                 {i18n.t("filter")}
             </Text>
         </Pressable>
@@ -45,15 +52,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#C5C6CC",
         columnGap: 8,
-        alignItems: 'center'
+        alignItems: "center",
     },
     filterIcon: {
         width: 12,
         height: 12,
-    },
-    filterText: {
-        fontFamily: fonts.Inter_Regular,
-        fontSize: 12,
-        textTransform: "capitalize",
-    },
+    }
 });

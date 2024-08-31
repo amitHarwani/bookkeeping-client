@@ -144,7 +144,7 @@ const Login = () => {
                             />
 
                             <View style={styles.registerHelperContainer}>
-                                <Text style={styles.registerHelperText}>
+                                <Text style={[commonStyles.textSmall, commonStyles.capitalize]}>
                                     {i18n.t("dontHaveAnAccount")}
                                 </Text>
                                 <Link
@@ -185,10 +185,5 @@ const styles = StyleSheet.create({
     registerHelperContainer: {
         flexDirection: "row",
         columnGap: 2,
-    },
-    registerHelperText: {
-        textTransform: "capitalize",
-        fontFamily: fonts.Inter_Regular,
-        fontSize: 12,
     },
 });

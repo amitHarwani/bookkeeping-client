@@ -2,6 +2,7 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import InfoIcon from "@/assets/images/info_icon.png";
 import { fonts } from "@/constants/fonts";
+import { commonStyles } from "@/utils/common_styles";
 
 interface InfoMessageProps {
     message: string;
@@ -9,7 +10,11 @@ interface InfoMessageProps {
     extraTextStyles?: Object;
 }
 
-const InfoMessage = ({ message, extraContainerStyles, extraTextStyles }: InfoMessageProps) => {
+const InfoMessage = ({
+    message,
+    extraContainerStyles,
+    extraTextStyles,
+}: InfoMessageProps) => {
     return (
         <View style={[styles.container, extraContainerStyles]}>
             <Image
@@ -17,7 +22,16 @@ const InfoMessage = ({ message, extraContainerStyles, extraTextStyles }: InfoMes
                 resizeMode="contain"
                 style={styles.infoIcon}
             />
-            <Text style={[styles.infoMessageText, extraTextStyles && extraTextStyles]}>{message}</Text>
+            <Text
+                style={[
+                    commonStyles.textMediumMid,
+                    commonStyles.textBlue,
+                    commonStyles.capitalize,
+                    extraTextStyles && extraTextStyles,
+                ]}
+            >
+                {message}
+            </Text>
         </View>
     );
 };
@@ -28,16 +42,10 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
         columnGap: 4,
-        alignItems: "center"
+        alignItems: "center",
     },
     infoIcon: {
         width: 24,
         height: 24,
-    },
-    infoMessageText: {
-        fontSize: 14,
-        fontFamily: fonts.Inter_Medium,
-        color: "#006FFD",
-        textTransform: "capitalize",
     },
 });

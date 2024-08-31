@@ -3,6 +3,7 @@ import React from "react";
 import { CompanyWithTaxDetails } from "@/services/user/user_types";
 import SettingsIcon from "@/assets/images/settings_icon.png";
 import { fonts } from "@/constants/fonts";
+import { commonStyles } from "@/utils/common_styles";
 
 interface CompanyListItemProps {
     companyDetails: CompanyWithTaxDetails;
@@ -20,10 +21,10 @@ const CompanyListItem = ({
                 style={styles.companyDetailsContainer}
                 onPress={() => companyPressHandler(companyDetails.companyId)}
             >
-                <Text style={styles.companyName}>
+                <Text style={[commonStyles.textMediumXLBold]}>
                     {companyDetails.companyName}
                 </Text>
-                <Text style={styles.companyAddress}>
+                <Text style={[commonStyles.textSmall, commonStyles.textDarkGray]}>
                     {companyDetails.address}
                 </Text>
             </Pressable>
@@ -54,15 +55,6 @@ const styles = StyleSheet.create({
         padding: 16,
         rowGap: 4,
         flex: 1,
-    },
-    companyName: {
-        fontFamily: fonts.Inter_ExtraBold,
-        fontSize: 14,
-    },
-    companyAddress: {
-        fontFamily: fonts.Inter_Regular,
-        fontSize: 12,
-        color: "#71727A",
     },
     settingsContainer: {
         padding: 16,

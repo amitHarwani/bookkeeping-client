@@ -331,7 +331,7 @@ const Register = () => {
                                 />
 
                                 <View style={styles.haveAnAccountContainer}>
-                                    <Text style={styles.haveAnAccountText}>
+                                    <Text style={[commonStyles.textSmall, commonStyles.capitalize]}>
                                         {i18n.t("alreadyHaveAnAccount")}
                                     </Text>
                                     <Link
@@ -381,11 +381,6 @@ const styles = StyleSheet.create({
     haveAnAccountContainer: {
         flexDirection: "row",
         columnGap: 2
-    },
-    haveAnAccountText: {
-        textTransform: "capitalize",
-        fontFamily: fonts.Inter_Regular,
-        fontSize: 12
     }
 });
 

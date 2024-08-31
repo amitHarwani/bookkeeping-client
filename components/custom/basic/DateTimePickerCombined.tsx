@@ -5,6 +5,7 @@ import ErrorMessage from "./ErrorMessage";
 import moment from "moment";
 import { dateFormat, timeFormat24hr } from "@/constants/datetimes";
 import { fonts } from "@/constants/fonts";
+import { commonStyles } from "@/utils/common_styles";
 
 interface DateTimePickerCombinedProps {
     dateLabel: string;
@@ -27,12 +28,15 @@ const DateTimePickerCombined = ({
     const [selectedTime, setSelectedTime] = useState<Date>();
 
     /* Combining YYYY-MM-DD from date, and HH:mm:ss from time into a single date object */
-    const getSelectedDateTime = useCallback((date?: Date, time?: Date): Date => {
-        const dateString = moment(date).format(dateFormat);
-        const timeString = moment(time).format(timeFormat24hr);
+    const getSelectedDateTime = useCallback(
+        (date?: Date, time?: Date): Date => {
+            const dateString = moment(date).format(dateFormat);
+            const timeString = moment(time).format(timeFormat24hr);
 
-        return moment(`${dateString} ${timeString}`).toDate();
-    }, []);
+            return moment(`${dateString} ${timeString}`).toDate();
+        },
+        []
+    );
 
     /* Set selected date and call parent function by passing the combined date time */
     const onDateChangeHandler = (dateString: string, dateTime: Date) => {
@@ -54,7 +58,6 @@ const DateTimePickerCombined = ({
         }
     }, [value]);
 
-
     return (
         <View style={styles.mainContainer}>
             <View style={styles.container}>
@@ -74,7 +77,17 @@ const DateTimePickerCombined = ({
                     extraContainerStyles={{ flex: 1 }}
                 />
             </View>
-            {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text> }
+            {errorMessage && (
+                <Text
+                    style={[
+                        commonStyles.textSmallMedium,
+                        commonStyles.textError,
+                        commonStyles.capitalize,
+                    ]}
+                >
+                    {errorMessage}
+                </Text>
+            )}
         </View>
     );
 };
@@ -89,10 +102,4 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         columnGap: 4,
     },
-    errorText: {
-        fontSize: 12,
-        fontFamily: fonts.Inter_Medium,
-        color: "#FF616D",
-        textTransform: "capitalize",
-    }
 });

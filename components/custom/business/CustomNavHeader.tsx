@@ -12,11 +12,19 @@ const ScreenWidth = Dimensions.get("window").width;
 const CustomNavHeader = ({ mainHeading, subHeading }: CustomNavHeaderProps) => {
     return (
         <View style={styles.container}>
-            <Text style={[commonStyles.mainHeading, styles.mainHeading]} numberOfLines={1}>{mainHeading}</Text>
-            {
-                subHeading && 
-                <Text style={styles.subHeading}>{subHeading}</Text>
-            }
+            <Text
+                style={[commonStyles.mainHeading]}
+                numberOfLines={1}
+            >
+                {mainHeading}
+            </Text>
+            {subHeading && (
+                <Text
+                    style={[commonStyles.textSmallBold, commonStyles.textGray]}
+                >
+                    {subHeading}
+                </Text>
+            )}
         </View>
     );
 };
@@ -27,13 +35,5 @@ const styles = StyleSheet.create({
     container: {
         rowGap: 0,
         width: ScreenWidth - 100,
-    },
-    mainHeading: {
-        
-    },
-    subHeading: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        color: "#8F9098",
     },
 });

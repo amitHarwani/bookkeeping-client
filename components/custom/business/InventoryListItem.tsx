@@ -1,5 +1,6 @@
 import { fonts } from "@/constants/fonts";
 import { Item } from "@/services/inventory/inventory_types";
+import { commonStyles } from "@/utils/common_styles";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -11,9 +12,14 @@ const InventoryListItem = ({ item, onPress }: InventoryListItemProps) => {
     return (
         <Pressable onPress={() => onPress(item)}>
             <View style={styles.itemContainer}>
-                <Text style={styles.itemName} numberOfLines={2}>{item.itemName}</Text>
                 <Text
-                    style={styles.itemStock}
+                    style={[commonStyles.textMedium, styles.itemName]}
+                    numberOfLines={2}
+                >
+                    {item.itemName}
+                </Text>
+                <Text
+                    style={[commonStyles.textSmall, commonStyles.textDarkGray]}
                 >{`${item.stock} ${item.unitName}`}</Text>
             </View>
         </Pressable>
@@ -29,13 +35,6 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     itemName: {
-        fontFamily: fonts.Inter_Regular,
-        fontSize: 14,
-        maxWidth: "75%"
-    },
-    itemStock: {
-        fontFamily: fonts.Inter_Regular,
-        fontSize: 12,
-        color: "#71727A",
+        maxWidth: "75%",
     },
 });

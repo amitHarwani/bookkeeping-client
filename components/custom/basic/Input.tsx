@@ -15,6 +15,7 @@ import {
 import showPasswordIcon from "@/assets/images/show_password_icon.png";
 import searchIcon from "@/assets/images/search_icon.png";
 import hidePasswordIcon from "@/assets/images/hide_password_icon.png";
+import { commonStyles } from "@/utils/common_styles";
 
 interface InputProps {
     label?: string;
@@ -29,7 +30,7 @@ interface InputProps {
     extraInputStyles?: Object;
     errorMessage?: string | null;
     isSearchIconVisible?: boolean;
-    isDisabled?: boolean
+    isDisabled?: boolean;
 }
 const Input = ({
     label,
@@ -44,7 +45,7 @@ const Input = ({
     errorMessage,
     keyboardType,
     isSearchIconVisible = false,
-    isDisabled = false
+    isDisabled = false,
 }: InputProps) => {
     /* Password visibility state for password inputs */
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -68,7 +69,16 @@ const Input = ({
     };
     return (
         <View style={[styles.container, extraContainerStyles]}>
-           {keepLabelSpace && <Text style={styles.label}>{label ? label : ""}</Text>}
+            {keepLabelSpace && (
+                <Text
+                    style={[
+                        commonStyles.textSmallBold,
+                        commonStyles.capitalize,
+                    ]}
+                >
+                    {label ? label : ""}
+                </Text>
+            )}
             <View
                 style={[
                     styles.inputContainer,
@@ -76,11 +86,19 @@ const Input = ({
                     !!errorMessage && styles.errorInputContainer,
                 ]}
             >
-                {isSearchIconVisible && 
-                    <Image source={searchIcon} style={styles.searchIcon} resizeMode="contain" />
-                }
+                {isSearchIconVisible && (
+                    <Image
+                        source={searchIcon}
+                        style={styles.searchIcon}
+                        resizeMode="contain"
+                    />
+                )}
                 <TextInput
-                    style={[styles.input, extraInputStyles]}
+                    style={[
+                        styles.input,
+                        commonStyles.textMedium,
+                        extraInputStyles,
+                    ]}
                     placeholder={placeholder}
                     onChangeText={inputChangeHandler}
                     onBlur={blurHandler}
@@ -109,7 +127,15 @@ const Input = ({
                 )}
             </View>
             {errorMessage && (
-                <Text style={styles.errorText}>{errorMessage}</Text>
+                <Text
+                    style={[
+                        commonStyles.textSmallMedium,
+                        commonStyles.textError,
+                        commonStyles.capitalize,
+                    ]}
+                >
+                    {errorMessage}
+                </Text>
             )}
         </View>
     );
@@ -120,11 +146,6 @@ export default Input;
 const styles = StyleSheet.create({
     container: {
         rowGap: 8,
-    },
-    label: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        textTransform: "capitalize",
     },
     inputContainer: {
         flexDirection: "row",
@@ -137,7 +158,7 @@ const styles = StyleSheet.create({
     searchIcon: {
         width: 18,
         height: 18,
-        marginLeft: 16
+        marginLeft: 16,
     },
     focussedInputContainer: {
         borderColor: "#006FFD",
@@ -149,8 +170,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 14,
         flex: 1,
-        fontFamily: fonts.Inter_Regular,
-        fontSize: 14,
     },
     passwordIconContainer: {
         marginRight: 14,
@@ -158,11 +177,5 @@ const styles = StyleSheet.create({
     passwordIcon: {
         width: 16,
         height: 16,
-    },
-    errorText: {
-        fontSize: 12,
-        fontFamily: fonts.Inter_Medium,
-        color: "#FF616D",
-        textTransform: "capitalize",
     },
 });

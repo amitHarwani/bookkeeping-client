@@ -3,6 +3,7 @@ import CheckMarkIcon from "@/assets/images/checkmark_icon.png";
 import React, { useCallback, useEffect, useState } from "react";
 import { GenericObject } from "@/constants/types";
 import { fonts } from "@/constants/fonts";
+import { commonStyles } from "@/utils/common_styles";
 
 interface CheckboxProps {
     data: GenericObject;
@@ -62,7 +63,7 @@ const Checkbox = ({
                 )}
             </View>
             {errorMessage && (
-                <Text style={styles.errorText}>{errorMessage}</Text>
+                <Text style={[commonStyles.textSmallMedium, commonStyles.textError, commonStyles.capitalize]}>{errorMessage}</Text>
             )}
         </View>
     );
@@ -97,11 +98,5 @@ const styles = StyleSheet.create({
     checkMark: {
         width: 18,
         height: 18,
-    },
-    errorText: {
-        fontSize: 12,
-        fontFamily: fonts.Inter_Medium,
-        color: "#FF616D",
-        textTransform: "capitalize",
-    },
+    }
 });

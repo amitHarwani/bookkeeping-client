@@ -215,29 +215,29 @@ const AddInvoiceItem = ({
 
                                 <View>
                                     <View style={styles.totalContainer}>
-                                        <Text style={styles.totalHeading}>
+                                        <Text style={[commonStyles.textSmallBold, commonStyles.capitalize]}>
                                             {i18n.t("subtotal")}
                                         </Text>
-                                        <Text style={styles.totalText}>
+                                        <Text style={[commonStyles.textMediumXLBold, commonStyles.textGray]}>
                                             {companyState.country?.currency}{" "}
                                             {formik.values.subtotal}
                                         </Text>
                                     </View>
                                     <View style={styles.totalContainer}>
-                                        <Text style={styles.totalHeading}>
+                                        <Text style={[commonStyles.textSmallBold, commonStyles.capitalize]}>
                                             {i18n.t("tax")}{" "}
                                             {`(${invoiceTaxPercent}%)`}
                                         </Text>
-                                        <Text style={styles.totalText}>
+                                        <Text style={[commonStyles.textMediumXLBold, commonStyles.textGray]}>
                                             {companyState.country?.currency}{" "}
                                             {formik.values.tax}
                                         </Text>
                                     </View>
                                     <View style={styles.totalContainer}>
-                                        <Text style={styles.totalHeading}>
+                                        <Text style={[commonStyles.textSmallBold, commonStyles.capitalize]}>
                                             {i18n.t("total")}
                                         </Text>
-                                        <Text style={styles.totalText}>
+                                        <Text style={[commonStyles.textMediumXLBold, commonStyles.textGray]}>
                                             {companyState.country?.currency}{" "}
                                             {formik.values.totalAfterTax}
                                         </Text>
@@ -275,15 +275,5 @@ const styles = StyleSheet.create({
     totalContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-    },
-    totalHeading: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        textTransform: "capitalize",
-    },
-    totalText: {
-        fontFamily: fonts.Inter_ExtraBold,
-        fontSize: 14,
-        color: "#8F9098",
     },
 });

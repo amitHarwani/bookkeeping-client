@@ -4,16 +4,20 @@ import { InvoiceItem } from "@/constants/types";
 import MinusIcon from "@/assets/images/minus_icon.png";
 import { fonts } from "@/constants/fonts";
 import { useAppSelector } from "@/store";
+import { commonStyles } from "@/utils/common_styles";
 
 interface InvoiceListItemProps {
     item: InvoiceItem;
     removeItem(item: InvoiceItem): void;
     onInvoiceItemSelected(item: InvoiceItem): void;
 }
-const InvoiceListItem = ({ item, removeItem, onInvoiceItemSelected }: InvoiceListItemProps) => {
+const InvoiceListItem = ({
+    item,
+    removeItem,
+    onInvoiceItemSelected,
+}: InvoiceListItemProps) => {
+    const companyState = useAppSelector((state) => state.company);
 
-    const companyState = useAppSelector(state => state.company);
-    
     return (
         <View style={styles.container}>
             <Pressable onPress={() => removeItem(item)}>
@@ -23,16 +27,28 @@ const InvoiceListItem = ({ item, removeItem, onInvoiceItemSelected }: InvoiceLis
                     resizeMode="contain"
                 />
             </Pressable>
-            <Pressable style={styles.itemDetailsContainer} onPress={() => onInvoiceItemSelected(item)}>
-                    <View>
-                        <Text style={styles.itemName}>
-                            {item.item?.itemName}
-                        </Text>
-                        <Text
-                            style={styles.unit}
-                        >{`${item.units}${item.item?.unitName} * ${item.pricePerUnit}`}</Text>
-                    </View>
-                    <Text style={styles.total}>{`${companyState.country?.currency} ${item.totalAfterTax}`}</Text>
+            <Pressable
+                style={styles.itemDetailsContainer}
+                onPress={() => onInvoiceItemSelected(item)}
+            >
+                <View>
+                    <Text style={[commonStyles.textSmallBold]}>
+                        {item.item?.itemName}
+                    </Text>
+                    <Text
+                        style={[
+                            commonStyles.textSmallSemiBold,
+                            commonStyles.textGray,
+                            styles.unit,
+                        ]}
+                    >{`${item.units}${item.item?.unitName} * ${item.pricePerUnit}`}</Text>
+                </View>
+                <Text
+                    style={[
+                        commonStyles.textSmallSemiBold,
+                        commonStyles.textGray,
+                    ]}
+                >{`${companyState.country?.currency} ${item.totalAfterTax}`}</Text>
             </Pressable>
         </View>
     );
@@ -48,7 +64,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 12,
         borderRadius: 12,
-        columnGap: 20
+        columnGap: 20,
     },
     minusIcon: {
         width: 12,
@@ -58,21 +74,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         flex: 1,
-        alignItems: "center"
-    },
-    itemName: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
+        alignItems: "center",
     },
     unit: {
-        fontFamily: fonts.Inter_SemiBold,
-        fontSize: 12,
-        color: "#8F9098",
-        marginTop: 4
-    },
-    total: {
-        fontFamily: fonts.Inter_SemiBold,
-        fontSize: 12,
-        color: "#8F9098",
+        marginTop: 4,
     },
 });

@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { fonts } from "@/constants/fonts";
+import { commonStyles } from "@/utils/common_styles";
 
 interface CustomButtonProps {
     onPress(): void;
@@ -34,7 +35,13 @@ const CustomButton = ({
         >
             <Text
                 style={[
-                    isSecondaryButton ? styles.secondaryBtnText : styles.text,
+                    isSecondaryButton
+                        ? [commonStyles.textMediumBold,
+                          commonStyles.uppercase,
+                          commonStyles.textBlue]
+                        : [commonStyles.textMediumBold,
+                          commonStyles.uppercase,
+                          commonStyles.textWhite],
                     extraTextStyles,
                 ]}
             >
@@ -61,21 +68,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderWidth: 1.5,
-        borderColor: "#006FFD"
+        borderColor: "#006FFD",
     },
     containerWhenLoading: {
         opacity: 0.5,
-    },
-    text: {
-        color: "#FFFFFF",
-        fontSize: 14,
-        fontFamily: fonts.Inter_Bold,
-        textTransform: "uppercase",
-    },
-    secondaryBtnText: {
-        color: "#006FFD",
-        fontSize: 14,
-        fontFamily: fonts.Inter_Bold,
-        textTransform: "uppercase",
     },
 });

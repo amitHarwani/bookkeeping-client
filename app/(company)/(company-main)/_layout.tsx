@@ -20,6 +20,7 @@ import {
     setUserACL,
 } from "@/store/CompanySlice";
 import { setPlatformFeatures } from "@/store/PlatformFeaturesSlice";
+import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
 import { deleteValueFromSecureStore } from "@/utils/securestore";
@@ -97,8 +98,15 @@ const CustomDrawer = (props) => {
                 {showLoadingSpinner && <LoadingSpinnerOverlay />}
 
                 <View style={styles.userDetailsContainer}>
-                    <Text style={styles.fullName}>{userDetails?.fullName}</Text>
-                    <Text style={styles.companyName}>
+                    <Text style={[commonStyles.textXLBlack]}>
+                        {userDetails?.fullName}
+                    </Text>
+                    <Text
+                        style={[
+                            commonStyles.textSmallBold,
+                            commonStyles.textGray,
+                        ]}
+                    >
                         {selectedCompany?.companyName}
                     </Text>
                 </View>
@@ -111,7 +119,15 @@ const CustomDrawer = (props) => {
                         style={styles.logoutIcon}
                         resizeMode="contain"
                     />
-                    <Text style={styles.logoutText}>{i18n.t("logout")}</Text>
+                    <Text
+                        style={[
+                            commonStyles.textSmallBold,
+                            commonStyles.capitalize,
+                            commonStyles.textBlue,
+                        ]}
+                    >
+                        {i18n.t("logout")}
+                    </Text>
                 </Pressable>
 
                 <CustomButton
@@ -450,15 +466,6 @@ const styles = StyleSheet.create({
     userDetailsContainer: {
         rowGap: 2,
     },
-    fullName: {
-        fontFamily: fonts.Inter_Black,
-        fontSize: 24,
-    },
-    companyName: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        color: "#8F9098",
-    },
     logoutContainer: {
         flexDirection: "row",
         columnGap: 4,
@@ -473,13 +480,7 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         marginLeft: 16,
-    },
-    logoutText: {
-        color: "#006FFD",
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        textTransform: "capitalize",
-    },
+    }
 });
 
 export default CompanyMainLayout;

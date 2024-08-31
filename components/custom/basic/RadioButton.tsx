@@ -11,6 +11,7 @@ import { GenericObject } from "@/constants/types";
 import { fonts } from "@/constants/fonts";
 import RadioButtonSelected from "@/assets/images/radio_button_selected.png";
 import RadioButtonUnSelected from "@/assets/images/radio_button_unselected.png";
+import { commonStyles } from "@/utils/common_styles";
 
 interface RadioButtonProps {
     label?: string;
@@ -19,7 +20,7 @@ interface RadioButtonProps {
     textKey: string;
     value?: GenericObject;
     errorMessage?: string | null;
-    isDisabled?: boolean
+    isDisabled?: boolean;
 }
 const RadioButton = ({
     label,
@@ -28,7 +29,7 @@ const RadioButton = ({
     textKey,
     value,
     errorMessage,
-    isDisabled = false
+    isDisabled = false,
 }: RadioButtonProps) => {
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
 
@@ -49,12 +50,23 @@ const RadioButton = ({
 
     return (
         <View style={styles.container}>
-            {label && <Text style={styles.label}>{label}</Text>}
+            {label && (
+                <Text
+                    style={[
+                        commonStyles.textSmallBold,
+                        commonStyles.capitalize,
+                    ]}
+                >
+                    {label}
+                </Text>
+            )}
             <View>
                 <FlatList
                     data={data}
                     horizontal={true}
-                    ItemSeparatorComponent={() => <View style={styles.separator} />}
+                    ItemSeparatorComponent={() => (
+                        <View style={styles.separator} />
+                    )}
                     renderItem={({ item }) => (
                         <Pressable
                             onPress={() => selectItem(item)}
@@ -70,7 +82,13 @@ const RadioButton = ({
                                 resizeMode="contain"
                                 style={styles.radioButtonImage}
                             />
-                            <Text style={styles.radioButtonText}>
+                            <Text
+                                style={[
+                                    commonStyles.textSmallBold,
+                                    commonStyles.textDarkGray,
+                                    commonStyles.capitalize,
+                                ]}
+                            >
                                 {item[textKey]}
                             </Text>
                         </Pressable>
@@ -87,27 +105,16 @@ const styles = StyleSheet.create({
     container: {
         rowGap: 12,
     },
-    label: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        textTransform: "capitalize",
-    },
     separator: {
         width: 16,
     },
     radioButtonItemContainer: {
         flexDirection: "row",
         columnGap: 8,
-        alignItems: "center"
+        alignItems: "center",
     },
     radioButtonImage: {
         width: 16,
-        height: 16
-    },
-    radioButtonText: {
-        fontFamily: fonts.Inter_Bold,
-        fontSize: 12,
-        color: "#71727A",
-        textTransform: "capitalize",
+        height: 16,
     },
 });
