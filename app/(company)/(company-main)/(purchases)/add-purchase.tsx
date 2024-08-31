@@ -25,7 +25,6 @@ const AddPurchase = () => {
     const formik = useFormik({
         initialValues: initialFormValues,
         onSubmit: (values) => {
-            console.log(values);
         },
         validationSchema: AddPurchaseFormValidation,
     });

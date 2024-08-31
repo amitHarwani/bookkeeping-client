@@ -1,14 +1,21 @@
-import { AddUpdatePartyForm } from "@/constants/types";
+import { AddUpdatePartyForm, FilterPurchaseForm } from "@/constants/types";
 import axios from "axios";
 import { ApiResponse } from "../api_response";
 import { asyncHandler } from "../async_handler";
 import {
     AddPartyResponse,
     FilterPartiesQuery,
+    FilterPurchasesQuery,
     GetAllPartiesResponse,
+    GetAllPurchasesResponse,
     GetPartyResponse,
     UpdatePartyResponse,
 } from "./billing_types";
+import moment from "moment";
+import momentTimezone from "moment-timezone";
+import { dateTimeFormat24hr } from "@/constants/datetimes";
+import { Country } from "../sysadmin/sysadmin_types";
+import { convertLocalUTCToTimezoneUTC } from "@/utils/common_utils";
 
 class BillingService {
     hostPath = process.env.EXPO_PUBLIC_BILLING_SERVICE;
@@ -16,6 +23,68 @@ class BillingService {
     addPartyPath = "party/add-party";
     getPartyPath = "party/get-party";
     updatePartyPath = "party/update-party";
+    getAllPurchasesPath = "purchase/get-all-purchases";
+
+    getAllPurchases = async ({
+        pageParam,
+    }: {
+        pageParam: {
+            pageSize: number;
+            companyId: number;
+            query?: FilterPurchaseForm;
+            invoiceNumberSearchQuery?: number;
+            cursor?: {
+                updatedAt: string;
+                purchaseId: bigint;
+            };
+            countryDetails: Country;
+        };
+    }) => {
+        let requestQuery: FilterPurchasesQuery = {};
+
+        if (pageParam?.query) {
+            if (pageParam?.query?.fromTransactionDateTime) {
+                /* Converting UTC derived from system timezone to companies timezone derived UTC */
+                requestQuery = {
+                    ...requestQuery,
+                    fromTransactionDate: convertLocalUTCToTimezoneUTC(
+                        pageParam?.query?.fromTransactionDateTime,
+                        dateTimeFormat24hr,
+                        pageParam.countryDetails.timezone
+                    ),
+                };
+                requestQuery = {
+                    ...requestQuery,
+                    toTransactionDate: convertLocalUTCToTimezoneUTC(
+                        pageParam?.query?.toTransactionDateTime as Date,
+                        dateTimeFormat24hr,
+                        pageParam.countryDetails.timezone
+                    ),
+                };
+            }
+
+            requestQuery = {
+                ...requestQuery,
+                partyId: pageParam?.query?.party?.partyId,
+                purchaseType: pageParam?.query?.purchaseType,
+                getOnlyOverduePayments:
+                    pageParam?.query?.getOnlyOverduePayments,
+                invoiceNumberSearchQuery: pageParam?.invoiceNumberSearchQuery,
+            };
+        }
+
+        return await asyncHandler<GetAllPurchasesResponse>(async () => {
+            return axios.post<ApiResponse<GetAllPurchasesResponse>>(
+                `${this.hostPath}/${this.getAllPurchasesPath}`,
+                {
+                    pageSize: pageParam?.pageSize,
+                    companyId: pageParam?.companyId,
+                    query: requestQuery,
+                    cursor: pageParam?.cursor,
+                }
+            );
+        });
+    };
 
     getAllParties = async ({
         pageParam,
@@ -27,7 +96,6 @@ class BillingService {
             query?: FilterPartiesQuery;
         };
     }) => {
-        console.log("Query Party Name Searched", pageParam?.query?.partyNameSearchQuery);
         return await asyncHandler<GetAllPartiesResponse>(() => {
             return axios.post<ApiResponse<GetAllPartiesResponse>>(
                 `${this.hostPath}/${this.getAllPartiesPath}`,

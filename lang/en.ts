@@ -113,6 +113,17 @@ export default {
     partyUpdatedSuccessfully: "party updated successfully",
     purchases: "purchases",
     addPurchase: "add purchase",
-
+    invoiceNumberShouldBeNumeric:"invoice number should be numeric",
+    searchByInvoiceNumber: "search by invoice number",
+    noPurchasesFound: "no purchases found",
+    transactionType: "transaction type",
+    getOnlyOverduePayments: "get only overdue payments",
+    fromDate: "from date",
+    fromTime: "from time",
+    toDate: "to date",
+    toTime: "to time",
+    reset: "reset",
+    filterByDate: "filter by date",
+    qm: "?"
 
 }

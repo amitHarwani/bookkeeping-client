@@ -1,5 +1,6 @@
 import { GenericObject } from "@/constants/types";
 import * as Yup from "yup";
+import moment from "moment";
 
 export const LoginFormValidation = Yup.object().shape({
     email: Yup.string()
@@ -221,6 +222,21 @@ export const AddUpdatePartyValidation = Yup.object().shape({
 });
 
 
+export const FilterPurchaseFormValidation = Yup.object().shape({
+    party: Yup.object().notRequired().nullable(),
+    purchaseType: Yup.string().required(),
+    fromTransactionDateTime: Yup.date().notRequired(),
+    toTransactionDateTime: Yup.date().notRequired().test("toTransactionDateTest", "to date cannot be before from date", (value, context) => {
+        const from = context?.options?.context?.fromTransactionDateTime;
+        if(moment(value).isBefore(from)){
+            return false;
+        }
+        return true;
+    }),
+    getOnlyOverduePayments: Yup.boolean()
+})
+
 export const AddPurchaseFormValidation = Yup.object().shape({
     party: Yup.object().required("party is required")
 })
+

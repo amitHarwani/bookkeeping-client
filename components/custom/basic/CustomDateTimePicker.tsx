@@ -8,21 +8,26 @@ import { fonts } from "@/constants/fonts";
 
 interface CustomDateTimePickerProps {
     label?: string;
-    value?: string;
-    onChange(selectedDateTime: string): void;
+    value?: Date;
+    onChange(selectedDateTime: string, dateTime: Date): void;
     mode: "date" | "time" | "datetime";
+    errorMessage?: string | null;
+    extraContainerStyles?: Object;
 }
 const CustomDateTimePicker = ({
     label,
     value,
     onChange,
     mode,
+    errorMessage,
+    extraContainerStyles
 }: CustomDateTimePickerProps) => {
     const [isDateTimePickerShown, setIsDateTimePickerShown] = useState(false);
 
+    /* selected date time (Stores In UTC) */
     const [dateTime, setDateTime] = useState(new Date());
 
-    /* Format date time as per mode */
+    /* Format date time as per mode: Formatting gives in local */
     const formatDateTime = useCallback((dateTime: Date) => {
         const momentObj = moment(dateTime);
         switch (mode) {
@@ -50,7 +55,7 @@ const CustomDateTimePicker = ({
         /* Set selected date time & toggle picker */
         if (selectedDate) {
             setDateTime(selectedDate);
-            onChange(formatDateTime(selectedDate));
+            onChange(formatDateTime(selectedDate), selectedDate);
         }
         setIsDateTimePickerShown(false);
     };
@@ -58,19 +63,22 @@ const CustomDateTimePicker = ({
     /* For default values */
     useEffect(() => {
         if (value) {
-            setDateTime(moment(value).toDate());
+            setDateTime(value);
         }
     }, [value]);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, extraContainerStyles && extraContainerStyles]}>
             {label && <Text style={styles.label}>{label}</Text>}
             <Pressable
-                style={styles.dateTimeInput}
+                style={[styles.dateTimeInput, !!errorMessage && styles.errorInput]}
                 onPress={() => setIsDateTimePickerShown(true)}
             >
                 <Text>{valueShown}</Text>
             </Pressable>
+            {errorMessage && (
+                <Text style={styles.errorText}>{errorMessage}</Text>
+            )}
             {isDateTimePickerShown && (
                 <DateTimePicker
                     value={dateTime}
@@ -102,4 +110,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
+    errorInput: {
+        borderColor: "#FF616D",
+    },
+    errorText: {
+        fontSize: 12,
+        fontFamily: fonts.Inter_Medium,
+        color: "#FF616D",
+        textTransform: "capitalize",
+    }
 });

@@ -87,7 +87,14 @@ export interface AddUpdatePartyTaxDetails {
     [taxId: number]: { taxId: number; registrationNumber: string };
 }
 
-
+export interface FilterPurchaseForm {
+    party?: ThirdParty,
+    purchaseType?: "ALL" | "CASH" | "CREDIT",
+    filterByDate?: boolean,
+    fromTransactionDateTime?: Date,
+    toTransactionDateTime?: Date,
+    getOnlyOverduePayments: boolean
+}
 export interface AddPurchaseForm {
     party?: ThirdParty,
 }

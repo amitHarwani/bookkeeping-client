@@ -12,6 +12,29 @@ export interface ThirdParty {
     defaultPurchaseCreditAllowanceInDays: number;
 }
 
+export interface Purchase {
+    companyId: number;
+    createdAt: Date;
+    updatedAt: Date;
+    taxName: string;
+    partyId: number;
+    partyName: string;
+    purchaseId: bigint;
+    invoiceNumber: number;
+    subtotal: string;
+    discount: string;
+    totalAfterDiscount: string;
+    taxPercent: string;
+    totalAfterTax: string;
+    isCredit: boolean;
+    paymentDueDate: string | null;
+    amountPaid: string;
+    amountDue: string;
+    isFullyPaid: boolean;
+    paymentCompletionDate: string | null;
+    receiptNumber: string | null;
+}
+
 export interface FilterPartiesQuery {
     isActive?: boolean;
     partyNameSearchQuery?: string;
@@ -54,4 +77,26 @@ export class UpdatePartyResponse {
         public party: ThirdParty,
         public message: string
     ){}
+}
+
+export interface FilterPurchasesQuery {
+    partyId?: number,
+    purchaseType?: "ALL" | "CASH" | "CREDIT",
+    fromTransactionDate?: string,
+    toTransactionDate?: string,
+    getOnlyOverduePayments?: boolean,
+    invoiceNumberSearchQuery?: number
+}
+
+export class GetAllPurchasesResponse {
+    constructor(
+        public purchases: Purchase[],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            updatedAt: Date,
+            purchaseId: bigint
+        }
+    ){
+
+    }
 }

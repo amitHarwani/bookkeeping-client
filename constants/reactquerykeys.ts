@@ -10,5 +10,6 @@ export enum ReactQueryKeys {
     units = "units",
     getItem = "getItem",
     parties = "parties",
-    getParty = "getParty"
+    getParty = "getParty",
+    purchases = "purchases"
 }
