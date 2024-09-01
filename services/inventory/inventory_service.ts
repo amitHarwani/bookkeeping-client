@@ -8,6 +8,7 @@ import {
     GetAllItemsResponse,
     GetAllUnitsResponse,
     GetItemResponse,
+    Item,
     UpdateItemResponse,
 } from "./inventory_types";
 import { ApiResponse } from "../api_response";
@@ -31,6 +32,7 @@ class InventoryService {
             companyId: number;
             cursor?: { itemId: number; updatedAt: string };
             query?: FilterItemsQuery;
+            select?: [keyof Item]
         };
     }) => {
         return await asyncHandler<GetAllItemsResponse>(() => {
@@ -41,6 +43,7 @@ class InventoryService {
                     companyId: pageParam.companyId,
                     cursor: pageParam?.cursor,
                     query: pageParam?.query,
+                    select: pageParam?.select
                 }
             );
         });

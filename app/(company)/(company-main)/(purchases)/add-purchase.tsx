@@ -1,5 +1,7 @@
 import { i18n } from "@/app/_layout";
 import CustomButton from "@/components/custom/basic/CustomButton";
+import ErrorMessage from "@/components/custom/basic/ErrorMessage";
+import Input from "@/components/custom/basic/Input";
 import InvoiceListItem from "@/components/custom/business/InvoiceListItem";
 import AddInvoiceItem from "@/components/custom/widgets/AddInvoiceItem";
 import InvoicePartySelector from "@/components/custom/widgets/InvoicePartySelector";
@@ -7,13 +9,13 @@ import { fonts } from "@/constants/fonts";
 import { AddPurchaseForm, InvoiceItem } from "@/constants/types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
+import { capitalizeText } from "@/utils/common_utils";
 import { AddPurchaseFormValidation } from "@/utils/schema_validations";
 import { useFormik } from "formik";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View, Text, FlatList } from "react-native";
 
 const AddPurchase = () => {
-
     /* Selected Company */
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
@@ -35,6 +37,7 @@ const AddPurchase = () => {
     const initialFormValues: AddPurchaseForm = useMemo(() => {
         return {
             party: undefined,
+            invoiceNumber: undefined,
             items: {},
         };
     }, []);
@@ -50,6 +53,7 @@ const AddPurchase = () => {
     const onInvoiceItemChanged = (item: InvoiceItem) => {
         /* Update items field. value is stores as key value, where key is itemId and value is invoice item */
         if (item && item.item) {
+            formik.setFieldTouched("items", true);
             const temp = formik.values.items;
             temp[item.item?.itemId] = item;
             formik.setFieldValue("items", temp);
@@ -78,6 +82,22 @@ const AddPurchase = () => {
         <ScrollView style={styles.mainContainer}>
             <View style={styles.container}>
                 <View style={styles.formContainer}>
+                    <Input
+                        label={i18n.t("invoiceNumber")}
+                        placeholder={capitalizeText(
+                            i18n.t("enterInvoiceNumber")
+                        )}
+                        value={formik.values.invoiceNumber?.toString() || ""}
+                        onChangeText={formik.handleChange("invoiceNumber")}
+                        onBlur={formik.handleBlur("invoiceNumber")}
+                        errorMessage={
+                            formik.touched.invoiceNumber &&
+                            formik.errors.invoiceNumber
+                                ? formik.errors.invoiceNumber
+                                : null
+                        }
+                        keyboardType="number-pad"
+                    />
                     <InvoicePartySelector
                         value={formik.values.party}
                         onChange={(party) => {
@@ -91,7 +111,13 @@ const AddPurchase = () => {
                         }
                     />
 
-                    <Text style={[commonStyles.textSmallBold]}>{i18n.t("items")}</Text>
+                    <Text style={[commonStyles.textSmallBold]}>
+                        {i18n.t("items")}
+                    </Text>
+
+                    {formik.touched.items && formik.errors.items && (
+                        <ErrorMessage message={formik.errors.items as string} />
+                    )}
 
                     <FlatList
                         data={Object.values(formik.values.items)}
@@ -144,5 +170,5 @@ const styles = StyleSheet.create({
     },
     formContainer: {
         rowGap: 16,
-    }
+    },
 });

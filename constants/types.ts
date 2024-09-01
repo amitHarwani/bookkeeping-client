@@ -101,7 +101,9 @@ export interface FilterPurchaseForm {
 }
 export interface AddPurchaseForm {
     party?: ThirdParty;
-    items: {[itemId: number]: InvoiceItem}
+    invoiceNumber?: number;
+    items: {[itemId: number]: InvoiceItem},
+
 }
 
 export interface InvoiceItem {

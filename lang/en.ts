@@ -133,6 +133,8 @@ export default {
     subtotal: "subtotal",
     tax: "tax",
     total: "total",
-    includeTax: "include tax"
+    includeTax: "include tax",
+    invoiceNumber: "invoice number",
+    enterInvoiceNumber: "enter invoice number"
 
 }

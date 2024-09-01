@@ -87,7 +87,15 @@ const Items = () => {
         isPending,
         refetch: refetchItems,
     } = useInfiniteQuery({
-        queryKey: [ReactQueryKeys.items, selectedCompany?.companyId, filtersState, searchQuery],
+        queryKey: [
+            ReactQueryKeys.items,
+            selectedCompany?.companyId,
+            {
+                ...filtersState,
+                itemNameSearchQuery: searchQuery,
+                select: ["itemName", "unitName", "stock"],
+            },
+        ],
         queryFn: InventoryService.getAllItems,
         initialPageParam: {
             pageSize: 20,
@@ -97,6 +105,7 @@ const Items = () => {
                 ...filtersState,
                 itemNameSearchQuery: searchQuery,
             },
+            select: ["itemName", "unitName", "stock"],
         },
         getNextPageParam: (lastPage, pages) => {
             if (lastPage.data.nextPageCursor) {
@@ -108,6 +117,7 @@ const Items = () => {
                         ...filtersState,
                         itemNameSearchQuery: searchQuery,
                     },
+                    select: ["itemName", "unitName", "stock"],
                 };
             }
             return null;
