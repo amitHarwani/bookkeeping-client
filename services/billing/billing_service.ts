@@ -9,6 +9,8 @@ import {
     GetAllPartiesResponse,
     GetAllPurchasesResponse,
     GetPartyResponse,
+    Purchase,
+    ThirdParty,
     UpdatePartyResponse,
 } from "./billing_types";
 import moment from "moment";
@@ -38,6 +40,7 @@ class BillingService {
                 purchaseId: bigint;
             };
             countryDetails: Country;
+            select?: [keyof Purchase]
         };
     }) => {
         let requestQuery: FilterPurchasesQuery = {};
@@ -81,6 +84,7 @@ class BillingService {
                     companyId: pageParam?.companyId,
                     query: requestQuery,
                     cursor: pageParam?.cursor,
+                    select: pageParam?.select
                 }
             );
         });
@@ -94,6 +98,7 @@ class BillingService {
             companyId: number;
             cursor?: { partyId: number; updatedAt: string };
             query?: FilterPartiesQuery;
+            select?: [keyof ThirdParty]
         };
     }) => {
         return await asyncHandler<GetAllPartiesResponse>(() => {
@@ -104,6 +109,7 @@ class BillingService {
                     companyId: pageParam.companyId,
                     cursor: pageParam?.cursor,
                     query: pageParam?.query,
+                    select: pageParam?.select
                 }
             );
         });

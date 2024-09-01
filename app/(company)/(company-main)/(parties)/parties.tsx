@@ -72,7 +72,15 @@ const Parties = () => {
         isPending,
         refetch: refetchParties,
     } = useInfiniteQuery({
-        queryKey: [ReactQueryKeys.parties, selectedCompany?.companyId, filtersState, searchQuery],
+        queryKey: [
+            ReactQueryKeys.parties,
+            selectedCompany?.companyId,
+            {
+                ...filtersState,
+                partyNameSearchQuery: searchQuery,
+                select: ["partyId", "partyName"],
+            },
+        ],
         queryFn: BillingService.getAllParties,
         initialPageParam: {
             pageSize: 20,
@@ -82,6 +90,7 @@ const Parties = () => {
                 ...filtersState,
                 partyNameSearchQuery: searchQuery,
             },
+            select: ["partyId", "partyName"],
         },
         getNextPageParam: (lastPage, pages) => {
             if (lastPage.data.nextPageCursor) {
@@ -93,6 +102,7 @@ const Parties = () => {
                         ...filtersState,
                         partyNameSearchQuery: searchQuery,
                     },
+                    select: ["partyId", "partyName"],
                 };
             }
             return null;
@@ -223,7 +233,11 @@ const Parties = () => {
                     onEndReached={loadMorePagesHandler}
                     onEndReachedThreshold={0}
                     contentContainerStyle={{ paddingBottom: 20 }}
-                    ListEmptyComponent={() => <ListEmptyComponent message={i18n.t("noPartiesFound")} />}
+                    ListEmptyComponent={() => (
+                        <ListEmptyComponent
+                            message={i18n.t("noPartiesFound")}
+                        />
+                    )}
                 />
                 {isFetchingNextPage && <ActivityIndicator size="large" />}
             </View>

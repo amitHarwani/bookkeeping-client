@@ -102,7 +102,20 @@ const Purchases = () => {
         isPending,
         refetch: refetchPurchases,
     } = useInfiniteQuery({
-        queryKey: [ReactQueryKeys.purchases, selectedCompany?.companyId, filtersState, searchQuery],
+        queryKey: [
+            ReactQueryKeys.purchases,
+            selectedCompany?.companyId,
+            {
+                ...filtersState,
+                invoiceNumberSearchQuery: searchQuery,
+                select: [
+                    "purchaseId",
+                    "partyName",
+                    "invoiceNumber",
+                    "totalAfterTax",
+                ],
+            },
+        ],
         queryFn: BillingService.getAllPurchases,
         initialPageParam: {
             pageSize: 20,
@@ -111,6 +124,12 @@ const Purchases = () => {
             query: filtersState,
             countryDetails: companyState.country,
             invoiceNumberSearchQuery: Number(searchQuery),
+            select: [
+                "purchaseId",
+                "partyName",
+                "invoiceNumber",
+                "totalAfterTax",
+            ],
         },
         getNextPageParam: (lastPage, pages) => {
             if (lastPage.data.nextPageCursor) {
@@ -121,6 +140,12 @@ const Purchases = () => {
                     query: filtersState,
                     countryDetails: companyState.country,
                     invoiceNumberSearchQuery: Number(searchQuery),
+                    select: [
+                        "purchaseId",
+                        "partyName",
+                        "invoiceNumber",
+                        "totalAfterTax",
+                    ],
                 };
             }
             return null;
@@ -325,11 +350,14 @@ const Purchases = () => {
                                                     selectedParty
                                                 );
                                             }}
-                                            extraContainerStyles={{flex: 1}}
+                                            extraContainerStyles={{ flex: 1 }}
                                         />
                                         <CustomButton
                                             onPress={() => {
-                                                setFieldValue("party", undefined);
+                                                setFieldValue(
+                                                    "party",
+                                                    undefined
+                                                );
                                             }}
                                             text={i18n.t("reset")}
                                             isSecondaryButton
@@ -337,7 +365,7 @@ const Purchases = () => {
                                                 flex: 0.3,
                                                 paddingHorizontal: 12,
                                                 paddingVertical: 10,
-                                                height: 54
+                                                height: 54,
                                             }}
                                             extraTextStyles={{ fontSize: 12 }}
                                         />
@@ -519,6 +547,6 @@ const styles = StyleSheet.create({
     partySelectorContainer: {
         flexDirection: "row",
         columnGap: 4,
-        alignItems: "flex-end"
-    }
+        alignItems: "flex-end",
+    },
 });

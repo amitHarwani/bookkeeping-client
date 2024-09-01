@@ -44,7 +44,11 @@ const InvoicePartySelector = ({
         queryKey: [
             ReactQueryKeys.parties,
             selectedCompany?.companyId,
-            { isActive: true, partyNameSearchQuery: partyNameSearched },
+            {
+                isActive: true,
+                partyNameSearchQuery: partyNameSearched,
+                select: ["partyId", "partyName"],
+            },
         ],
         queryFn: BillingService.getAllParties,
         initialPageParam: {
@@ -55,6 +59,7 @@ const InvoicePartySelector = ({
                 isActive: true,
                 partyNameSearchQuery: partyNameSearched,
             },
+            select: ["partyId", "partyName"],
         },
         getNextPageParam: (lastPage) => {
             if (lastPage.data.nextPageCursor) {
@@ -66,6 +71,7 @@ const InvoicePartySelector = ({
                         partyNameSearchQuery: partyNameSearched,
                     },
                     cursor: lastPage.data.nextPageCursor,
+                    select: ["partyId", "partyName"],
                 };
             }
             return null;
