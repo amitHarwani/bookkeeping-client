@@ -21,7 +21,6 @@ const InvoiceItemSelector = ({
     onChange,
     errorMessage,
 }: InvoiceItemSelectorProps) => {
-
     /* Selected Company from redux */
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
@@ -43,7 +42,11 @@ const InvoiceItemSelector = ({
         queryKey: [
             ReactQueryKeys.items,
             selectedCompany?.companyId,
-            { isActive: true, itemNameSearchQuery: itemNameSearched },
+            {
+                isActive: true,
+                itemNameSearchQuery: itemNameSearched,
+                select: ["itemId", "itemName", "unitId", "unitName"],
+            },
         ],
         queryFn: InventoryService.getAllItems,
         initialPageParam: {
@@ -51,6 +54,7 @@ const InvoiceItemSelector = ({
             companyId: selectedCompany?.companyId,
             cursor: undefined,
             query: { isActive: true, itemNameSearchQuery: itemNameSearched },
+            select: ["itemId", "itemName", "unitId", "unitName"],
         },
         getNextPageParam: (lastPage) => {
             if (lastPage.data.nextPageCursor) {
@@ -62,17 +66,18 @@ const InvoiceItemSelector = ({
                         isActive: true,
                         itemNameSearchQuery: itemNameSearched,
                     },
+                    select: ["itemId", "itemName", "unitId", "unitName"],
                 };
             }
             return null;
         },
-        enabled: false
+        enabled: false,
     });
 
     /* Fetch Item on mount */
     useEffect(() => {
         refetchItems();
-    }, [])
+    }, []);
 
     /* Error fetching items, show a toast message and go back */
     useEffect(() => {
