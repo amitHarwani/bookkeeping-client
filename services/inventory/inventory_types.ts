@@ -3,6 +3,7 @@ import { ItemTypeInInvoiceItem, ItemTypeInItemsList } from "@/constants/types";
 export interface PriceHistoryOfCurrentStockType {
     stock: number;
     purchasePrice: number;
+    purchaseId?: number
 }
 
 export interface Item {
