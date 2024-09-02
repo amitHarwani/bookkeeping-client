@@ -104,7 +104,7 @@ export interface AddUpdatePartyTaxDetails {
 }
 
 export interface PurchaseTypeInPurchaseList {
-    purchaseId: bigint;
+    purchaseId: number;
     partyName: string;
     invoiceNumber: number;
     totalAfterTax: string;
@@ -123,8 +123,9 @@ export interface PartyTypeInInvoicePartySelector {
     partyId: number;
     partyName: string;
     updatedAt: Date;
+    defaultPurchaseCreditAllowanceInDays: number
 }
-export interface AddPurchaseForm {
+export interface InvoiceForm {
     party?: PartyTypeInInvoicePartySelector;
     invoiceNumber?: number;
     items: { [itemId: number]: InvoiceItem };
@@ -133,6 +134,15 @@ export interface AddPurchaseForm {
     totalAfterDiscount: string;
     tax: string;
     totalAfterTax: string;
+    isCredit: boolean,
+
+    paymentDueDate: Date | null,
+    amountPaid: number,
+    amountDue: number,
+
+    paymentCompletionDate: Date | null,
+    isFullyPaid: boolean,
+    receiptNumber: string | null
 }
 
 export interface ItemTypeInInvoiceItem {

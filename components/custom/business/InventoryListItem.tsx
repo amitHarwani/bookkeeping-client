@@ -1,12 +1,13 @@
 import { fonts } from "@/constants/fonts";
+import { ItemTypeInItemsList } from "@/constants/types";
 import { Item } from "@/services/inventory/inventory_types";
 import { commonStyles } from "@/utils/common_styles";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 interface InventoryListItemProps {
-    item: Item;
-    onPress: (item: Item) => void;
+    item: ItemTypeInItemsList;
+    onPress: (item: ItemTypeInItemsList) => void;
 }
 const InventoryListItem = ({ item, onPress }: InventoryListItemProps) => {
     return (

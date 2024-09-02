@@ -1,9 +1,14 @@
-import { AddUpdatePartyForm, FilterPurchaseForm } from "@/constants/types";
+import {
+    AddUpdatePartyForm,
+    FilterPurchaseForm,
+    InvoiceForm,
+} from "@/constants/types";
 import axios from "axios";
 import { ApiResponse } from "../api_response";
 import { asyncHandler } from "../async_handler";
 import {
     AddPartyResponse,
+    AddPurchaseResponse,
     FilterPartiesQuery,
     FilterPurchasesQuery,
     GetAllPartiesResponse,
@@ -15,7 +20,7 @@ import {
 } from "./billing_types";
 import moment from "moment";
 import momentTimezone from "moment-timezone";
-import { dateTimeFormat24hr } from "@/constants/datetimes";
+import { dateFormat, dateTimeFormat24hr } from "@/constants/datetimes";
 import { Country } from "../sysadmin/sysadmin_types";
 import { convertLocalUTCToTimezoneUTC } from "@/utils/common_utils";
 
@@ -26,8 +31,9 @@ class BillingService {
     getPartyPath = "party/get-party";
     updatePartyPath = "party/update-party";
     getAllPurchasesPath = "purchase/get-all-purchases";
+    addPurchasePath = "purchase/add-purchase";
 
-    getAllPurchases = async<T> ({
+    getAllPurchases = async <T>({
         pageParam,
     }: {
         pageParam: {
@@ -40,7 +46,7 @@ class BillingService {
                 purchaseId: bigint;
             };
             countryDetails: Country;
-            select?: [keyof Purchase]
+            select?: [keyof Purchase];
         };
     }) => {
         let requestQuery: FilterPurchasesQuery = {};
@@ -84,13 +90,83 @@ class BillingService {
                     companyId: pageParam?.companyId,
                     query: requestQuery,
                     cursor: pageParam?.cursor,
-                    select: pageParam?.select
+                    select: pageParam?.select,
                 }
             );
         });
     };
 
-    getAllParties = async<T> ({
+    addPurchase = async (
+        purchaseForm: InvoiceForm,
+        companyId: number,
+        companyTimezone: string,
+        taxPercent: number,
+        taxName: string,
+        decimalRoundTo: number
+    ) => {
+        let items: any = [];
+
+        /* Purchase Items req body   */
+        Object.values(purchaseForm.items).forEach((item) => {
+            items.push({
+                itemId: item.item?.itemId,
+                itemName: item.item?.itemName,
+                companyId: companyId,
+                unitId: item.item?.unitId,
+                unitName: item.item?.unitName,
+                unitsPurchased: Number(item.units),
+                pricePerUnit: Number(item.pricePerUnit),
+                subtotal: Number(item.subtotal),
+                tax: Number(item.tax),
+                taxPercent: taxPercent,
+                totalAfterTax: Number(item.totalAfterTax),
+            });
+        });
+        let requestBody;
+        requestBody = {
+            invoiceNumber: Number(purchaseForm.invoiceNumber),
+            companyId: companyId,
+            partyId: purchaseForm.party?.partyId,
+            partyName: purchaseForm.party?.partyName,
+            subtotal: Number(purchaseForm.subtotal),
+            discount: Number(purchaseForm.discount),
+            totalAfterDiscount: Number(purchaseForm.totalAfterDiscount),
+            taxPercent: taxPercent,
+            taxName: taxName,
+            tax: Number(purchaseForm.tax),
+            totalAfterTax: Number(purchaseForm.totalAfterTax),
+            isCredit: purchaseForm.isCredit,
+            paymentDueDate: purchaseForm.paymentDueDate
+                ? convertLocalUTCToTimezoneUTC(
+                      purchaseForm.paymentDueDate,
+                      dateFormat,
+                      companyTimezone
+                  )
+                : null,
+            amountPaid: Number(purchaseForm.amountPaid),
+            amountDue: Number(purchaseForm.amountDue),
+            isFullyPaid: Number(purchaseForm.amountDue) === 0,
+            paymentCompletionDate:
+                Number(purchaseForm.amountDue) === 0
+                    ? moment.utc().format(dateFormat)
+                    : null,
+            receiptNumber: purchaseForm.receiptNumber
+                ? purchaseForm.receiptNumber
+                : null,
+            decimalRoundTo: decimalRoundTo,
+            items: items,
+        };
+
+
+        return await asyncHandler<AddPurchaseResponse>(() => {
+            return axios.post<ApiResponse<AddPurchaseResponse>>(
+                `${this.hostPath}/${this.addPurchasePath}`,
+                requestBody
+            );
+        });
+    };
+
+    getAllParties = async <T>({
         pageParam,
     }: {
         pageParam: {
@@ -98,7 +174,7 @@ class BillingService {
             companyId: number;
             cursor?: { partyId: number; updatedAt: string };
             query?: FilterPartiesQuery;
-            select?: [keyof ThirdParty]
+            select?: [keyof ThirdParty];
         };
     }) => {
         return await asyncHandler<T>(() => {
@@ -109,7 +185,7 @@ class BillingService {
                     companyId: pageParam.companyId,
                     cursor: pageParam?.cursor,
                     query: pageParam?.query,
-                    select: pageParam?.select
+                    select: pageParam?.select,
                 }
             );
         });

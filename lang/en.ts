@@ -139,6 +139,16 @@ export default {
     enterDiscountAmount: "enter discount amount",
     discount: "discount",
     totalAfterDiscount: "total after discount",
-    totalAfterTax: "total after tax"
+    totalAfterTax: "total after tax",
+    invoiceType: "invoice type",
+    amountPaid: "amount paid",
+    enterAmountPaid: "enter amount paid",
+    amountDue: "amount due",
+    enterAmountDue: "enter amount due",
+    paymentDueDate: "payment due date",
+    save: "save",
+    receiptNumber: "receipt number",
+    enterReceiptNumber: "enter receipt number",
+    purchaseAddedSuccessfully: "purchase added successfully"
 
 }

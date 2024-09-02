@@ -246,7 +246,7 @@ export const AddUpdateInvoiceItemValidation = Yup.object().shape({
     }),
     pricePerUnit: Yup.number().typeError("invalid price"),
 })
-export const AddPurchaseFormValidation = Yup.object().shape({
+export const InvoiceFormValidation = Yup.object().shape({
     party: Yup.object().required("party is required"),
     invoiceNumber: Yup.number().required("invoice number is required").typeError("invalid invoice number"),
     items: Yup.object().test("items", "no items added", (value) => {
@@ -255,7 +255,16 @@ export const AddPurchaseFormValidation = Yup.object().shape({
         }
         return true;
     }),
-    discount: Yup.number().nullable().typeError("invalid discount")
+    discount: Yup.number().nullable().typeError("invalid discount"),
+    isCredit: Yup.boolean(),
+    amountPaid: Yup.number().typeError("invalid amount paid").test("amountPaid", "amount paid cannot be greater than total amount", (value, context) => {
+        const totalAfterTax = Number(context?.options?.context?.totalAfterTax);
+        if(Number(value) > totalAfterTax){
+            return false;
+        }
+        return true;
+    }),
+    receiptNumber: Yup.string().nullable()
     
 })
 

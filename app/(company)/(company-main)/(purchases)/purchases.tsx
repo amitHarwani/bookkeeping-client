@@ -334,7 +334,6 @@ const Purchases = () => {
                                 <View
                                     style={commonStyles.modalEndMenuContainer}
                                 >
-                                    <Text>{JSON.stringify(errors)}</Text>
                                     <Text
                                         style={commonStyles.modalEndMenuHeading}
                                     >

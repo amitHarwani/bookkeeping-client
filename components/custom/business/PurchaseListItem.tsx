@@ -4,10 +4,11 @@ import { Purchase, ThirdParty } from "@/services/billing/billing_types";
 import { fonts } from "@/constants/fonts";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
+import { PurchaseTypeInPurchaseList } from "@/constants/types";
 
 interface PurchaseListItemProps {
-    purchase: Purchase;
-    onPress(purchase: Purchase): void;
+    purchase: PurchaseTypeInPurchaseList;
+    onPress(purchase: PurchaseTypeInPurchaseList): void;
 }
 const PurchaseListItem = ({ purchase, onPress }: PurchaseListItemProps) => {
     const country = useAppSelector((state) => state.company.country);

@@ -25,7 +25,7 @@ export interface Purchase {
     taxName: string;
     partyId: number;
     partyName: string;
-    purchaseId: bigint;
+    purchaseId: number;
     invoiceNumber: number;
     subtotal: string;
     discount: string;
@@ -39,6 +39,22 @@ export interface Purchase {
     isFullyPaid: boolean;
     paymentCompletionDate: string | null;
     receiptNumber: string | null;
+}
+export interface PurchaseItem {
+    purchaseId: number;
+    companyId: number;
+    createdAt: Date;
+    updatedAt: Date;
+    subtotal: string;
+    tax: string;
+    taxPercent: string;
+    totalAfterTax: string;
+    itemId: number;
+    itemName: string;
+    unitId: number;
+    unitName: string;
+    unitsPurchased: string;
+    pricePerUnit: string;
 }
 
 export interface FilterPartiesQuery {
@@ -110,7 +126,7 @@ export class GetAllPurchasesResponse {
         public hasNextPage: boolean,
         public nextPageCursor?: {
             updatedAt: Date;
-            purchaseId: bigint;
+            purchaseId: number;
         }
     ) {}
 }
@@ -121,7 +137,17 @@ export class GetAllPurchasesForPurchaseListResponse {
         public hasNextPage: boolean,
         public nextPageCursor?: {
             updatedAt: Date;
-            purchaseId: bigint;
+            purchaseId: number;
         }
     ) {}
+}
+
+export class AddPurchaseResponse {
+    constructor(
+        public purchase: Purchase,
+        public purchaseItems: PurchaseItem[],
+        public message: string
+    ){
+
+    }
 }

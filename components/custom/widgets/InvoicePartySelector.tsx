@@ -47,7 +47,7 @@ const InvoicePartySelector = ({
             {
                 isActive: true,
                 partyNameSearchQuery: partyNameSearched,
-                select: ["partyId", "partyName"],
+                select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays"],
             },
         ],
         queryFn: BillingService.getAllParties<GetAllPartiesForInvoicePartySelectorResponse>,
@@ -59,7 +59,7 @@ const InvoicePartySelector = ({
                 isActive: true,
                 partyNameSearchQuery: partyNameSearched,
             },
-            select: ["partyId", "partyName"],
+            select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays"],
         },
         getNextPageParam: (lastPage) => {
             if (lastPage.data.nextPageCursor) {
@@ -71,7 +71,7 @@ const InvoicePartySelector = ({
                         partyNameSearchQuery: partyNameSearched,
                     },
                     cursor: lastPage.data.nextPageCursor,
-                    select: ["partyId", "partyName"],
+                    select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays"],
                 };
             }
             return null;

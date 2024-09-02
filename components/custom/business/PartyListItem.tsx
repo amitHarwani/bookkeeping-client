@@ -3,10 +3,11 @@ import React from "react";
 import { ThirdParty } from "@/services/billing/billing_types";
 import { fonts } from "@/constants/fonts";
 import { commonStyles } from "@/utils/common_styles";
+import { PartyTypeInPartyList } from "@/constants/types";
 
 interface PartyListItemProps {
-    party: ThirdParty;
-    onPress(party: ThirdParty): void;
+    party: PartyTypeInPartyList;
+    onPress(party: PartyTypeInPartyList): void;
 }
 const PartyListItem = ({ party, onPress }: PartyListItemProps) => {
     return (
