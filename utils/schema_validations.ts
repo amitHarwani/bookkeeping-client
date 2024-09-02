@@ -254,7 +254,8 @@ export const AddPurchaseFormValidation = Yup.object().shape({
             return false;
         }
         return true;
-    })
+    }),
+    discount: Yup.number().nullable().typeError("invalid discount")
     
 })
 

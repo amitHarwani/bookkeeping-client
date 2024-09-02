@@ -24,7 +24,7 @@ class InventoryService {
     addUnitPath = "unit/add-unit";
     adjustItemPath = "item/adjust-item";
 
-    getAllItems = async ({
+    getAllItems = async <T>({
         pageParam,
     }: {
         pageParam: {
@@ -35,8 +35,8 @@ class InventoryService {
             select?: [keyof Item]
         };
     }) => {
-        return await asyncHandler<GetAllItemsResponse>(() => {
-            return axios.post<ApiResponse<GetAllItemsResponse>>(
+        return await asyncHandler<T>(() => {
+            return axios.post<ApiResponse<T>>(
                 `${this.hostPath}/${this.getAllItemsPath}`,
                 {
                     pageSize: pageParam.pageSize,

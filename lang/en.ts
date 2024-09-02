@@ -135,6 +135,10 @@ export default {
     total: "total",
     includeTax: "include tax",
     invoiceNumber: "invoice number",
-    enterInvoiceNumber: "enter invoice number"
+    enterInvoiceNumber: "enter invoice number",
+    enterDiscountAmount: "enter discount amount",
+    discount: "discount",
+    totalAfterDiscount: "total after discount",
+    totalAfterTax: "total after tax"
 
 }

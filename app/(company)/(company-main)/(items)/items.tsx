@@ -27,7 +27,7 @@ import { AppRoutes } from "@/constants/routes";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
 import { PLATFORM_FEATURES } from "@/constants/features";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
-import { FilterItemsQuery, Item } from "@/services/inventory/inventory_types";
+import { FilterItemsQuery, GetAllItemsForItemsListResponse, Item } from "@/services/inventory/inventory_types";
 import InventoryListItem from "@/components/custom/business/InventoryListItem";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
@@ -96,7 +96,7 @@ const Items = () => {
                 select: ["itemName", "unitName", "stock"],
             },
         ],
-        queryFn: InventoryService.getAllItems,
+        queryFn: InventoryService.getAllItems<GetAllItemsForItemsListResponse>,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,

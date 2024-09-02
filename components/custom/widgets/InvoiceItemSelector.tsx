@@ -8,12 +8,12 @@ import { useAppSelector } from "@/store";
 import InventoryService from "@/services/inventory/inventory_service";
 import { router } from "expo-router";
 import { capitalizeText, debounce } from "@/utils/common_utils";
-import { Item } from "@/services/inventory/inventory_types";
-import { GenericObject } from "@/constants/types";
+import { GetAllItemsForInvoiceItemSelectorResponse, Item } from "@/services/inventory/inventory_types";
+import { GenericObject, InvoiceItem, ItemTypeInInvoiceItem } from "@/constants/types";
 
 interface InvoiceItemSelectorProps {
-    value?: Item;
-    onChange(item: Item): void;
+    value?: ItemTypeInInvoiceItem;
+    onChange(item: ItemTypeInInvoiceItem): void;
     errorMessage?: string | null;
 }
 const InvoiceItemSelector = ({
@@ -27,7 +27,7 @@ const InvoiceItemSelector = ({
     );
 
     /* Selected Item */
-    const [selectedItem, setSelectedItem] = useState<Item>();
+    const [selectedItem, setSelectedItem] = useState<ItemTypeInInvoiceItem>();
 
     /* Item name searched state */
     const [itemNameSearched, setItemNameSearched] = useState("");
@@ -48,7 +48,7 @@ const InvoiceItemSelector = ({
                 select: ["itemId", "itemName", "unitId", "unitName"],
             },
         ],
-        queryFn: InventoryService.getAllItems,
+        queryFn: InventoryService.getAllItems<GetAllItemsForInvoiceItemSelectorResponse>,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,

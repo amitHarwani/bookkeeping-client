@@ -1,3 +1,5 @@
+import { ItemTypeInInvoiceItem, ItemTypeInItemsList } from "@/constants/types";
+
 export interface PriceHistoryOfCurrentStockType {
     stock: number;
     purchasePrice: number;
@@ -34,6 +36,27 @@ export class GetAllItemsResponse {
             updatedAt: Date;
         }
     ) {}
+}
+
+export class GetAllItemsForItemsListResponse {
+    constructor(
+        public items: [ItemTypeInItemsList],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            itemId: number,
+            updatedAt: Date
+        }
+    ){}
+}
+export class GetAllItemsForInvoiceItemSelectorResponse {
+    constructor(
+        public items: [ItemTypeInInvoiceItem],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            itemId: number,
+            updatedAt: Date
+        }
+    ){}
 }
 
 export class GetAllUnitsResponse {

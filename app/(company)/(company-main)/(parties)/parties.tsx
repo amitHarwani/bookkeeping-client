@@ -14,7 +14,7 @@ import { AppRoutes } from "@/constants/routes";
 import { FilterPartyForm } from "@/constants/types";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import BillingService from "@/services/billing/billing_service";
-import { FilterPartiesQuery } from "@/services/billing/billing_types";
+import { FilterPartiesQuery, GetAllPartiesForPartiesListResponse } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
@@ -81,7 +81,7 @@ const Parties = () => {
                 select: ["partyId", "partyName"],
             },
         ],
-        queryFn: BillingService.getAllParties,
+        queryFn: BillingService.getAllParties<GetAllPartiesForPartiesListResponse>,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,

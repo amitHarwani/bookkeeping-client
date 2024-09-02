@@ -48,6 +48,13 @@ export interface AddItemForm {
     priceOfCurrentStock: number | null;
 }
 
+export interface ItemTypeInItemsList {
+    itemId: number;
+    updatedAt: Date;
+    itemName: string;
+    unitName: string;
+    stock: string;
+}
 export interface FilterItemForm {
     itemType: { all: boolean; isActive: boolean };
     filterByStockLow: boolean;
@@ -70,6 +77,11 @@ export interface AdjustItemForm {
     pricePerUnit: number | null;
 }
 
+export interface PartyTypeInPartyList {
+    partyId: number;
+    partyName: string;
+    updatedAt: Date;
+}
 export interface FilterPartyForm {
     partyType: { all: boolean; isActive: boolean };
 }
@@ -91,6 +103,13 @@ export interface AddUpdatePartyTaxDetails {
     [taxId: number]: { taxId: number; registrationNumber: string };
 }
 
+export interface PurchaseTypeInPurchaseList {
+    purchaseId: bigint;
+    partyName: string;
+    invoiceNumber: number;
+    totalAfterTax: string;
+    updatedAt: Date;
+}
 export interface FilterPurchaseForm {
     party?: ThirdParty;
     purchaseType?: "ALL" | "CASH" | "CREDIT";
@@ -99,15 +118,32 @@ export interface FilterPurchaseForm {
     toTransactionDateTime?: Date;
     getOnlyOverduePayments: boolean;
 }
-export interface AddPurchaseForm {
-    party?: ThirdParty;
-    invoiceNumber?: number;
-    items: {[itemId: number]: InvoiceItem},
 
+export interface PartyTypeInInvoicePartySelector {
+    partyId: number;
+    partyName: string;
+    updatedAt: Date;
+}
+export interface AddPurchaseForm {
+    party?: PartyTypeInInvoicePartySelector;
+    invoiceNumber?: number;
+    items: { [itemId: number]: InvoiceItem };
+    discount: string;
+    subtotal: string;
+    totalAfterDiscount: string;
+    tax: string;
+    totalAfterTax: string;
 }
 
+export interface ItemTypeInInvoiceItem {
+    itemId: number;
+    itemName: string;
+    unitId: number;
+    unitName: string;
+    updatedAt: Date;
+}
 export interface InvoiceItem {
-    item?: Item;
+    item?: ItemTypeInInvoiceItem;
     units: number;
     pricePerUnit: number;
     subtotal: string;

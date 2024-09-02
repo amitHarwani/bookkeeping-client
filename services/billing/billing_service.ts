@@ -27,7 +27,7 @@ class BillingService {
     updatePartyPath = "party/update-party";
     getAllPurchasesPath = "purchase/get-all-purchases";
 
-    getAllPurchases = async ({
+    getAllPurchases = async<T> ({
         pageParam,
     }: {
         pageParam: {
@@ -76,8 +76,8 @@ class BillingService {
             };
         }
 
-        return await asyncHandler<GetAllPurchasesResponse>(async () => {
-            return axios.post<ApiResponse<GetAllPurchasesResponse>>(
+        return await asyncHandler<T>(async () => {
+            return axios.post<ApiResponse<T>>(
                 `${this.hostPath}/${this.getAllPurchasesPath}`,
                 {
                     pageSize: pageParam?.pageSize,
@@ -90,7 +90,7 @@ class BillingService {
         });
     };
 
-    getAllParties = async ({
+    getAllParties = async<T> ({
         pageParam,
     }: {
         pageParam: {
@@ -101,8 +101,8 @@ class BillingService {
             select?: [keyof ThirdParty]
         };
     }) => {
-        return await asyncHandler<GetAllPartiesResponse>(() => {
-            return axios.post<ApiResponse<GetAllPartiesResponse>>(
+        return await asyncHandler<T>(() => {
+            return axios.post<ApiResponse<T>>(
                 `${this.hostPath}/${this.getAllPartiesPath}`,
                 {
                     pageSize: pageParam.pageSize,

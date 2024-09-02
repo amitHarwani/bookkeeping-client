@@ -1,3 +1,9 @@
+import {
+    PartyTypeInInvoicePartySelector,
+    PartyTypeInPartyList,
+    PurchaseTypeInPurchaseList,
+} from "@/constants/types";
+
 export interface ThirdParty {
     companyId: number;
     countryId: number;
@@ -41,8 +47,8 @@ export interface FilterPartiesQuery {
 }
 
 export interface TaxDetailsOfThirdPartyType {
-    taxId: number,
-    registrationNumber: string
+    taxId: number;
+    registrationNumber: string;
 }
 
 export class GetAllPartiesResponse {
@@ -55,37 +61,47 @@ export class GetAllPartiesResponse {
         }
     ) {}
 }
-
-export class AddPartyResponse {
+export class GetAllPartiesForPartiesListResponse {
     constructor(
-        public party: ThirdParty,
-        public message: string
-    ){}
+        public parties: [PartyTypeInPartyList],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            partyId: number;
+            updatedAt: Date;
+        }
+    ) {}
 }
 
+export class GetAllPartiesForInvoicePartySelectorResponse {
+    constructor(
+        public parties: [PartyTypeInInvoicePartySelector],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            partyId: number;
+            updatedAt: Date;
+        }
+    ) {}
+}
+
+export class AddPartyResponse {
+    constructor(public party: ThirdParty, public message: string) {}
+}
 
 export class GetPartyResponse {
-    constructor(
-        public party: ThirdParty
-    ){
-
-    }
+    constructor(public party: ThirdParty) {}
 }
 
 export class UpdatePartyResponse {
-    constructor(
-        public party: ThirdParty,
-        public message: string
-    ){}
+    constructor(public party: ThirdParty, public message: string) {}
 }
 
 export interface FilterPurchasesQuery {
-    partyId?: number,
-    purchaseType?: "ALL" | "CASH" | "CREDIT",
-    fromTransactionDate?: string,
-    toTransactionDate?: string,
-    getOnlyOverduePayments?: boolean,
-    invoiceNumberSearchQuery?: number
+    partyId?: number;
+    purchaseType?: "ALL" | "CASH" | "CREDIT";
+    fromTransactionDate?: string;
+    toTransactionDate?: string;
+    getOnlyOverduePayments?: boolean;
+    invoiceNumberSearchQuery?: number;
 }
 
 export class GetAllPurchasesResponse {
@@ -93,10 +109,19 @@ export class GetAllPurchasesResponse {
         public purchases: Purchase[],
         public hasNextPage: boolean,
         public nextPageCursor?: {
-            updatedAt: Date,
-            purchaseId: bigint
+            updatedAt: Date;
+            purchaseId: bigint;
         }
-    ){
+    ) {}
+}
 
-    }
+export class GetAllPurchasesForPurchaseListResponse {
+    constructor(
+        public purchases: [PurchaseTypeInPurchaseList],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            updatedAt: Date;
+            purchaseId: bigint;
+        }
+    ) {}
 }

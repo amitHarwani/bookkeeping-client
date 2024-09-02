@@ -1,8 +1,8 @@
 import { i18n } from "@/app/_layout";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
-import { GenericObject } from "@/constants/types";
+import { GenericObject, PartyTypeInInvoicePartySelector } from "@/constants/types";
 import BillingService from "@/services/billing/billing_service";
-import { ThirdParty } from "@/services/billing/billing_types";
+import { GetAllPartiesForInvoicePartySelectorResponse, ThirdParty } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { capitalizeText, debounce } from "@/utils/common_utils";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -12,8 +12,8 @@ import { StyleSheet, ToastAndroid, View } from "react-native";
 import Dropdown from "../basic/Dropdown";
 
 interface InvoicePartySelectorProps {
-    value?: ThirdParty;
-    onChange(party: ThirdParty): void;
+    value?: PartyTypeInInvoicePartySelector;
+    onChange(party: PartyTypeInInvoicePartySelector): void;
     errorMessage?: string | null;
     extraContainerStyles?: Object;
 }
@@ -30,7 +30,7 @@ const InvoicePartySelector = ({
     );
 
     /* Selected party */
-    const [selectedParty, setSelectedParty] = useState<ThirdParty>();
+    const [selectedParty, setSelectedParty] = useState<PartyTypeInInvoicePartySelector>();
 
     /* Party name searched by the user */
     const [partyNameSearched, setPartyNameSearched] = useState("");
@@ -50,7 +50,7 @@ const InvoicePartySelector = ({
                 select: ["partyId", "partyName"],
             },
         ],
-        queryFn: BillingService.getAllParties,
+        queryFn: BillingService.getAllParties<GetAllPartiesForInvoicePartySelectorResponse>,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,

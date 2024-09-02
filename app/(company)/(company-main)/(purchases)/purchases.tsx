@@ -21,6 +21,7 @@ import BillingService from "@/services/billing/billing_service";
 import {
     FilterPartiesQuery,
     FilterPurchasesQuery,
+    GetAllPurchasesForPurchaseListResponse,
 } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
@@ -116,7 +117,7 @@ const Purchases = () => {
                 ],
             },
         ],
-        queryFn: BillingService.getAllPurchases,
+        queryFn: BillingService.getAllPurchases<GetAllPurchasesForPurchaseListResponse>,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,
