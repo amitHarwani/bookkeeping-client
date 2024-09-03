@@ -1,23 +1,23 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { InvoiceItem } from "@/constants/types";
+import { PurchaseInvoiceItem } from "@/constants/types";
 import MinusIcon from "@/assets/images/minus_icon.png";
 import { fonts } from "@/constants/fonts";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 
-interface InvoiceListItemProps {
-    item: InvoiceItem;
-    removeItem(item: InvoiceItem): void;
-    onInvoiceItemSelected(item: InvoiceItem): void;
+interface PurchaseInvoiceListItemProps {
+    item: PurchaseInvoiceItem;
+    removeItem(item: PurchaseInvoiceItem): void;
+    onInvoiceItemSelected(item: PurchaseInvoiceItem): void;
     isDisabled?: boolean;
 }
-const InvoiceListItem = ({
+const PurchaseInvoiceListItem = ({
     item,
     removeItem,
     onInvoiceItemSelected,
     isDisabled = false,
-}: InvoiceListItemProps) => {
+}: PurchaseInvoiceListItemProps) => {
     const companyState = useAppSelector((state) => state.company);
 
     return (
@@ -57,7 +57,7 @@ const InvoiceListItem = ({
     );
 };
 
-export default InvoiceListItem;
+export default PurchaseInvoiceListItem;
 
 const styles = StyleSheet.create({
     container: {

@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import { useAppSelector } from "@/store";
 import { getInvoiceTaxDetails } from "@/utils/tax_helper";
 import InvoiceItemSelector from "./InvoiceItemSelector";
-import { InvoiceItem } from "@/constants/types";
+import { PurchaseInvoiceItem } from "@/constants/types";
 import Input from "../basic/Input";
 import { capitalizeText } from "@/utils/common_utils";
 import RadioButton from "../basic/RadioButton";
@@ -16,10 +16,10 @@ import { fonts } from "@/constants/fonts";
 import { AddUpdateInvoiceItemValidation } from "@/utils/schema_validations";
 
 interface AddInvoiceItemProps {
-    value?: InvoiceItem;
+    value?: PurchaseInvoiceItem;
     isVisible: boolean;
     toggleVisibility(): void;
-    onInvoiceItemChange(invoiceItem: InvoiceItem): void;
+    onInvoiceItemChange(invoiceItem: PurchaseInvoiceItem): void;
 }
 const AddInvoiceItem = ({
     value,
@@ -39,7 +39,7 @@ const AddInvoiceItem = ({
     const { invoiceTaxPercent, invoiceTaxName } = getInvoiceTaxDetails();
 
     /* Initial form values */
-    const [formValues, setFormValues] = useState<InvoiceItem>({
+    const [formValues, setFormValues] = useState<PurchaseInvoiceItem>({
         item: undefined,
         units: 0,
         pricePerUnit: 0,

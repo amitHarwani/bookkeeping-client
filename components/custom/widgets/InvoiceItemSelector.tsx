@@ -9,7 +9,7 @@ import InventoryService from "@/services/inventory/inventory_service";
 import { router } from "expo-router";
 import { capitalizeText, debounce } from "@/utils/common_utils";
 import { GetAllItemsForInvoiceItemSelectorResponse, Item } from "@/services/inventory/inventory_types";
-import { GenericObject, InvoiceItem, ItemTypeInInvoiceItem } from "@/constants/types";
+import { GenericObject, ItemTypeInInvoiceItem } from "@/constants/types";
 
 interface InvoiceItemSelectorProps {
     value?: ItemTypeInInvoiceItem;

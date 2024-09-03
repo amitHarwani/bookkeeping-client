@@ -1,7 +1,7 @@
 import { i18n } from "@/app/_layout";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
-import AddUpdateInvoice from "@/components/custom/widgets/AddUpdateInvoice";
-import { InvoiceForm } from "@/constants/types";
+import AddUpdatePurchaseInvoice from "@/components/custom/widgets/AddUpdatePurchaseInvoice";
+import { PurchaseInvoiceForm } from "@/constants/types";
 import BillingService from "@/services/billing/billing_service";
 import { useAppSelector } from "@/store";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
@@ -31,7 +31,7 @@ const AddPurchase = () => {
             invoiceTaxPercent,
             invoiceTaxName,
         }: {
-            values: InvoiceForm;
+            values: PurchaseInvoiceForm;
             invoiceTaxPercent: number;
             invoiceTaxName: string;
         }) =>
@@ -47,7 +47,7 @@ const AddPurchase = () => {
 
     /* On Purchase added, call API */
     const onAddPurchase = (
-        values: InvoiceForm,
+        values: PurchaseInvoiceForm,
         invoiceTaxPercent: number,
         invoiceTaxName: string
     ) => {
@@ -87,7 +87,7 @@ const AddPurchase = () => {
         <>
             {showLoadingSpinner && <LoadingSpinnerOverlay />}
 
-            <AddUpdateInvoice
+            <AddUpdatePurchaseInvoice
                 type="PURCHASE"
                 operation="ADD"
                 onAddPurchase={onAddPurchase}

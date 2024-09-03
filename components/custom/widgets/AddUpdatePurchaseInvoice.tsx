@@ -4,16 +4,20 @@ import CustomDateTimePicker from "@/components/custom/basic/CustomDateTimePicker
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import Input from "@/components/custom/basic/Input";
 import RadioButton from "@/components/custom/basic/RadioButton";
-import InvoiceListItem from "@/components/custom/business/InvoiceListItem";
+import PurchaseInvoiceListItem from "@/components/custom/business/PurchaseInvoiceListItem";
 import AddInvoiceItem from "@/components/custom/widgets/AddInvoiceItem";
 import InvoicePartySelector from "@/components/custom/widgets/InvoicePartySelector";
-import { InvoiceForm, InvoiceItem } from "@/constants/types";
+import {
+    PurchaseInvoiceForm,
+    PurchaseInvoiceItem,
+    PartyTypeInInvoicePartySelector,
+} from "@/constants/types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText } from "@/utils/common_utils";
-import { InvoiceFormValidation } from "@/utils/schema_validations";
+import { PurchaseInvoiceFormValidation } from "@/utils/schema_validations";
 import { getInvoiceTaxDetails } from "@/utils/tax_helper";
-import { useFormik } from "formik";
+import { Formik, useFormik } from "formik";
 import React, {
     useCallback,
     useEffect,
@@ -22,28 +26,27 @@ import React, {
     useState,
 } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import LoadingSpinnerOverlay from "../basic/LoadingSpinnerOverlay";
 
-interface AddUpdateInvoiceProps {
-    type: "PURCHASE" | "SALE";
+interface AddUpdatePurchaseInvoiceProps {
     operation: "ADD" | "UPDATE";
     onAddPurchase?(
-        values: InvoiceForm,
+        values: PurchaseInvoiceForm,
         invoiceTaxPercent: number,
         invoiceTaxName: string
     ): void;
     apiErrorMessage?: string | null;
 
-    formValues?: InvoiceForm;
+    formValues?: PurchaseInvoiceForm;
     isUpdateEnabled?: boolean;
 }
-const AddUpdateInvoice = ({
-    type = "PURCHASE",
+const AddUpdatePurchaseInvoice = ({
     operation,
     onAddPurchase,
     apiErrorMessage,
     formValues,
     isUpdateEnabled,
-}: AddUpdateInvoiceProps) => {
+}: AddUpdatePurchaseInvoiceProps) => {
     /* Company State from redux */
     const companyState = useAppSelector((state) => state.company);
 
@@ -69,13 +72,13 @@ const AddUpdateInvoice = ({
             return true;
         }
         return false;
-    }, []);
+    }, [operation, isUpdateEnabled]);
 
     /* Tax Percent, and tax name on invoice */
     const { invoiceTaxPercent, invoiceTaxName } = getInvoiceTaxDetails();
 
     /* To store a selected invoice item if any */
-    const selectedInvoiceItem = useRef<InvoiceItem>();
+    const selectedInvoiceItem = useRef<PurchaseInvoiceItem>();
 
     /* Whether add invoice item modal is visible */
     const [isAddInvoiceItemModalVisibile, setIsAddInvoiceItemModalVisible] =
@@ -87,7 +90,7 @@ const AddUpdateInvoice = ({
     }, [isAddInvoiceItemModalVisibile]);
 
     /* Initial Purchase form */
-    const initialFormValues: InvoiceForm = useMemo(() => {
+    const initialFormValues: PurchaseInvoiceForm = useMemo(() => {
         if (formValues) {
             return formValues;
         }
@@ -127,29 +130,30 @@ const AddUpdateInvoice = ({
         initialValues: initialFormValues,
         onSubmit: (values) => {
             if (
-                type === "PURCHASE" &&
                 operation === "ADD" &&
                 typeof onAddPurchase === "function"
             ) {
                 onAddPurchase(values, invoiceTaxPercent, invoiceTaxName);
             }
         },
-        validationSchema: InvoiceFormValidation,
+        validationSchema: PurchaseInvoiceFormValidation,
     });
 
     /* On change of invoice item */
-    const onInvoiceItemChanged = (item: InvoiceItem) => {
+    const onInvoiceItemChanged = (item: PurchaseInvoiceItem) => {
         /* Update items field. value is stores as key value, where key is itemId and value is invoice item */
         if (item && item.item) {
             formik.setFieldTouched("items", true);
             const temp = { ...formik.values.items };
             temp[item.item?.itemId] = item;
+            calculateAggregateValues(temp, formik.values.discount);
             formik.setFieldValue("items", temp);
+
         }
     };
 
     /* On Invoice Item selected */
-    const onInvoiceItemSelected = (item: InvoiceItem) => {
+    const onInvoiceItemSelected = (item: PurchaseInvoiceItem) => {
         if (item) {
             /* Setting selectedInvoiceItem, and toggling the modal */
             selectedInvoiceItem.current = item;
@@ -158,16 +162,20 @@ const AddUpdateInvoice = ({
     };
 
     /* Remove Invoice Item, removing the item from items */
-    const removeInvoiceItemHandler = (item: InvoiceItem) => {
+    const removeInvoiceItemHandler = (item: PurchaseInvoiceItem) => {
         if (item && item.item?.itemId) {
             const temp = { ...formik.values.items };
             delete temp[item.item?.itemId];
             formik.setFieldValue("items", temp);
+            calculateAggregateValues(temp, formik.values.discount);
         }
     };
 
     /* On Change of items or discount value */
-    useEffect(() => {
+    const calculateAggregateValues = (
+        items: { [x: number]: PurchaseInvoiceItem },
+        discountVal: string
+    ) => {
         /* Aggregate values to calculate */
         let subtotal = 0;
         let discount = 0;
@@ -176,12 +184,12 @@ const AddUpdateInvoice = ({
         let totalAfterTax = 0;
 
         /* Adding Discount */
-        if (formik.values.discount && !isNaN(Number(formik.values.discount))) {
-            discount = Number(formik.values.discount);
+        if (discountVal && !isNaN(Number(discountVal))) {
+            discount = Number(discountVal);
         }
 
         /* Aggregating subtotal from all items */
-        Object.values(formik.values.items).forEach((item) => {
+        Object.values(items).forEach((item) => {
             subtotal += Number(item.subtotal);
         });
 
@@ -195,67 +203,72 @@ const AddUpdateInvoice = ({
         totalAfterTax = totalAfterDiscount + tax;
 
         /* Setting the values in the form */
-        formik.setFieldValue("subtotal", subtotal.toFixed(decimalPoints));
-        formik.setFieldValue(
-            "totalAfterDiscount",
-            totalAfterDiscount.toFixed(decimalPoints)
-        );
-        formik.setFieldValue("tax", tax.toFixed(decimalPoints));
-        formik.setFieldValue(
-            "totalAfterTax",
+        formik.values.subtotal = subtotal.toFixed(decimalPoints);
+        formik.values.totalAfterDiscount =
+            totalAfterDiscount.toFixed(decimalPoints);
+
+        formik.values.tax = tax.toFixed(decimalPoints);
+        formik.values.totalAfterTax = totalAfterTax.toFixed(decimalPoints);
+
+        calculateDefaultAmountPaid(
+            formik.values.isCredit,
             totalAfterTax.toFixed(decimalPoints)
         );
-    }, [formik.values.items, formik.values.discount]);
+    };
 
     /* On change of invoice type, or total after tax */
-    useEffect(() => {
+    const calculateDefaultAmountPaid = (
+        isCredit: boolean,
+        totalAfterTax: string
+    ) => {
         /* Cash Purchase */
-        if (formik.values.isCredit === false) {
+        if (isCredit === false) {
             /* Set amount paid to total amount due*/
-            formik.setFieldValue(
-                "amountPaid",
-                Number(formik.values.totalAfterTax)
-            );
+            formik.values.amountPaid = Number(totalAfterTax);
+            calculateAmountDue(totalAfterTax, totalAfterTax);
         } else {
             /* Credit purchase, set amount paid to 0 initially */
-            formik.setFieldValue("amountPaid", 0);
+            formik.values.amountPaid = 0;
+            calculateAmountDue("0", totalAfterTax);
         }
-    }, [formik.values.isCredit, formik.values.totalAfterTax]);
+    };
 
-    /* On change of invoice type or party details */
-    useEffect(() => {
+    /* On change of invoice type or party details or amount due */
+    const calculateDefaultPaymentDueDate = (
+        isCredit: boolean,
+        amountDue: number,
+        party?: PartyTypeInInvoicePartySelector
+    ) => {
         /* Cash transaction, or payment is complete */
-        if (
-            formik.values.isCredit === false ||
-            Number(formik.values.amountDue) === 0
-        ) {
+        if (isCredit === false || amountDue === 0) {
             /* Payment due date is null */
-            formik.setFieldValue("paymentDueDate", null);
+            formik.values.paymentDueDate = null;
         } else {
             /* Cash transaction, if party is present and payment due date is null */
-            if (formik.values.party && formik.values.paymentDueDate == null) {
+            if (party && formik.values.paymentDueDate == null) {
                 /* Calculating default due date, as todays date + default credit allowance in days for the party */
                 const dueDate = new Date();
                 dueDate.setDate(
                     dueDate.getDate() +
-                        formik.values.party
-                            ?.defaultPurchaseCreditAllowanceInDays
+                        party?.defaultPurchaseCreditAllowanceInDays
                 );
-                formik.setFieldValue("paymentDueDate", dueDate);
+                formik.values.paymentDueDate = dueDate;
             }
         }
-    }, [formik.values.isCredit, formik.values.party, formik.values.amountDue]);
+    };
 
     /* On change of amount paid, or totalAfterTax: Calculating amount due */
-    useEffect(() => {
-        if (!isNaN(Number(formik.values.amountPaid))) {
-            formik.setFieldValue(
-                "amountDue",
-                Number(formik.values.totalAfterTax) -
-                    Number(formik.values.amountPaid)
+    const calculateAmountDue = (amountPaid: string, totalAfterTax: string) => {
+        if (!isNaN(Number(amountPaid))) {
+            const amountDue = Number(totalAfterTax) - Number(amountPaid);
+            formik.values.amountDue = amountDue;
+            calculateDefaultPaymentDueDate(
+                formik.values.isCredit,
+                amountDue,
+                formik.values.party
             );
         }
-    }, [formik.values.amountPaid, formik.values.totalAfterTax]);
+    };
 
     return (
         <ScrollView style={styles.mainContainer}>
@@ -270,6 +283,16 @@ const AddUpdateInvoice = ({
                         label={i18n.t("invoiceType")}
                         onChange={(selectedType) => {
                             formik.setFieldTouched("isCredit", true);
+
+                            calculateDefaultAmountPaid(
+                                selectedType.key === "credit",
+                                formik.values.totalAfterTax
+                            );
+                            calculateDefaultPaymentDueDate(
+                                selectedType.key === "credit",
+                                formik.values.amountDue,
+                                formik.values.party
+                            );
                             if (selectedType.key === "credit") {
                                 formik.setFieldValue("isCredit", true);
                             } else {
@@ -309,6 +332,11 @@ const AddUpdateInvoice = ({
                         value={formik.values.party}
                         onChange={(party) => {
                             formik.setFieldTouched("party", true);
+                            calculateDefaultPaymentDueDate(
+                                formik.values.isCredit,
+                                formik.values.amountDue,
+                                party
+                            );
                             formik.setFieldValue("party", party);
                         }}
                         errorMessage={
@@ -335,7 +363,7 @@ const AddUpdateInvoice = ({
                     <FlatList
                         data={Object.values(formik.values.items)}
                         renderItem={({ item }) => (
-                            <InvoiceListItem
+                            <PurchaseInvoiceListItem
                                 item={item}
                                 removeItem={removeInvoiceItemHandler}
                                 onInvoiceItemSelected={onInvoiceItemSelected}
@@ -362,7 +390,13 @@ const AddUpdateInvoice = ({
                                 i18n.t("enterDiscountAmount")
                             )}
                             value={formik.values.discount.toString() || ""}
-                            onChangeText={formik.handleChange("discount")}
+                            onChangeText={(val) => {
+                                calculateAggregateValues(
+                                    formik.values.items,
+                                    val
+                                );
+                                formik.setFieldValue("discount", val);
+                            }}
                             onBlur={formik.handleBlur("discount")}
                             errorMessage={
                                 formik.touched.discount &&
@@ -394,7 +428,7 @@ const AddUpdateInvoice = ({
                                     ]}
                                 >
                                     {formik.values?.[
-                                        field as keyof InvoiceForm
+                                        field as keyof PurchaseInvoiceForm
                                     ]?.toString()}
                                 </Text>
                             </View>
@@ -406,7 +440,13 @@ const AddUpdateInvoice = ({
                                 i18n.t("enterAmountPaid")
                             )}
                             value={formik.values.amountPaid.toString()}
-                            onChangeText={formik.handleChange("amountPaid")}
+                            onChangeText={(val) => {
+                                calculateAmountDue(
+                                    val,
+                                    formik.values.totalAfterTax
+                                );
+                                formik.setFieldValue("amountPaid", val);
+                            }}
                             onBlur={formik.handleBlur("amountPaid")}
                             isDisabled={
                                 formik.values.isCredit === false ||
@@ -503,7 +543,7 @@ const AddUpdateInvoice = ({
     );
 };
 
-export default AddUpdateInvoice;
+export default AddUpdatePurchaseInvoice;
 
 const styles = StyleSheet.create({
     mainContainer: {

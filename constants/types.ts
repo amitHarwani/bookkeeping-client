@@ -125,10 +125,10 @@ export interface PartyTypeInInvoicePartySelector {
     updatedAt: Date;
     defaultPurchaseCreditAllowanceInDays: number
 }
-export interface InvoiceForm {
+export interface PurchaseInvoiceForm {
     party?: PartyTypeInInvoicePartySelector;
     invoiceNumber?: number;
-    items: { [itemId: number]: InvoiceItem };
+    items: { [itemId: number]: PurchaseInvoiceItem };
     discount: string;
     subtotal: string;
     totalAfterDiscount: string;
@@ -152,7 +152,7 @@ export interface ItemTypeInInvoiceItem {
     unitName: string;
     updatedAt: Date;
 }
-export interface InvoiceItem {
+export interface PurchaseInvoiceItem {
     item?: ItemTypeInInvoiceItem;
     units: number;
     pricePerUnit: number;

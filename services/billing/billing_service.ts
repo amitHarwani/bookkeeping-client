@@ -1,7 +1,7 @@
 import {
     AddUpdatePartyForm,
     FilterPurchaseForm,
-    InvoiceForm,
+    PurchaseInvoiceForm,
 } from "@/constants/types";
 import axios from "axios";
 import { ApiResponse } from "../api_response";
@@ -14,6 +14,7 @@ import {
     GetAllPartiesResponse,
     GetAllPurchasesResponse,
     GetPartyResponse,
+    GetPurchaseResponse,
     Purchase,
     ThirdParty,
     UpdatePartyResponse,
@@ -32,6 +33,7 @@ class BillingService {
     updatePartyPath = "party/update-party";
     getAllPurchasesPath = "purchase/get-all-purchases";
     addPurchasePath = "purchase/add-purchase";
+    getPurchasePath = "purchase/get-purchase";
 
     getAllPurchases = async <T>({
         pageParam,
@@ -96,8 +98,22 @@ class BillingService {
         });
     };
 
+    getPurchase = async (purchaseId: number, companyId: number) => {
+        return await asyncHandler<GetPurchaseResponse>(() => {
+            return axios.get<ApiResponse<GetPurchaseResponse>>(
+                `${this.hostPath}/${this.getPurchasePath}`,
+                {
+                    params: {
+                        companyId,
+                        purchaseId,
+                    },
+                }
+            );
+        });
+    };
+
     addPurchase = async (
-        purchaseForm: InvoiceForm,
+        purchaseForm: PurchaseInvoiceForm,
         companyId: number,
         companyTimezone: string,
         taxPercent: number,
@@ -156,7 +172,6 @@ class BillingService {
             decimalRoundTo: decimalRoundTo,
             items: items,
         };
-
 
         return await asyncHandler<AddPurchaseResponse>(() => {
             return axios.post<ApiResponse<AddPurchaseResponse>>(

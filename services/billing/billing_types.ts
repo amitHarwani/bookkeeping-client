@@ -29,6 +29,7 @@ export interface Purchase {
     invoiceNumber: number;
     subtotal: string;
     discount: string;
+    tax: string,
     totalAfterDiscount: string;
     taxPercent: string;
     totalAfterTax: string;
@@ -147,7 +148,12 @@ export class AddPurchaseResponse {
         public purchase: Purchase,
         public purchaseItems: PurchaseItem[],
         public message: string
-    ){
+    ) {}
+}
 
-    }
+export class GetPurchaseResponse {
+    constructor(
+        public purchase: Purchase,
+        public purchaseItems: PurchaseItem[]
+    ) {}
 }

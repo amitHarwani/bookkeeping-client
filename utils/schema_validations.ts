@@ -246,7 +246,7 @@ export const AddUpdateInvoiceItemValidation = Yup.object().shape({
     }),
     pricePerUnit: Yup.number().typeError("invalid price"),
 })
-export const InvoiceFormValidation = Yup.object().shape({
+export const PurchaseInvoiceFormValidation = Yup.object().shape({
     party: Yup.object().required("party is required"),
     invoiceNumber: Yup.number().required("invoice number is required").typeError("invalid invoice number"),
     items: Yup.object().test("items", "no items added", (value) => {
