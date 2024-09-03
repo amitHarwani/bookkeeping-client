@@ -16,6 +16,7 @@ interface InvoicePartySelectorProps {
     onChange(party: PartyTypeInInvoicePartySelector): void;
     errorMessage?: string | null;
     extraContainerStyles?: Object;
+    isDisabled?: boolean
 }
 
 const InvoicePartySelector = ({
@@ -23,6 +24,7 @@ const InvoicePartySelector = ({
     onChange,
     errorMessage,
     extraContainerStyles,
+    isDisabled = false
 }: InvoicePartySelectorProps) => {
     /* Selected company */
     const selectedCompany = useAppSelector(
@@ -139,6 +141,7 @@ const InvoicePartySelector = ({
             extraContainerStyles={
                 extraContainerStyles ? extraContainerStyles : undefined
             }
+            isDisabled={isDisabled}
         />
     );
 };

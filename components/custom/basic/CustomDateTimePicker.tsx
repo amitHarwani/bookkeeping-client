@@ -14,6 +14,7 @@ interface CustomDateTimePickerProps {
     mode: "date" | "time" | "datetime";
     errorMessage?: string | null;
     extraContainerStyles?: Object;
+    isDisabled?: boolean;
 }
 const CustomDateTimePicker = ({
     label,
@@ -22,6 +23,7 @@ const CustomDateTimePicker = ({
     mode,
     errorMessage,
     extraContainerStyles,
+    isDisabled = false
 }: CustomDateTimePickerProps) => {
     const [isDateTimePickerShown, setIsDateTimePickerShown] = useState(false);
 
@@ -90,6 +92,7 @@ const CustomDateTimePicker = ({
                     styles.dateTimeInput,
                     !!errorMessage && styles.errorInput,
                 ]}
+                disabled={isDisabled}
                 onPress={() => setIsDateTimePickerShown(true)}
             >
                 <Text>{valueShown}</Text>

@@ -10,17 +10,19 @@ interface InvoiceListItemProps {
     item: InvoiceItem;
     removeItem(item: InvoiceItem): void;
     onInvoiceItemSelected(item: InvoiceItem): void;
+    isDisabled?: boolean;
 }
 const InvoiceListItem = ({
     item,
     removeItem,
     onInvoiceItemSelected,
+    isDisabled = false,
 }: InvoiceListItemProps) => {
     const companyState = useAppSelector((state) => state.company);
 
     return (
         <View style={styles.container}>
-            <Pressable onPress={() => removeItem(item)}>
+            <Pressable onPress={() => removeItem(item)} disabled={isDisabled}>
                 <Image
                     source={MinusIcon}
                     style={styles.minusIcon}
@@ -30,6 +32,7 @@ const InvoiceListItem = ({
             <Pressable
                 style={styles.itemDetailsContainer}
                 onPress={() => onInvoiceItemSelected(item)}
+                disabled={isDisabled}
             >
                 <View>
                     <Text style={[commonStyles.textSmallBold]}>
