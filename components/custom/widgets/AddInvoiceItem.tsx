@@ -46,6 +46,7 @@ const AddInvoiceItem = ({
         subtotal: "",
         tax: "",
         totalAfterTax: "",
+        taxPercent: invoiceTaxPercent
     });
 
     /* Formik initialization */

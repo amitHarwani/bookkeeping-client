@@ -40,17 +40,35 @@ export const convertLocalUTCToTimezoneUTC = (
     format: string,
     timezone: string
 ) => {
-    const localDateTime = moment.utc(localUTCDate).local().format(format);
+    /**
+     * moment.tz(..., String): Does parsing in given timezone, It says the passed date string is in the timezone passed
+     * moment().tz(string): Converts to the provided timezone
+     */
+    /* Local Date Passed, formatted to YYYY-MM-DD HH:mm:ss*/
+    const localDateTime = moment(localUTCDate).format(format);
 
-    /* Converting Local (System Date Time Format) to location timezone */
-    const timezonedDateTime = momentTimezone.tz(
-        localDateTime,
-        format,
-        timezone
-    );
+    /* Setting to the timezone passed (parsing) (As the date entered by the user is in the companies timezone)*/
+    const converted = momentTimezone.tz(localDateTime, timezone);
 
-    /* Finally Converting to utc */
-    const timezonedUTC = timezonedDateTime.utc().format(format);
+    /* Converting to UTC, and formatting */
+    return converted.tz("UTC").format(format); // Returning UTC based on the timezone passed.
+};
 
-    return timezonedUTC;
+export const convertUTCStringToTimezonedDate = (
+    dateTimeString: string,
+    format: string,
+    timezone: string
+) => {
+    const timezonedDate = momentTimezone
+        .tz(dateTimeString, format, "UTC")
+        .tz(timezone)
+        .toDate();
+
+    return timezonedDate;
+};
+export const setTimeToEmpty = (date: Date) => {
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    return date;
 };

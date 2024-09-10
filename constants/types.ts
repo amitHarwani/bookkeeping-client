@@ -134,6 +134,8 @@ export interface PurchaseInvoiceForm {
     totalAfterDiscount: string;
     tax: string;
     totalAfterTax: string;
+    taxPercent: number,
+    taxName: string,
     isCredit: boolean,
 
     paymentDueDate: Date | null,
@@ -159,4 +161,5 @@ export interface PurchaseInvoiceItem {
     subtotal: string;
     tax: string;
     totalAfterTax: string;
+    taxPercent: number
 }

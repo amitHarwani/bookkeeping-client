@@ -151,6 +151,7 @@ export default {
     enterReceiptNumber: "enter receipt number",
     purchaseAddedSuccessfully: "purchase added successfully",
     errorFetchingDetails: "error fetching details",
-    purchase: "purchase"
+    purchase: "purchase",
+    purchaseUpdatedSuccessfully: "purchase updated successfully"
 
 }

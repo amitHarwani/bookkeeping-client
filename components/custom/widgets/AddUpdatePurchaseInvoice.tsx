@@ -30,11 +30,7 @@ import LoadingSpinnerOverlay from "../basic/LoadingSpinnerOverlay";
 
 interface AddUpdatePurchaseInvoiceProps {
     operation: "ADD" | "UPDATE";
-    onAddPurchase?(
-        values: PurchaseInvoiceForm,
-        invoiceTaxPercent: number,
-        invoiceTaxName: string
-    ): void;
+    onAddUpdatePurchase(values: PurchaseInvoiceForm): void;
     apiErrorMessage?: string | null;
 
     formValues?: PurchaseInvoiceForm;
@@ -42,7 +38,7 @@ interface AddUpdatePurchaseInvoiceProps {
 }
 const AddUpdatePurchaseInvoice = ({
     operation,
-    onAddPurchase,
+    onAddUpdatePurchase,
     apiErrorMessage,
     formValues,
     isUpdateEnabled,
@@ -110,6 +106,8 @@ const AddUpdatePurchaseInvoice = ({
             amountPaid: 0,
             isFullyPaid: false,
             receiptNumber: null,
+            taxPercent: invoiceTaxPercent,
+            taxName: invoiceTaxName,
         };
     }, [formValues]);
 
@@ -129,12 +127,7 @@ const AddUpdatePurchaseInvoice = ({
     const formik = useFormik({
         initialValues: initialFormValues,
         onSubmit: (values) => {
-            if (
-                operation === "ADD" &&
-                typeof onAddPurchase === "function"
-            ) {
-                onAddPurchase(values, invoiceTaxPercent, invoiceTaxName);
-            }
+            onAddUpdatePurchase(values);
         },
         validationSchema: PurchaseInvoiceFormValidation,
     });
@@ -148,7 +141,6 @@ const AddUpdatePurchaseInvoice = ({
             temp[item.item?.itemId] = item;
             calculateAggregateValues(temp, formik.values.discount);
             formik.setFieldValue("items", temp);
-
         }
     };
 
@@ -197,7 +189,7 @@ const AddUpdatePurchaseInvoice = ({
         totalAfterDiscount = subtotal - discount;
 
         /* Applyting Tax */
-        tax = totalAfterDiscount * (invoiceTaxPercent / 100);
+        tax = totalAfterDiscount * (formik.values.taxPercent / 100);
 
         /* Total after tax */
         totalAfterTax = totalAfterDiscount + tax;
@@ -418,7 +410,9 @@ const AddUpdatePurchaseInvoice = ({
                                     ]}
                                 >
                                     {field === "tax"
-                                        ? `${invoiceTaxName.toUpperCase()} (${invoiceTaxPercent}%)`
+                                        ? `${formik.values.taxName.toUpperCase()} (${
+                                              formik.values.taxPercent
+                                          }%)`
                                         : i18n.t(field)}
                                 </Text>
                                 <Text

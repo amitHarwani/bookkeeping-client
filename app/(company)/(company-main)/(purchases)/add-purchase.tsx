@@ -26,37 +26,14 @@ const AddPurchase = () => {
 
     /* Add Purchase mutation */
     const addPurchaseMutation = useMutation({
-        mutationFn: ({
-            values,
-            invoiceTaxPercent,
-            invoiceTaxName,
-        }: {
-            values: PurchaseInvoiceForm;
-            invoiceTaxPercent: number;
-            invoiceTaxName: string;
-        }) =>
+        mutationFn: (values: PurchaseInvoiceForm) =>
             BillingService.addPurchase(
                 values,
                 selectedCompany?.companyId as number,
                 companyState.country?.timezone as string,
-                invoiceTaxPercent,
-                invoiceTaxName,
                 decimalPoints
             ),
     });
-
-    /* On Purchase added, call API */
-    const onAddPurchase = (
-        values: PurchaseInvoiceForm,
-        invoiceTaxPercent: number,
-        invoiceTaxName: string
-    ) => {
-        addPurchaseMutation.mutate({
-            values,
-            invoiceTaxPercent,
-            invoiceTaxName,
-        });
-    };
 
     /* Show loading spinner when purchase is being added */
     const showLoadingSpinner = useMemo(() => {
@@ -88,9 +65,10 @@ const AddPurchase = () => {
             {showLoadingSpinner && <LoadingSpinnerOverlay />}
 
             <AddUpdatePurchaseInvoice
-                type="PURCHASE"
                 operation="ADD"
-                onAddPurchase={onAddPurchase}
+                onAddUpdatePurchase={(values) =>
+                    addPurchaseMutation.mutate(values)
+                }
                 apiErrorMessage={apiErrorMessage}
             />
         </>

@@ -9,11 +9,11 @@ import {
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useAppSelector } from "@/store";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import billing_service from "@/services/billing/billing_service";
-import { capitalizeText } from "@/utils/common_utils";
-import { i18n } from "@/app/_layout";
+import { capitalizeText, convertUTCStringToTimezonedDate, getApiErrorMessage } from "@/utils/common_utils";
+import { i18n, queryClient } from "@/app/_layout";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
@@ -23,8 +23,16 @@ import { commonStyles } from "@/utils/common_styles";
 import { PurchaseInvoiceForm, PurchaseInvoiceItem } from "@/constants/types";
 import moment from "moment";
 import AddUpdatePurchaseInvoice from "@/components/custom/widgets/AddUpdatePurchaseInvoice";
+import { PurchaseItem } from "@/services/billing/billing_types";
+import { dateTimeFormat24hr } from "@/constants/datetimes";
 
 const GetPurchase = () => {
+    /* Company State */
+    const companyState = useAppSelector((state) => state.company);
+
+    const timezone = useMemo(() => {return companyState.country?.timezone}, [companyState])
+
+    /* Selected company */
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
     );
@@ -32,20 +40,25 @@ const GetPurchase = () => {
     const navigation = useNavigation();
     const params = useLocalSearchParams();
 
+    /* Purchase ID from params */
     const purchaseId = useMemo(() => {
         return Number(params.purchaseId);
     }, []);
 
+    /* edit enabled state */
     const [isEditEnabled, setIsEditEnabled] = useState(false);
 
+    /* Toggle Edit */
     const toggleEdit = useCallback(() => {
         setIsEditEnabled((prev) => !prev);
     }, [isEditEnabled]);
 
+    /* Fetching Purchase Details */
     const {
         isFetching: fetchingPurchaseDetails,
         data: purchaseDetails,
         error: errorFetchingPurchaseDetails,
+        refetch: fetchPurchaseDetails,
     } = useQuery({
         queryKey: [
             ReactQueryKeys.getPurchase,
@@ -59,6 +72,7 @@ const GetPurchase = () => {
             ),
     });
 
+    /* To fetch party details */
     const {
         isFetching: fetchingPartyDetails,
         data: partyDetails,
@@ -75,6 +89,19 @@ const GetPurchase = () => {
                 selectedCompany?.companyId as number
             ),
         enabled: false,
+    });
+
+    /* Mutation To Update Purchase Details */
+    const updatePurchaseMutation = useMutation({
+        mutationFn: (values: PurchaseInvoiceForm) =>
+            billing_service.updatePurchase(
+                purchaseDetails?.data.purchase.purchaseId as number,
+                purchaseDetails?.data.purchaseItems as PurchaseItem[],
+                values,
+                selectedCompany?.companyId as number,
+                companyState.country?.timezone as string,
+                selectedCompany?.decimalRoundTo as number
+            ),
     });
 
     /* Setting the header for the page */
@@ -107,18 +134,28 @@ const GetPurchase = () => {
         });
     }, [navigation, purchaseDetails, isEditEnabled]);
 
+    /* Invoice form values from purchase and party details fetched */
     const invoiceFormValues: PurchaseInvoiceForm | undefined = useMemo(() => {
+        /* If purchase and party details are fetched */
         if (
             purchaseDetails &&
             purchaseDetails.success &&
             partyDetails &&
             partyDetails.success
         ) {
+            /* Purchase Data */
             const purchaseData = purchaseDetails.data.purchase;
+
+            /* Purchase Items */
             const purchaseItems = purchaseDetails.data.purchaseItems;
+
+            /* Party */
             const partyInfo = partyDetails.data.party;
 
+            /* PurchaseInvoiceItem */
             let itemsFormData: { [itemId: number]: PurchaseInvoiceItem } = {};
+
+            /* For each purchase item */
             purchaseItems.forEach((item) => {
                 const itemId = item.itemId;
                 itemsFormData[itemId] = {
@@ -134,6 +171,7 @@ const GetPurchase = () => {
                     subtotal: item.subtotal,
                     tax: item.tax,
                     totalAfterTax: item.totalAfterTax,
+                    taxPercent: Number(item.taxPercent),
                 };
             });
 
@@ -151,13 +189,15 @@ const GetPurchase = () => {
                 discount: purchaseData.discount,
                 subtotal: purchaseData.subtotal,
                 tax: purchaseData.tax,
+                taxPercent: Number(purchaseData.taxPercent),
+                taxName: purchaseData.taxName,
                 totalAfterDiscount: purchaseData.totalAfterDiscount,
                 totalAfterTax: purchaseData.totalAfterTax,
                 paymentCompletionDate: purchaseData.paymentCompletionDate
-                    ? moment(purchaseData.paymentCompletionDate).toDate()
+                    ? convertUTCStringToTimezonedDate(purchaseData.paymentCompletionDate, dateTimeFormat24hr, timezone as string)
                     : null,
                 paymentDueDate: purchaseData.paymentDueDate
-                    ? moment(purchaseData.paymentDueDate).toDate()
+                    ? convertUTCStringToTimezonedDate(purchaseData.paymentDueDate, dateTimeFormat24hr, timezone as string)
                     : null,
                 isFullyPaid: purchaseData.isFullyPaid,
                 isCredit: purchaseData.isCredit,
@@ -168,16 +208,39 @@ const GetPurchase = () => {
         return undefined;
     }, [purchaseDetails, partyDetails]);
 
+    /* Fetch party details once purchaseDetails are fetched */
     useEffect(() => {
         if (purchaseDetails && purchaseDetails.success && !partyDetails) {
             fetchPartyDetails();
         }
     }, [purchaseDetails]);
 
-    const showLoadingSpinner = useMemo(() => {
-        return fetchingPurchaseDetails || fetchingPartyDetails ? true : false;
-    }, [fetchingPurchaseDetails, fetchingPartyDetails]);
+    /* If update is successful, fetchPurchaseDetails again, and toggle edit */
+    useEffect(() => {
+        if (
+            updatePurchaseMutation.isSuccess &&
+            updatePurchaseMutation.data.success
+        ) {
+            ToastAndroid.show(capitalizeText(i18n.t("purchaseUpdatedSuccessfully")), ToastAndroid.LONG);
+            fetchPurchaseDetails();
+            toggleEdit();
+        }
+    }, [updatePurchaseMutation.isSuccess]);
 
+    /* Loading spinner visibility */
+    const showLoadingSpinner = useMemo(() => {
+        return fetchingPurchaseDetails ||
+            fetchingPartyDetails ||
+            updatePurchaseMutation.isPending
+            ? true
+            : false;
+    }, [
+        fetchingPurchaseDetails,
+        fetchingPartyDetails,
+        updatePurchaseMutation.isPending,
+    ]);
+
+    /* Error fetching purchase or party details */
     useEffect(() => {
         let message;
         if (errorFetchingPurchaseDetails || errorFetchingPartyDetails) {
@@ -201,6 +264,12 @@ const GetPurchase = () => {
                     operation="UPDATE"
                     formValues={invoiceFormValues}
                     isUpdateEnabled={isEditEnabled}
+                    apiErrorMessage={
+                        updatePurchaseMutation.error
+                            ? getApiErrorMessage(updatePurchaseMutation.error)
+                            : null
+                    }
+                    onAddUpdatePurchase={(values) => updatePurchaseMutation.mutate(values)}
                 />
             )}
         </>

@@ -143,7 +143,7 @@ export class GetAllPurchasesForPurchaseListResponse {
     ) {}
 }
 
-export class AddPurchaseResponse {
+export class AddUpdatePurchaseResponse {
     constructor(
         public purchase: Purchase,
         public purchaseItems: PurchaseItem[],

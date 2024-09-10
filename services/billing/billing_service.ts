@@ -1,29 +1,27 @@
+import { dateFormat, dateTimeFormat24hr } from "@/constants/datetimes";
 import {
     AddUpdatePartyForm,
     FilterPurchaseForm,
     PurchaseInvoiceForm,
 } from "@/constants/types";
+import { convertLocalUTCToTimezoneUTC, setTimeToEmpty } from "@/utils/common_utils";
 import axios from "axios";
+import moment from "moment";
 import { ApiResponse } from "../api_response";
 import { asyncHandler } from "../async_handler";
+import { Country } from "../sysadmin/sysadmin_types";
 import {
     AddPartyResponse,
-    AddPurchaseResponse,
+    AddUpdatePurchaseResponse,
     FilterPartiesQuery,
     FilterPurchasesQuery,
-    GetAllPartiesResponse,
-    GetAllPurchasesResponse,
     GetPartyResponse,
     GetPurchaseResponse,
     Purchase,
+    PurchaseItem,
     ThirdParty,
-    UpdatePartyResponse,
+    UpdatePartyResponse
 } from "./billing_types";
-import moment from "moment";
-import momentTimezone from "moment-timezone";
-import { dateFormat, dateTimeFormat24hr } from "@/constants/datetimes";
-import { Country } from "../sysadmin/sysadmin_types";
-import { convertLocalUTCToTimezoneUTC } from "@/utils/common_utils";
 
 class BillingService {
     hostPath = process.env.EXPO_PUBLIC_BILLING_SERVICE;
@@ -34,6 +32,7 @@ class BillingService {
     getAllPurchasesPath = "purchase/get-all-purchases";
     addPurchasePath = "purchase/add-purchase";
     getPurchasePath = "purchase/get-purchase";
+    updatePurchasePath = "purchase/update-purchase";
 
     getAllPurchases = async <T>({
         pageParam,
@@ -116,8 +115,6 @@ class BillingService {
         purchaseForm: PurchaseInvoiceForm,
         companyId: number,
         companyTimezone: string,
-        taxPercent: number,
-        taxName: string,
         decimalRoundTo: number
     ) => {
         let items: any = [];
@@ -134,10 +131,18 @@ class BillingService {
                 pricePerUnit: Number(item.pricePerUnit),
                 subtotal: Number(item.subtotal),
                 tax: Number(item.tax),
-                taxPercent: taxPercent,
+                taxPercent: item.taxPercent,
                 totalAfterTax: Number(item.totalAfterTax),
             });
         });
+
+        if(purchaseForm.paymentDueDate){
+            purchaseForm.paymentDueDate = setTimeToEmpty(purchaseForm.paymentDueDate);
+        }
+        if(purchaseForm.paymentCompletionDate){
+            purchaseForm.paymentCompletionDate = setTimeToEmpty(purchaseForm.paymentCompletionDate);
+        }
+
         let requestBody;
         requestBody = {
             invoiceNumber: Number(purchaseForm.invoiceNumber),
@@ -147,15 +152,15 @@ class BillingService {
             subtotal: Number(purchaseForm.subtotal),
             discount: Number(purchaseForm.discount),
             totalAfterDiscount: Number(purchaseForm.totalAfterDiscount),
-            taxPercent: taxPercent,
-            taxName: taxName,
+            taxPercent: purchaseForm.taxPercent,
+            taxName: purchaseForm.taxName,
             tax: Number(purchaseForm.tax),
             totalAfterTax: Number(purchaseForm.totalAfterTax),
             isCredit: purchaseForm.isCredit,
             paymentDueDate: purchaseForm.paymentDueDate
                 ? convertLocalUTCToTimezoneUTC(
                       purchaseForm.paymentDueDate,
-                      dateFormat,
+                      dateTimeFormat24hr,
                       companyTimezone
                   )
                 : null,
@@ -164,7 +169,7 @@ class BillingService {
             isFullyPaid: Number(purchaseForm.amountDue) === 0,
             paymentCompletionDate:
                 Number(purchaseForm.amountDue) === 0
-                    ? moment.utc().format(dateFormat)
+                    ? moment.utc().format(dateTimeFormat24hr)
                     : null,
             receiptNumber: purchaseForm.receiptNumber
                 ? purchaseForm.receiptNumber
@@ -173,9 +178,89 @@ class BillingService {
             items: items,
         };
 
-        return await asyncHandler<AddPurchaseResponse>(() => {
-            return axios.post<ApiResponse<AddPurchaseResponse>>(
+        return await asyncHandler<AddUpdatePurchaseResponse>(() => {
+            return axios.post<ApiResponse<AddUpdatePurchaseResponse>>(
                 `${this.hostPath}/${this.addPurchasePath}`,
+                requestBody
+            );
+        });
+    };
+
+    updatePurchase = async (
+        purchaseId: number,
+        oldPurchaseItems: PurchaseItem[],
+        purchaseForm: PurchaseInvoiceForm,
+        companyId: number,
+        companyTimezone: string,
+        decimalRoundTo: number
+    ) => {
+        let items: any = [];
+
+        /* Purchase Items req body   */
+        Object.values(purchaseForm.items).forEach((item) => {
+            items.push({
+                itemId: item.item?.itemId,
+                itemName: item.item?.itemName,
+                companyId: companyId,
+                unitId: item.item?.unitId,
+                unitName: item.item?.unitName,
+                unitsPurchased: Number(item.units),
+                pricePerUnit: Number(item.pricePerUnit),
+                subtotal: Number(item.subtotal),
+                tax: Number(item.tax),
+                taxPercent: item.taxPercent,
+                totalAfterTax: Number(item.totalAfterTax),
+            });
+        });
+
+        
+        if(purchaseForm.paymentDueDate){
+            purchaseForm.paymentDueDate = setTimeToEmpty(purchaseForm.paymentDueDate);
+        }
+        if(purchaseForm.paymentCompletionDate){
+            purchaseForm.paymentCompletionDate = setTimeToEmpty(purchaseForm.paymentCompletionDate);
+        }
+
+        let requestBody;
+        requestBody = {
+            purchaseId: purchaseId,
+            invoiceNumber: Number(purchaseForm.invoiceNumber),
+            companyId: companyId,
+            partyId: purchaseForm.party?.partyId,
+            partyName: purchaseForm.party?.partyName,
+            subtotal: Number(purchaseForm.subtotal),
+            discount: Number(purchaseForm.discount),
+            totalAfterDiscount: Number(purchaseForm.totalAfterDiscount),
+            taxPercent: purchaseForm.taxPercent,
+            taxName: purchaseForm.taxName,
+            tax: Number(purchaseForm.tax),
+            totalAfterTax: Number(purchaseForm.totalAfterTax),
+            isCredit: purchaseForm.isCredit,
+            paymentDueDate: purchaseForm.paymentDueDate
+                ? convertLocalUTCToTimezoneUTC(
+                      purchaseForm.paymentDueDate,
+                      dateTimeFormat24hr,
+                      companyTimezone
+                  )
+                : null,
+            amountPaid: Number(purchaseForm.amountPaid),
+            amountDue: Number(purchaseForm.amountDue),
+            isFullyPaid: Number(purchaseForm.amountDue) === 0,
+            paymentCompletionDate:
+                Number(purchaseForm.amountDue) === 0
+                    ? moment.utc().format(dateTimeFormat24hr)
+                    : null,
+            receiptNumber: purchaseForm.receiptNumber
+                ? purchaseForm.receiptNumber
+                : null,
+            decimalRoundTo: decimalRoundTo,
+            items: items,
+            oldItems: oldPurchaseItems
+        };
+
+        return await asyncHandler<AddUpdatePurchaseResponse>(() => {
+            return axios.put<ApiResponse<AddUpdatePurchaseResponse>>(
+                `${this.hostPath}/${this.updatePurchasePath}`,
                 requestBody
             );
         });
