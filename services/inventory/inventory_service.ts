@@ -102,6 +102,7 @@ class InventoryService {
                                       purchasePrice: Number(
                                           itemForm.priceOfCurrentStock
                                       ),
+                                      purchaseId: null
                                   },
                               ]
                             : null,
