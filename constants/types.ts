@@ -110,7 +110,24 @@ export interface PurchaseTypeInPurchaseList {
     totalAfterTax: string;
     updatedAt: Date;
 }
+export interface SaleTypeInSalesList {
+    saleId: number;
+    partyName: string | null;
+    isNoPartyBill: boolean,
+    invoiceNumber: number;
+    totalAfterTax: string;
+    updatedAt: Date;
+}
 export interface FilterPurchaseForm {
+    party?: ThirdParty;
+    purchaseType?: "ALL" | "CASH" | "CREDIT";
+    filterByDate?: boolean;
+    fromTransactionDateTime?: Date;
+    toTransactionDateTime?: Date;
+    getOnlyOverduePayments: boolean;
+}
+
+export interface FilterSalesForm {
     party?: ThirdParty;
     purchaseType?: "ALL" | "CASH" | "CREDIT";
     filterByDate?: boolean;
@@ -124,6 +141,7 @@ export interface PartyTypeInInvoicePartySelector {
     partyName: string;
     updatedAt: Date;
     defaultPurchaseCreditAllowanceInDays: number
+    defaultSaleCreditAllowanceInDays: number
 }
 export interface PurchaseInvoiceForm {
     createdAt: Date,
@@ -148,6 +166,32 @@ export interface PurchaseInvoiceForm {
     receiptNumber: string | null
 }
 
+export interface SaleInvoiceForm {
+    createdAt: Date,
+    isNoPartyBill: boolean,
+    party: PartyTypeInInvoicePartySelector | null;
+    doneBy: string,
+    autogenerateInvoice: boolean,
+    invoiceNumber: number | null;
+    quotationNumber: number | null;
+    items: { [itemId: number]: SaleInvoiceItem };
+    discount: string;
+    subtotal: string;
+    totalAfterDiscount: string;
+    tax: string;
+    totalAfterTax: string;
+    taxPercent: number,
+    taxName: string,
+    isCredit: boolean,
+
+    paymentDueDate: Date | null,
+    amountPaid: number,
+    amountDue: number,
+
+    paymentCompletionDate: Date | null,
+    isFullyPaid: boolean,
+}
+
 export interface ItemTypeInInvoiceItem {
     itemId: number;
     itemName: string;
@@ -164,3 +208,14 @@ export interface PurchaseInvoiceItem {
     totalAfterTax: string;
     taxPercent: number
 }
+
+export interface SaleInvoiceItem {
+    item?: ItemTypeInInvoiceItem;
+    units: number;
+    pricePerUnit: number;
+    subtotal: string;
+    tax: string;
+    totalAfterTax: string;
+    taxPercent: number
+}
+

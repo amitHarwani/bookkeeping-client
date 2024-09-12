@@ -8,16 +8,16 @@ import Input from "@/components/custom/basic/Input";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import RadioButton from "@/components/custom/basic/RadioButton";
 import ListEmptyComponent from "@/components/custom/business/ListEmptyComponent";
-import PurchaseListItem from "@/components/custom/business/PurchaseListItem";
+import SaleListItem from "@/components/custom/business/SaleListItem";
 import InvoicePartySelector from "@/components/custom/widgets/InvoicePartySelector";
 import { PLATFORM_FEATURES } from "@/constants/features";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import { AppRoutes } from "@/constants/routes";
-import { FilterPurchaseForm } from "@/constants/types";
+import { FilterSalesForm } from "@/constants/types";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import BillingService from "@/services/billing/billing_service";
 import {
-    GetAllPurchasesForPurchaseListResponse
+    GetAllSalesForSalesListResponse
 } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
@@ -27,7 +27,9 @@ import {
     getDateAfterSubtracting,
 } from "@/utils/common_utils";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
-import { FilterPurchaseFormValidation } from "@/utils/schema_validations";
+import {
+    FilterSaleFormValidation
+} from "@/utils/schema_validations";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Href, router } from "expo-router";
 import { Formik } from "formik";
@@ -41,7 +43,7 @@ import {
     View,
 } from "react-native";
 
-const Purchases = () => {
+const Sales = () => {
     /* Selected company from redux */
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
@@ -65,7 +67,7 @@ const Purchases = () => {
     );
 
     /* Current state of filters */
-    const [filtersState, setFiltersState] = useState<FilterPurchaseForm>({
+    const [filtersState, setFiltersState] = useState<FilterSalesForm>({
         getOnlyOverduePayments: false,
         purchaseType: "ALL",
         filterByDate: false,
@@ -88,32 +90,35 @@ const Purchases = () => {
         setIsFiltersModalShown((prev) => !prev);
     }, [isFiltersModalShown]);
 
-    /* Use Infinite query to get purchases by filters and search query  */
+    /* Use Infinite query to get sales by filters and search query  */
     const {
-        data: purchasesData,
-        error: errorFetchingPurchases,
-        fetchNextPage: fetctNextPageOfPurchases,
+        data: salesData,
+        error: errorFetchingSales,
+        fetchNextPage: fetctNextPageOfSales,
         hasNextPage,
         isFetchingNextPage,
         isFetching,
         isPending,
-        refetch: refetchPurchases,
+        refetch: refetchSales,
     } = useInfiniteQuery({
         queryKey: [
-            ReactQueryKeys.purchases,
+            ReactQueryKeys.sales,
             selectedCompany?.companyId,
             {
                 ...filtersState,
                 invoiceNumberSearchQuery: searchQuery,
                 select: [
-                    "purchaseId",
+                    "saleId",
                     "partyName",
                     "invoiceNumber",
                     "totalAfterTax",
+                    "isNoPartyBill",
+                    "updatedAt",
                 ],
             },
         ],
-        queryFn: BillingService.getAllPurchases<GetAllPurchasesForPurchaseListResponse>,
+        queryFn:
+            BillingService.getAllSales<GetAllSalesForSalesListResponse>,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,
@@ -122,10 +127,12 @@ const Purchases = () => {
             countryDetails: companyState.country,
             invoiceNumberSearchQuery: Number(searchQuery),
             select: [
-                "purchaseId",
+                "saleId",
                 "partyName",
                 "invoiceNumber",
                 "totalAfterTax",
+                "isNoPartyBill",
+                "updatedAt",
             ],
         },
         getNextPageParam: (lastPage, pages) => {
@@ -138,10 +145,12 @@ const Purchases = () => {
                     countryDetails: companyState.country,
                     invoiceNumberSearchQuery: Number(searchQuery),
                     select: [
-                        "purchaseId",
+                        "saleId",
                         "partyName",
                         "invoiceNumber",
                         "totalAfterTax",
+                        "isNoPartyBill",
+                        "updatedAt",
                     ],
                 };
             }
@@ -150,8 +159,8 @@ const Purchases = () => {
         enabled: false,
     });
 
-    /* Refetch Purchases when the screen comes back to focus */
-    useRefreshOnFocus(refetchPurchases);
+    /* Refetch Sales when the screen comes back to focus */
+    useRefreshOnFocus(refetchSales);
 
     /* Search input change handler */
     const searchInputChangeHandler = (text: string) => {
@@ -162,12 +171,12 @@ const Purchases = () => {
     const loadMorePagesHandler = () => {
         /* If next page is there, fetch */
         if (hasNextPage) {
-            fetctNextPageOfPurchases();
+            fetctNextPageOfSales();
         }
     };
 
     /* Filter form submit handler */
-    const filterFormSubmitHandler = (values: FilterPurchaseForm) => {
+    const filterFormSubmitHandler = (values: FilterSalesForm) => {
         /* Setting the filters state */
         setFiltersState({
             party: values?.party,
@@ -206,8 +215,8 @@ const Purchases = () => {
     useEffect(() => {
         /* If fetching is not in progress */
         if (!isFetching) {
-            /* fetch purchases  */
-            refetchPurchases();
+            /* fetch sales  */
+            refetchSales();
         }
     }, [filtersState, searchQuery]);
 
@@ -218,10 +227,10 @@ const Purchases = () => {
 
     /* Error message from API */
     const apiErrorMessage = useMemo(() => {
-        if (errorFetchingPurchases) {
-            return getApiErrorMessage(errorFetchingPurchases);
+        if (errorFetchingSales) {
+            return getApiErrorMessage(errorFetchingSales);
         }
-    }, [errorFetchingPurchases]);
+    }, [errorFetchingSales]);
 
     return (
         <View style={styles.container}>
@@ -250,11 +259,11 @@ const Purchases = () => {
             </View>
             <View style={styles.actionsContainer}>
                 <FilterButton onPress={toggleFiltersModal} />
-                {isFeatureAccessible(PLATFORM_FEATURES.ADD_UPDATE_PURCHASE) && (
+                {isFeatureAccessible(PLATFORM_FEATURES.ADD_UPDATE_SALE) && (
                     <CustomButton
-                        text={i18n.t("addPurchase")}
+                        text={i18n.t("addSale")}
                         onPress={() => {
-                            router.push(`${AppRoutes.addPurchase}` as Href);
+                            router.push(`${AppRoutes.addSale}` as Href);
                         }}
                         isSecondaryButton={true}
                         extraTextStyles={{ fontSize: 12 }}
@@ -268,20 +277,20 @@ const Purchases = () => {
             </View>
             <View style={styles.itemListContainer}>
                 <FlatList
-                    data={purchasesData?.pages
-                        .map((purchasePage) => purchasePage.data.purchases)
+                    data={salesData?.pages
+                        .map((salePage) => salePage.data.sales)
                         .flat()}
                     renderItem={({ item }) => (
-                        <PurchaseListItem
-                            purchase={item}
-                            onPress={(purchase) =>
+                        <SaleListItem
+                            sale={item}
+                            onPress={(sale) =>
                                 router.push(
-                                    `${AppRoutes.getPurchase}/${purchase.purchaseId}` as Href
+                                    `${AppRoutes.getSale}/${sale.saleId}` as Href
                                 )
                             }
                         />
                     )}
-                    keyExtractor={(item) => item.purchaseId.toString()}
+                    keyExtractor={(item) => item.saleId.toString()}
                     ItemSeparatorComponent={() => (
                         <View style={styles.itemSeparator} />
                     )}
@@ -289,9 +298,7 @@ const Purchases = () => {
                     onEndReachedThreshold={0}
                     contentContainerStyle={{ paddingBottom: 20 }}
                     ListEmptyComponent={() => (
-                        <ListEmptyComponent
-                            message={i18n.t("noPurchasesFound")}
-                        />
+                        <ListEmptyComponent message={i18n.t("noSalesFound")} />
                     )}
                 />
                 {isFetchingNextPage && <ActivityIndicator size="large" />}
@@ -316,7 +323,7 @@ const Purchases = () => {
                                     filtersState?.toTransactionDateTime,
                             }}
                             onSubmit={filterFormSubmitHandler}
-                            validationSchema={FilterPurchaseFormValidation}
+                            validationSchema={FilterSaleFormValidation}
                         >
                             {({
                                 values,
@@ -512,7 +519,7 @@ const Purchases = () => {
     );
 };
 
-export default Purchases;
+export default Sales;
 
 const styles = StyleSheet.create({
     container: {

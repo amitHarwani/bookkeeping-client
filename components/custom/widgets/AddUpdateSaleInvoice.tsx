@@ -8,44 +8,45 @@ import PurchaseInvoiceListItem from "@/components/custom/business/PurchaseInvoic
 import AddInvoiceItem from "@/components/custom/widgets/AddInvoiceItem";
 import InvoicePartySelector from "@/components/custom/widgets/InvoicePartySelector";
 import {
+    PartyTypeInInvoicePartySelector,
     PurchaseInvoiceForm,
     PurchaseInvoiceItem,
-    PartyTypeInInvoicePartySelector,
+    SaleInvoiceForm,
+    SaleInvoiceItem,
 } from "@/constants/types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText } from "@/utils/common_utils";
-import { PurchaseInvoiceFormValidation } from "@/utils/schema_validations";
+import {
+    PurchaseInvoiceFormValidation,
+    SaleInvoiceFormValidation,
+} from "@/utils/schema_validations";
 import { getInvoiceTaxDetails } from "@/utils/tax_helper";
-import { Formik, useFormik } from "formik";
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
+import { useFormik } from "formik";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
-import LoadingSpinnerOverlay from "../basic/LoadingSpinnerOverlay";
 import DateTimePickerCombined from "../basic/DateTimePickerCombined";
+import SaleInvoiceListItem from "../business/SaleInvoiceListItem";
 
-interface AddUpdatePurchaseInvoiceProps {
+interface AddUpdateSaleInvoiceProps {
     operation: "ADD" | "UPDATE";
-    onAddUpdatePurchase(values: PurchaseInvoiceForm): void;
+    onAddUpdateSale(values: SaleInvoiceForm): void;
     apiErrorMessage?: string | null;
 
-    formValues?: PurchaseInvoiceForm;
+    formValues?: SaleInvoiceForm;
     isUpdateEnabled?: boolean;
 }
-const AddUpdatePurchaseInvoice = ({
+const AddUpdateSaleInvoice = ({
     operation,
-    onAddUpdatePurchase,
+    onAddUpdateSale,
     apiErrorMessage,
     formValues,
     isUpdateEnabled,
-}: AddUpdatePurchaseInvoiceProps) => {
+}: AddUpdateSaleInvoiceProps) => {
     /* Company State from redux */
     const companyState = useAppSelector((state) => state.company);
+
+    const authState = useAppSelector((state) => state.auth);
 
     /* Decimal points to round to when showing the value */
     const decimalPoints = useMemo(() => {
@@ -63,6 +64,15 @@ const AddUpdatePurchaseInvoice = ({
         []
     );
 
+    /* Yes or No: Radio Button Data */
+    const yesNoRadioButtonData = useMemo(
+        () => [
+            { key: "yes", value: true },
+            { key: "no", value: false },
+        ],
+        []
+    );
+
     /* Disable all inputs only if operation is UPDATE and update is not enabled */
     const isInputsDisabled = useMemo(() => {
         if (operation === "UPDATE" && !isUpdateEnabled) {
@@ -75,7 +85,7 @@ const AddUpdatePurchaseInvoice = ({
     const { invoiceTaxPercent, invoiceTaxName } = getInvoiceTaxDetails();
 
     /* To store a selected invoice item if any */
-    const selectedInvoiceItem = useRef<PurchaseInvoiceItem>();
+    const selectedInvoiceItem = useRef<SaleInvoiceItem>();
 
     /* Whether add invoice item modal is visible */
     const [isAddInvoiceItemModalVisibile, setIsAddInvoiceItemModalVisible] =
@@ -86,15 +96,19 @@ const AddUpdatePurchaseInvoice = ({
         setIsAddInvoiceItemModalVisible((prev) => !prev);
     }, [isAddInvoiceItemModalVisibile]);
 
-    /* Initial Purchase form */
-    const initialFormValues: PurchaseInvoiceForm = useMemo(() => {
+    /* Initial Sale form */
+    const initialFormValues: SaleInvoiceForm = useMemo(() => {
         if (formValues) {
             return formValues;
         }
         return {
             createdAt: new Date(),
-            party: undefined,
-            invoiceNumber: undefined,
+            isNoPartyBill: true,
+            doneBy: authState.user?.userId as string,
+            quotationNumber: null,
+            party: null,
+            autogenerateInvoice: true,
+            invoiceNumber: null,
             items: {},
             discount: "0",
             subtotal: "0",
@@ -129,13 +143,13 @@ const AddUpdatePurchaseInvoice = ({
     const formik = useFormik({
         initialValues: initialFormValues,
         onSubmit: (values) => {
-            onAddUpdatePurchase(values);
+            onAddUpdateSale(values);
         },
-        validationSchema: PurchaseInvoiceFormValidation,
+        validationSchema: SaleInvoiceFormValidation,
     });
 
     /* On change of invoice item */
-    const onInvoiceItemChanged = (item: PurchaseInvoiceItem) => {
+    const onInvoiceItemChanged = (item: SaleInvoiceItem) => {
         /* Update items field. value is stores as key value, where key is itemId and value is invoice item */
         if (item && item.item) {
             formik.setFieldTouched("items", true);
@@ -147,7 +161,7 @@ const AddUpdatePurchaseInvoice = ({
     };
 
     /* On Invoice Item selected */
-    const onInvoiceItemSelected = (item: PurchaseInvoiceItem) => {
+    const onInvoiceItemSelected = (item: SaleInvoiceItem) => {
         if (item) {
             /* Setting selectedInvoiceItem, and toggling the modal */
             selectedInvoiceItem.current = item;
@@ -156,7 +170,7 @@ const AddUpdatePurchaseInvoice = ({
     };
 
     /* Remove Invoice Item, removing the item from items */
-    const removeInvoiceItemHandler = (item: PurchaseInvoiceItem) => {
+    const removeInvoiceItemHandler = (item: SaleInvoiceItem) => {
         if (item && item.item?.itemId) {
             const temp = { ...formik.values.items };
             delete temp[item.item?.itemId];
@@ -167,7 +181,7 @@ const AddUpdatePurchaseInvoice = ({
 
     /* On Change of items or discount value */
     const calculateAggregateValues = (
-        items: { [x: number]: PurchaseInvoiceItem },
+        items: { [x: number]: SaleInvoiceItem },
         discountVal: string
     ) => {
         /* Aggregate values to calculate */
@@ -231,7 +245,7 @@ const AddUpdatePurchaseInvoice = ({
     const calculateDefaultPaymentDueDate = (
         isCredit: boolean,
         amountDue: number,
-        party?: PartyTypeInInvoicePartySelector
+        party: PartyTypeInInvoicePartySelector | null
     ) => {
         /* Cash transaction, or payment is complete */
         if (isCredit === false || amountDue === 0) {
@@ -243,8 +257,7 @@ const AddUpdatePurchaseInvoice = ({
                 /* Calculating default due date, as todays date + default credit allowance in days for the party */
                 const dueDate = new Date();
                 dueDate.setDate(
-                    dueDate.getDate() +
-                        party?.defaultPurchaseCreditAllowanceInDays
+                    dueDate.getDate() + party?.defaultSaleCreditAllowanceInDays
                 );
                 formik.values.paymentDueDate = dueDate;
             }
@@ -306,7 +319,53 @@ const AddUpdatePurchaseInvoice = ({
                         isDisabled={isInputsDisabled}
                     />
 
-                    <DateTimePickerCombined 
+                    <RadioButton
+                        textKey="key"
+                        data={yesNoRadioButtonData}
+                        label={i18n.t("isNoPartyBill")}
+                        onChange={(selectedVal) => {
+                            formik.setFieldTouched("isNoPartyBill", true);
+                            formik.setFieldValue(
+                                "isNoPartyBill",
+                                selectedVal.value
+                            );
+                            formik.setFieldValue("party", null);
+                        }}
+                        value={
+                            formik.values.isNoPartyBill
+                                ? yesNoRadioButtonData[0]
+                                : yesNoRadioButtonData[1]
+                        }
+                        isDisabled={isInputsDisabled}
+                        errorMessage={
+                            formik.touched.isNoPartyBill &&
+                            formik.errors.isNoPartyBill
+                                ? formik.errors.isNoPartyBill
+                                : null
+                        }
+                    />
+                    {!formik.values.isNoPartyBill && (
+                        <InvoicePartySelector
+                            value={formik.values.party || undefined}
+                            onChange={(party) => {
+                                formik.setFieldTouched("party", true);
+                                calculateDefaultPaymentDueDate(
+                                    formik.values.isCredit,
+                                    formik.values.amountDue,
+                                    party
+                                );
+                                formik.setFieldValue("party", party);
+                            }}
+                            errorMessage={
+                                formik.touched.party && formik.errors.party
+                                    ? formik.errors.party
+                                    : null
+                            }
+                            isDisabled={isInputsDisabled}
+                        />
+                    )}
+
+                    <DateTimePickerCombined
                         dateLabel={i18n.t("transactionDateTime")}
                         onChange={(selectedDateTime) => {
                             formik.setFieldTouched("createdAt", true);
@@ -316,41 +375,58 @@ const AddUpdatePurchaseInvoice = ({
                         timeLabel=""
                         isDisabled={operation === "UPDATE"}
                     />
-                    <Input
-                        label={i18n.t("invoiceNumber")}
-                        placeholder={capitalizeText(
-                            i18n.t("enterInvoiceNumber")
-                        )}
-                        value={formik.values.invoiceNumber?.toString() || ""}
-                        onChangeText={formik.handleChange("invoiceNumber")}
-                        onBlur={formik.handleBlur("invoiceNumber")}
-                        errorMessage={
-                            formik.touched.invoiceNumber &&
-                            formik.errors.invoiceNumber
-                                ? formik.errors.invoiceNumber
-                                : null
-                        }
-                        keyboardType="number-pad"
-                        isDisabled={isInputsDisabled}
-                    />
-                    <InvoicePartySelector
-                        value={formik.values.party}
-                        onChange={(party) => {
-                            formik.setFieldTouched("party", true);
-                            calculateDefaultPaymentDueDate(
-                                formik.values.isCredit,
-                                formik.values.amountDue,
-                                party
-                            );
-                            formik.setFieldValue("party", party);
-                        }}
-                        errorMessage={
-                            formik.touched.party && formik.errors.party
-                                ? formik.errors.party
-                                : null
-                        }
-                        isDisabled={isInputsDisabled}
-                    />
+
+                    {operation === "ADD" && (
+                        <RadioButton
+                            textKey="key"
+                            data={yesNoRadioButtonData}
+                            label={i18n.t("autogenerateInvoiceNumber")}
+                            onChange={(selectedVal) => {
+                                formik.setFieldTouched(
+                                    "autogenerateInvoice",
+                                    true
+                                );
+                                formik.setFieldValue(
+                                    "autogenerateInvoice",
+                                    selectedVal.value
+                                );
+                                formik.setFieldValue("invoiceNumber", null);
+                            }}
+                            value={
+                                formik.values.autogenerateInvoice
+                                    ? yesNoRadioButtonData[0]
+                                    : yesNoRadioButtonData[1]
+                            }
+                            isDisabled={isInputsDisabled}
+                            errorMessage={
+                                formik.touched.autogenerateInvoice &&
+                                formik.errors.autogenerateInvoice
+                                    ? formik.errors.autogenerateInvoice
+                                    : null
+                            }
+                        />
+                    )}
+                    {!formik.values.autogenerateInvoice && (
+                        <Input
+                            label={i18n.t("invoiceNumber")}
+                            placeholder={capitalizeText(
+                                i18n.t("enterInvoiceNumber")
+                            )}
+                            value={
+                                formik.values.invoiceNumber?.toString() || ""
+                            }
+                            onChangeText={formik.handleChange("invoiceNumber")}
+                            onBlur={formik.handleBlur("invoiceNumber")}
+                            errorMessage={
+                                formik.touched.invoiceNumber &&
+                                formik.errors.invoiceNumber
+                                    ? formik.errors.invoiceNumber
+                                    : null
+                            }
+                            keyboardType="number-pad"
+                            isDisabled={operation === "UPDATE"}
+                        />
+                    )}
 
                     <Text
                         style={[
@@ -368,7 +444,7 @@ const AddUpdatePurchaseInvoice = ({
                     <FlatList
                         data={Object.values(formik.values.items)}
                         renderItem={({ item }) => (
-                            <PurchaseInvoiceListItem
+                            <SaleInvoiceListItem
                                 item={item}
                                 removeItem={removeInvoiceItemHandler}
                                 onInvoiceItemSelected={onInvoiceItemSelected}
@@ -435,7 +511,7 @@ const AddUpdatePurchaseInvoice = ({
                                     ]}
                                 >
                                     {formik.values?.[
-                                        field as keyof PurchaseInvoiceForm
+                                        field as keyof SaleInvoiceForm
                                     ]?.toString()}
                                 </Text>
                             </View>
@@ -511,20 +587,6 @@ const AddUpdatePurchaseInvoice = ({
                                 />
                             )}
 
-                        {Number(formik.values.amountDue) === 0 && (
-                            <Input
-                                label={i18n.t("receiptNumber")}
-                                placeholder={capitalizeText(
-                                    i18n.t("enterReceiptNumber")
-                                )}
-                                value={formik.values.receiptNumber || ""}
-                                onChangeText={formik.handleChange(
-                                    "receiptNumber"
-                                )}
-                                onBlur={formik.handleBlur("receiptNumber")}
-                                isDisabled={isInputsDisabled}
-                            />
-                        )}
                         {!isInputsDisabled && (
                             <CustomButton
                                 text={i18n.t("save")}
@@ -550,7 +612,7 @@ const AddUpdatePurchaseInvoice = ({
     );
 };
 
-export default AddUpdatePurchaseInvoice;
+export default AddUpdateSaleInvoice;
 
 const styles = StyleSheet.create({
     mainContainer: {

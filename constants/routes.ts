@@ -10,5 +10,7 @@ export enum AppRoutes {
     getParty = "get-party",
     addParty = "add-party",
     getPurchase = "get-purchase",
-    addPurchase = "add-purchase"
+    addPurchase = "add-purchase",
+    addSale = "add-sale",
+    getSale = "get-sale"
 }

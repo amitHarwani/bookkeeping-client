@@ -2,6 +2,7 @@ import {
     PartyTypeInInvoicePartySelector,
     PartyTypeInPartyList,
     PurchaseTypeInPurchaseList,
+    SaleTypeInSalesList,
 } from "@/constants/types";
 
 export interface ThirdParty {
@@ -29,7 +30,7 @@ export interface Purchase {
     invoiceNumber: number;
     subtotal: string;
     discount: string;
-    tax: string,
+    tax: string;
     totalAfterDiscount: string;
     taxPercent: string;
     totalAfterTax: string;
@@ -56,6 +57,48 @@ export interface PurchaseItem {
     unitName: string;
     unitsPurchased: string;
     pricePerUnit: string;
+}
+
+export interface Sale {
+    companyId: number;
+    createdAt: string;
+    updatedAt: Date;
+    taxName: string;
+    doneBy: string;
+    partyId: number | null;
+    partyName: string | null;
+    invoiceNumber: number;
+    subtotal: string;
+    discount: string;
+    totalAfterDiscount: string;
+    tax: string;
+    taxPercent: string;
+    totalAfterTax: string;
+    isCredit: boolean;
+    paymentDueDate: string | null;
+    amountPaid: string;
+    amountDue: string;
+    isFullyPaid: boolean;
+    paymentCompletionDate: string | null;
+    saleId: number;
+    isNoPartyBill: boolean;
+}
+
+export interface SaleItem {
+    companyId: number;
+    createdAt: Date;
+    updatedAt: Date;
+    itemId: number;
+    itemName: string;
+    unitId: number;
+    unitName: string;
+    pricePerUnit: string;
+    subtotal: string;
+    tax: string;
+    taxPercent: string;
+    totalAfterTax: string;
+    saleId: number;
+    unitsSold: string;
 }
 
 export interface FilterPartiesQuery {
@@ -155,5 +198,52 @@ export class GetPurchaseResponse {
     constructor(
         public purchase: Purchase,
         public purchaseItems: PurchaseItem[]
+    ) {}
+}
+
+
+export interface FilterSalesQuery {
+    partyId?: number;
+    purchaseType?: "ALL" | "CASH" | "CREDIT";
+    fromTransactionDate?: string;
+    toTransactionDate?: string;
+    getOnlyOverduePayments?: boolean;
+    invoiceNumberSearchQuery?: number;
+}
+
+export class GetAllSalesResponse {
+    constructor(
+        public sales: Sale[],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            updatedAt: Date;
+            saleId: number;
+        }
+    ) {}
+}
+
+export class GetAllSalesForSalesListResponse {
+    constructor(
+        public sales: [SaleTypeInSalesList],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            updatedAt: Date;
+            purchaseId: number;
+        }
+    ) {}
+}
+
+export class AddUpdateSaleResponse {
+    constructor(
+        public sale: Sale,
+        public saleItems: Array<SaleItem>,
+        public message: string
+    ) {}
+}
+
+export class GetSaleResponse {
+    constructor(
+        public sale: Sale,
+        public saleItems: Array<SaleItem>
     ) {}
 }

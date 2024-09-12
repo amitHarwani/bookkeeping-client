@@ -236,6 +236,20 @@ export const FilterPurchaseFormValidation = Yup.object().shape({
     getOnlyOverduePayments: Yup.boolean()
 })
 
+export const FilterSaleFormValidation = Yup.object().shape({
+    party: Yup.object().notRequired().nullable(),
+    purchaseType: Yup.string().required(),
+    fromTransactionDateTime: Yup.date().notRequired(),
+    toTransactionDateTime: Yup.date().notRequired().test("toTransactionDateTest", "to date cannot be before from date", (value, context) => {
+        const from = context?.options?.context?.fromTransactionDateTime;
+        if(moment(value).isBefore(from)){
+            return false;
+        }
+        return true;
+    }),
+    getOnlyOverduePayments: Yup.boolean()
+})
+
 export const AddUpdateInvoiceItemValidation = Yup.object().shape({
     item: Yup.object().required("item is required"),
     units: Yup.number().typeError("invalid unit").test("units", "unit must be greater than 0", (value) => {
@@ -267,4 +281,33 @@ export const PurchaseInvoiceFormValidation = Yup.object().shape({
     receiptNumber: Yup.string().nullable()
     
 })
+
+export const SaleInvoiceFormValidation = Yup.object().shape({
+    party: Yup.object().nullable().typeError("invalid party").test("party", "select party for non-open bills", (value, context) => {
+        const isNoPartyBill = Number(context?.options?.context?.isNoPartyBill);
+        if(!isNoPartyBill && !value){
+            return false;
+        }
+        return true;
+    }),
+    isNoPartyBill: Yup.boolean(),
+    invoiceNumber: Yup.number().nullable().typeError("invalid invoice number"),
+    items: Yup.object().test("items", "no items added", (value) => {
+        if(value && Object.values(value).length === 0){
+            return false;
+        }
+        return true;
+    }),
+    discount: Yup.number().nullable().typeError("invalid discount"),
+    isCredit: Yup.boolean(),
+    amountPaid: Yup.number().typeError("invalid amount paid").test("amountPaid", "amount paid cannot be greater than total amount", (value, context) => {
+        const totalAfterTax = Number(context?.options?.context?.totalAfterTax);
+        if(Number(value) > totalAfterTax){
+            return false;
+        }
+        return true;
+    }),
+    
+})
+
 

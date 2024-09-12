@@ -449,6 +449,29 @@ const CompanyMainLayout = () => {
                             },
                         }}
                     />
+
+                    <Drawer.Screen
+                        name="(sales)"
+                        options={{
+                            drawerLabel: capitalizeText(i18n.t("sales")),
+                            headerTitle: () => (
+                                <CustomNavHeader
+                                    mainHeading={i18n.t("sales")}
+                                    subHeading={
+                                        selectedCompany?.companyName || ""
+                                    }
+                                />
+                            ),
+                            drawerItemStyle: {
+                                display: isFeatureAccessible(
+                                    PLATFORM_FEATURES.GET_PURCHASES
+                                )
+                                    ? "flex"
+                                    : "none",
+                                marginTop: -10,
+                            },
+                        }}
+                    />
                 </Drawer>
             </GestureHandlerRootView>
         </>
@@ -480,7 +503,7 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
         marginLeft: 16,
-    }
+    },
 });
 
 export default CompanyMainLayout;

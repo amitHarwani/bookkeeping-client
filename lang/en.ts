@@ -153,6 +153,15 @@ export default {
     errorFetchingDetails: "error fetching details",
     purchase: "purchase",
     purchaseUpdatedSuccessfully: "purchase updated successfully",
-    transactionDateTime: "transaction date time"
+    transactionDateTime: "transaction date time",
+    sales: "sales",
+    isNoPartyBill: "is no party bill",
+    autogenerateInvoiceNumber: "autogenerate invoice number",
+    na: "N/A",
+    noSalesFound: "no sales found",
+    addSale: "add sale",
+    saleAddedSuccessfully: "sale added successfully",
+    sale: "sale",
+    saleUpdatedSuccessfully: "sale updated successfully"
 
 }
