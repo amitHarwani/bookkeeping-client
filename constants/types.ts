@@ -126,6 +126,7 @@ export interface PartyTypeInInvoicePartySelector {
     defaultPurchaseCreditAllowanceInDays: number
 }
 export interface PurchaseInvoiceForm {
+    createdAt: Date,
     party?: PartyTypeInInvoicePartySelector;
     invoiceNumber?: number;
     items: { [itemId: number]: PurchaseInvoiceItem };

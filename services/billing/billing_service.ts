@@ -145,6 +145,7 @@ class BillingService {
 
         let requestBody;
         requestBody = {
+            createdAt: convertLocalUTCToTimezoneUTC(purchaseForm.createdAt, dateTimeFormat24hr, companyTimezone),
             invoiceNumber: Number(purchaseForm.invoiceNumber),
             companyId: companyId,
             partyId: purchaseForm.party?.partyId,

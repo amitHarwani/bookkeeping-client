@@ -13,6 +13,7 @@ interface DateTimePickerCombinedProps {
     onChange(selectedDateTime: Date): void;
     errorMessage?: string | null;
     value?: Date;
+    isDisabled?: boolean
 }
 const DateTimePickerCombined = ({
     dateLabel,
@@ -20,6 +21,7 @@ const DateTimePickerCombined = ({
     onChange,
     errorMessage,
     value,
+    isDisabled = false
 }: DateTimePickerCombinedProps) => {
     /* Selected Date */
     const [selectedDate, setSelectedDate] = useState<Date>();
@@ -67,6 +69,8 @@ const DateTimePickerCombined = ({
                     onChange={onDateChangeHandler}
                     value={selectedDate}
                     extraContainerStyles={{ flex: 1 }}
+                    isDisabled={isDisabled}
+                    keepLabelSpace
                 />
 
                 <CustomDateTimePicker
@@ -75,6 +79,8 @@ const DateTimePickerCombined = ({
                     onChange={onTimeChangeHandler}
                     value={selectedTime}
                     extraContainerStyles={{ flex: 1 }}
+                    isDisabled={isDisabled}
+                    keepLabelSpace
                 />
             </View>
             {errorMessage && (

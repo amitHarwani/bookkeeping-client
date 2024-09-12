@@ -61,10 +61,9 @@ export const convertUTCStringToTimezonedDate = (
 ) => {
     const timezonedDate = momentTimezone
         .tz(dateTimeString, format, "UTC")
-        .tz(timezone)
-        .toDate();
+        .tz(timezone);
 
-    return timezonedDate;
+    return new Date(timezonedDate.format(format));
 };
 export const setTimeToEmpty = (date: Date) => {
     date.setHours(0);

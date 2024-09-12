@@ -152,6 +152,7 @@ export default {
     purchaseAddedSuccessfully: "purchase added successfully",
     errorFetchingDetails: "error fetching details",
     purchase: "purchase",
-    purchaseUpdatedSuccessfully: "purchase updated successfully"
+    purchaseUpdatedSuccessfully: "purchase updated successfully",
+    transactionDateTime: "transaction date time"
 
 }

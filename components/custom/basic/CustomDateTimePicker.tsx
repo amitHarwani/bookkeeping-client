@@ -15,6 +15,7 @@ interface CustomDateTimePickerProps {
     errorMessage?: string | null;
     extraContainerStyles?: Object;
     isDisabled?: boolean;
+    keepLabelSpace?: boolean
 }
 const CustomDateTimePicker = ({
     label,
@@ -23,7 +24,8 @@ const CustomDateTimePicker = ({
     mode,
     errorMessage,
     extraContainerStyles,
-    isDisabled = false
+    isDisabled = false,
+    keepLabelSpace = false
 }: CustomDateTimePickerProps) => {
     const [isDateTimePickerShown, setIsDateTimePickerShown] = useState(false);
 
@@ -77,14 +79,14 @@ const CustomDateTimePicker = ({
                 extraContainerStyles && extraContainerStyles,
             ]}
         >
-            {label && (
+            {(keepLabelSpace || label) && (
                 <Text
                     style={[
                         commonStyles.textSmallBold,
                         commonStyles.capitalize,
                     ]}
                 >
-                    {label}
+                    {label || ""}
                 </Text>
             )}
             <Pressable

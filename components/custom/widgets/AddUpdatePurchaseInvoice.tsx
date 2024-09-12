@@ -27,6 +27,7 @@ import React, {
 } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import LoadingSpinnerOverlay from "../basic/LoadingSpinnerOverlay";
+import DateTimePickerCombined from "../basic/DateTimePickerCombined";
 
 interface AddUpdatePurchaseInvoiceProps {
     operation: "ADD" | "UPDATE";
@@ -302,6 +303,17 @@ const AddUpdatePurchaseInvoice = ({
                                 : null
                         }
                         isDisabled={isInputsDisabled}
+                    />
+
+                    <DateTimePickerCombined 
+                        dateLabel={i18n.t("transactionDateTime")}
+                        onChange={(selectedDateTime) => {
+                            formik.setFieldTouched("createdAt", true);
+                            formik.setFieldValue("createdAt", selectedDateTime);
+                        }}
+                        value={formik.values.createdAt}
+                        timeLabel=""
+                        isDisabled={operation === "UPDATE"}
                     />
                     <Input
                         label={i18n.t("invoiceNumber")}

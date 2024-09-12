@@ -176,6 +176,7 @@ const GetPurchase = () => {
             });
 
             return {
+                createdAt: convertUTCStringToTimezonedDate(purchaseData.createdAt, dateTimeFormat24hr, timezone as string),
                 invoiceNumber: purchaseData.invoiceNumber,
                 party: {
                     partyId: partyInfo.partyId,

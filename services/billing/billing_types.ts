@@ -20,7 +20,7 @@ export interface ThirdParty {
 
 export interface Purchase {
     companyId: number;
-    createdAt: Date;
+    createdAt: string;
     updatedAt: Date;
     taxName: string;
     partyId: number;
