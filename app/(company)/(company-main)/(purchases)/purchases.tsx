@@ -16,9 +16,7 @@ import { AppRoutes } from "@/constants/routes";
 import { FilterPurchaseForm } from "@/constants/types";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import BillingService from "@/services/billing/billing_service";
-import {
-    GetAllPurchasesForPurchaseListResponse
-} from "@/services/billing/billing_types";
+import { GetAllPurchasesForPurchaseListResponse } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import {
@@ -113,7 +111,8 @@ const Purchases = () => {
                 ],
             },
         ],
-        queryFn: BillingService.getAllPurchases<GetAllPurchasesForPurchaseListResponse>,
+        queryFn:
+            BillingService.getAllPurchases<GetAllPurchasesForPurchaseListResponse>,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,
@@ -409,6 +408,15 @@ const Purchases = () => {
                                                 setFieldValue(
                                                     "toTransactionDateTime",
                                                     new Date()
+                                                );
+                                            } else {
+                                                setFieldValue(
+                                                    "fromTransactionDateTime",
+                                                    undefined
+                                                );
+                                                setFieldValue(
+                                                    "toTransactionDateTime",
+                                                    undefined
                                                 );
                                             }
                                         }}

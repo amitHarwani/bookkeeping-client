@@ -16,9 +16,7 @@ import { AppRoutes } from "@/constants/routes";
 import { FilterSalesForm } from "@/constants/types";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import BillingService from "@/services/billing/billing_service";
-import {
-    GetAllSalesForSalesListResponse
-} from "@/services/billing/billing_types";
+import { GetAllSalesForSalesListResponse } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import {
@@ -27,9 +25,7 @@ import {
     getDateAfterSubtracting,
 } from "@/utils/common_utils";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
-import {
-    FilterSaleFormValidation
-} from "@/utils/schema_validations";
+import { FilterSaleFormValidation } from "@/utils/schema_validations";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Href, router } from "expo-router";
 import { Formik } from "formik";
@@ -117,8 +113,7 @@ const Sales = () => {
                 ],
             },
         ],
-        queryFn:
-            BillingService.getAllSales<GetAllSalesForSalesListResponse>,
+        queryFn: BillingService.getAllSales<GetAllSalesForSalesListResponse>,
         initialPageParam: {
             pageSize: 20,
             companyId: selectedCompany?.companyId,
@@ -416,6 +411,15 @@ const Sales = () => {
                                                 setFieldValue(
                                                     "toTransactionDateTime",
                                                     new Date()
+                                                );
+                                            } else {
+                                                setFieldValue(
+                                                    "fromTransactionDateTime",
+                                                    undefined
+                                                );
+                                                setFieldValue(
+                                                    "toTransactionDateTime",
+                                                    undefined
                                                 );
                                             }
                                         }}

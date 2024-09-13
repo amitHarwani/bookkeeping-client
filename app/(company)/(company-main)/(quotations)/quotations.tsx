@@ -16,9 +16,7 @@ import { AppRoutes } from "@/constants/routes";
 import { FilterQuotationForm } from "@/constants/types";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import BillingService from "@/services/billing/billing_service";
-import {
-    GetAllQuotationsForQuotationListResponse
-} from "@/services/billing/billing_types";
+import { GetAllQuotationsForQuotationListResponse } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import {
@@ -27,9 +25,7 @@ import {
     getDateAfterSubtracting,
 } from "@/utils/common_utils";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
-import {
-    FilterQuotationFormValidation
-} from "@/utils/schema_validations";
+import { FilterQuotationFormValidation } from "@/utils/schema_validations";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Href, router } from "expo-router";
 import { Formik } from "formik";
@@ -387,6 +383,15 @@ const Quotations = () => {
                                                 setFieldValue(
                                                     "toTransactionDateTime",
                                                     new Date()
+                                                );
+                                            } else {
+                                                setFieldValue(
+                                                    "fromTransactionDateTime",
+                                                    undefined
+                                                );
+                                                setFieldValue(
+                                                    "toTransactionDateTime",
+                                                    undefined
                                                 );
                                             }
                                         }}
