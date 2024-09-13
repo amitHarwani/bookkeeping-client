@@ -175,6 +175,7 @@ export default {
     enterQuotationNumber: "enter quotation number",
     quotation: "quotation",
     quotationUpdatedSuccessfully: "quotation update successfully",
-    convertToInvoice: "convert to invoice"
+    convertToInvoice: "convert to invoice",
+    viewInvoice: "view invoice"
 
 }

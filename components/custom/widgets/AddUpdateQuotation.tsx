@@ -33,7 +33,7 @@ interface AddUpdateQuotationProps {
 
     formValues?: QuotationForm;
     isUpdateEnabled?: boolean;
-    isConvertToInvoiceEnabled?: boolean
+    isConvertToInvoiceEnabled?: boolean;
     onConvertToInvoice?(): void;
 }
 const AddUpdateQuotation = ({
@@ -208,28 +208,30 @@ const AddUpdateQuotation = ({
                     {apiErrorMessage && (
                         <ErrorMessage message={apiErrorMessage} />
                     )}
-                    {isConvertToInvoiceEnabled && operation === "UPDATE" && !isUpdateEnabled && (
-                        <Pressable
-                            style={styles.convertToInvoiceContainer}
-                            onPress={() => {
-                                typeof onConvertToInvoice === "function" &&
-                                    onConvertToInvoice();
-                            }}
-                        >
-                            <Image
-                                source={ForwardSquareIcon}
-                                style={styles.convertToInvoiceIcon}
-                            />
-                            <Text
-                                style={[
-                                    commonStyles.textSmallBold,
-                                    commonStyles.capitalize,
-                                ]}
+                    {isConvertToInvoiceEnabled &&
+                        operation === "UPDATE" &&
+                        !isUpdateEnabled && (
+                            <Pressable
+                                style={styles.convertToInvoiceContainer}
+                                onPress={() => {
+                                    typeof onConvertToInvoice === "function" &&
+                                        onConvertToInvoice();
+                                }}
                             >
-                                {i18n.t("convertToInvoice")}
-                            </Text>
-                        </Pressable>
-                    )}
+                                <Image
+                                    source={ForwardSquareIcon}
+                                    style={styles.convertToInvoiceIcon}
+                                />
+                                <Text
+                                    style={[
+                                        commonStyles.textSmallBold,
+                                        commonStyles.capitalize,
+                                    ]}
+                                >
+                                    {i18n.t("convertToInvoice")}
+                                </Text>
+                            </Pressable>
+                        )}
 
                     <InvoicePartySelector
                         value={formik.values.party || undefined}

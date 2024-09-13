@@ -144,8 +144,9 @@ const GetQuotation = () => {
                 />
             ),
             headerRight: () =>
-                /* If edit is not enabled and the update feature is accessible */
+                /* If edit is not enabled and the update feature is accessible, and quotation is not converted to invoice */
                 !isAddSaleVisbile &&
+                quotationDetails?.data.quotation.saleId == null &&
                 !isEditEnabled &&
                 isFeatureAccessible(PLATFORM_FEATURES.ADD_UPDATE_QUOTATION) ? (
                     <Pressable onPress={toggleEdit}>
@@ -357,7 +358,7 @@ const GetQuotation = () => {
                         updateQuotationMutation.mutate(values)
                     }
                     isConvertToInvoiceEnabled={
-                        quotationDetails?.data.quotation.saleInvoiceNumber ==
+                        quotationDetails?.data.quotation.saleId ==
                         null
                     }
                     onConvertToInvoice={() => toggleAddSaleScreen()}

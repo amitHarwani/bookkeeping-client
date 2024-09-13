@@ -121,7 +121,7 @@ export interface SaleTypeInSalesList {
 export interface QuotationTypeInQuotationsList {
     partyName: string;
     quotationNumber: number;
-    saleInvoiceNumber: number;
+    saleId: number;
     totalAfterTax: number;
     createdAt: string;
     updatedAt: string;

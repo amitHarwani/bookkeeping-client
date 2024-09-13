@@ -118,7 +118,7 @@ export interface Quotation {
     totalAfterTax: string;
     quotationId: number;
     quotationNumber: number;
-    saleInvoiceNumber: number | null;
+    saleId: number | null;
 }
 
 export interface QuotationItem {

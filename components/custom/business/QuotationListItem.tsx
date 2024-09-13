@@ -1,11 +1,10 @@
 import { i18n } from "@/app/_layout";
-import {
-    QuotationTypeInQuotationsList
-} from "@/constants/types";
+import { QuotationTypeInQuotationsList } from "@/constants/types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import TickIcon from "@/assets/images/tick_mark_icon_blue.png";
 
 interface QuotationListItemProps {
     quotation: QuotationTypeInQuotationsList;
@@ -23,13 +22,20 @@ const QuotationListItem = ({ quotation, onPress }: QuotationListItemProps) => {
                     {quotation.quotationNumber}
                 </Text>
             </View>
-            <Text
-                style={[commonStyles.textSmall, commonStyles.textDarkGray]}
-                numberOfLines={2}
-            >
-                {country?.currency}
-                {quotation.totalAfterTax}
-            </Text>
+            <View style={styles.detailsContainer}>
+                <Text
+                    style={[commonStyles.textSmall, commonStyles.textDarkGray]}
+                    numberOfLines={2}
+                >
+                    {`${country?.currency} ${quotation.totalAfterTax}`}
+                </Text>
+                {quotation.saleId && (
+                    <Image
+                        source={TickIcon}
+                        style={styles.tickmarkIcon}
+                    />
+                )}
+            </View>
         </Pressable>
     );
 };
@@ -42,4 +48,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
     },
+    detailsContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 4
+    },
+    tickmarkIcon: {
+        width: 20, 
+        height: 20,
+        marginRight: 4
+    }
 });

@@ -37,7 +37,7 @@ const SuccessModal = ({
                         {i18n.t("success")}
                     </Text>
                     <View style={styles.descriptionContainer}>
-                        <Image source={TickMarkIcon} style={styles.tickmark} />
+                        <Image source={TickMarkIcon} style={commonStyles.tickmarkIcon} />
                         <Text
                             style={[
                                 commonStyles.textMediumMid,
@@ -79,8 +79,5 @@ const styles = StyleSheet.create({
         columnGap: 8,
         alignItems: "center",
     },
-    tickmark: {
-        width: 24,
-        height: 24,
-    },
+   
 });

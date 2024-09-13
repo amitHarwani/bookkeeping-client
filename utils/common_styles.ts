@@ -146,4 +146,9 @@ export const commonStyles = StyleSheet.create({
         height: 24,
         marginRight: 16,
     },
+    /* Tick Mark icon */
+    tickmarkIcon: {
+        width: 24,
+        height: 24,
+    },
 })
