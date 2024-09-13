@@ -2,6 +2,7 @@ import {
     PartyTypeInInvoicePartySelector,
     PartyTypeInPartyList,
     PurchaseTypeInPurchaseList,
+    QuotationTypeInQuotationsList,
     SaleTypeInSalesList,
 } from "@/constants/types";
 
@@ -99,6 +100,42 @@ export interface SaleItem {
     totalAfterTax: string;
     saleId: number;
     unitsSold: string;
+}
+
+export interface Quotation {
+    companyId: number;
+    createdAt: string;
+    updatedAt: string;
+    createdBy: string;
+    taxName: string;
+    partyId: number;
+    partyName: string;
+    subtotal: string;
+    discount: string;
+    totalAfterDiscount: string;
+    tax: string;
+    taxPercent: string;
+    totalAfterTax: string;
+    quotationId: number;
+    quotationNumber: number;
+    saleInvoiceNumber: number | null;
+}
+
+export interface QuotationItem {
+    companyId: number;
+    createdAt: string;
+    updatedAt: string;
+    itemId: number;
+    itemName: string;
+    unitId: number;
+    unitName: string;
+    pricePerUnit: string;
+    subtotal: string;
+    tax: string;
+    taxPercent: string;
+    totalAfterTax: string;
+    unitsSold: string;
+    quotationId: number;
 }
 
 export interface FilterPartiesQuery {
@@ -210,6 +247,13 @@ export interface FilterSalesQuery {
     getOnlyOverduePayments?: boolean;
     invoiceNumberSearchQuery?: number;
 }
+export interface FilterQuotationQuery {
+    partyId?: number;
+    fromDate?: string;
+    toDate?: string;
+    quotationNumberSearchQuery?: number;
+
+}
 
 export class GetAllSalesResponse {
     constructor(
@@ -228,7 +272,7 @@ export class GetAllSalesForSalesListResponse {
         public hasNextPage: boolean,
         public nextPageCursor?: {
             updatedAt: Date;
-            purchaseId: number;
+            saleId: number;
         }
     ) {}
 }
@@ -246,4 +290,43 @@ export class GetSaleResponse {
         public sale: Sale,
         public saleItems: Array<SaleItem>
     ) {}
+}
+
+export class GetAllQuotationsResponse {
+    constructor(
+        public quotations: Quotation[],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            updatedAt: Date;
+            saleId: number;
+        }
+    ) {}
+}
+
+export class GetAllQuotationsForQuotationListResponse {
+    constructor(
+        public quotations: [QuotationTypeInQuotationsList],
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            updatedAt: Date;
+            quotationId: number;
+        }
+    ) {}
+}
+
+export class GetQuotationResponse {
+    constructor(
+        public quotation: Quotation,
+        public quotationItems: Array<QuotationItem>
+    ){
+
+    }
+}
+
+export class AddUpdateQuotationResponse {
+    constructor(
+        public quotation: Quotation,
+        public quotationItems: Array<QuotationItem>,
+        public message: string
+    ){}
 }

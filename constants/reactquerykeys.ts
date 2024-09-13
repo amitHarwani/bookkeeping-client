@@ -14,5 +14,7 @@ export enum ReactQueryKeys {
     purchases = "purchases",
     getPurchase = "getPurchase",
     sales = "sales",
-    getSale = "getSale"
+    getSale = "getSale",
+    quotations = "quotations",
+    getQuotation = "getQuotation"
 }

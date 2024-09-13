@@ -472,6 +472,29 @@ const CompanyMainLayout = () => {
                             },
                         }}
                     />
+
+                    <Drawer.Screen
+                        name="(quotations)"
+                        options={{
+                            drawerLabel: capitalizeText(i18n.t("quotations")),
+                            headerTitle: () => (
+                                <CustomNavHeader
+                                    mainHeading={i18n.t("quotations")}
+                                    subHeading={
+                                        selectedCompany?.companyName || ""
+                                    }
+                                />
+                            ),
+                            drawerItemStyle: {
+                                display: isFeatureAccessible(
+                                    PLATFORM_FEATURES.GET_QUOTATIONS
+                                )
+                                    ? "flex"
+                                    : "none",
+                                marginTop: -10,
+                            },
+                        }}
+                    />
                 </Drawer>
             </GestureHandlerRootView>
         </>

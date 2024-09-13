@@ -162,6 +162,19 @@ export default {
     addSale: "add sale",
     saleAddedSuccessfully: "sale added successfully",
     sale: "sale",
-    saleUpdatedSuccessfully: "sale updated successfully"
+    saleUpdatedSuccessfully: "sale updated successfully",
+    quotations: "quotations",
+    quotationNumberShouldBeNumeric: "quotation number should be numeric",
+    searchByQuotationNumber: "search by quotation number",
+    addQuotation: "add quotation",
+    noQuotationsFound: "no quotations found",
+    quotationAddedSuccessfully: "quotation added successfully",
+    dateTime: "date time",
+    autogenerateQuotationNumber: "autogenerate quotation number",
+    quotationNumber: "quotation number",
+    enterQuotationNumber: "enter quotation number",
+    quotation: "quotation",
+    quotationUpdatedSuccessfully: "quotation update successfully",
+    convertToInvoice: "convert to invoice"
 
 }

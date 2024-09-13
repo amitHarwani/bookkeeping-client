@@ -2,8 +2,10 @@ import { dateFormat, dateTimeFormat24hr } from "@/constants/datetimes";
 import {
     AddUpdatePartyForm,
     FilterPurchaseForm,
+    FilterQuotationForm,
     FilterSalesForm,
     PurchaseInvoiceForm,
+    QuotationForm,
     SaleInvoiceForm,
 } from "@/constants/types";
 import {
@@ -18,15 +20,19 @@ import { Country } from "../sysadmin/sysadmin_types";
 import {
     AddPartyResponse,
     AddUpdatePurchaseResponse,
+    AddUpdateQuotationResponse,
     AddUpdateSaleResponse,
     FilterPartiesQuery,
     FilterPurchasesQuery,
+    FilterQuotationQuery,
     FilterSalesQuery,
     GetPartyResponse,
     GetPurchaseResponse,
+    GetQuotationResponse,
     GetSaleResponse,
     Purchase,
     PurchaseItem,
+    QuotationItem,
     Sale,
     SaleItem,
     ThirdParty,
@@ -47,6 +53,10 @@ class BillingService {
     addSalePath = "sale/add-sale";
     getSalePath = "sale/get-sale";
     updateSalePath = "sale/update-sale";
+    getAllQuotationsPath = "quotation/get-all-quotations";
+    getQuotationPath = "quotation/get-quotation";
+    addQuotationPath = "quotation/add-quotation";
+    updateQuotationPath = "quotation/update-quotation";
 
     getAllPurchases = async <T>({
         pageParam,
@@ -539,6 +549,195 @@ class BillingService {
         return await asyncHandler<AddUpdateSaleResponse>(() => {
             return axios.put<ApiResponse<AddUpdateSaleResponse>>(
                 `${this.hostPath}/${this.updateSalePath}`,
+                requestBody
+            );
+        });
+    };
+
+    getAllQuotations = async <T>({
+        pageParam,
+    }: {
+        pageParam: {
+            pageSize: number;
+            companyId: number;
+            query?: FilterQuotationForm;
+            quotationNumberSearchQuery?: number;
+            cursor?: {
+                updatedAt: string;
+                quotationId: number;
+            };
+            countryDetails: Country;
+            select?: [keyof Sale];
+        };
+    }) => {
+        let requestQuery: FilterQuotationQuery = {};
+
+        if (pageParam?.query) {
+            if (pageParam?.query?.fromTransactionDateTime) {
+                /* Converting UTC derived from system timezone to companies timezone derived UTC */
+                requestQuery = {
+                    ...requestQuery,
+                    fromDate: convertLocalUTCToTimezoneUTC(
+                        pageParam?.query?.fromTransactionDateTime,
+                        dateTimeFormat24hr,
+                        pageParam.countryDetails.timezone
+                    ),
+                };
+                requestQuery = {
+                    ...requestQuery,
+                    toDate: convertLocalUTCToTimezoneUTC(
+                        pageParam?.query?.toTransactionDateTime as Date,
+                        dateTimeFormat24hr,
+                        pageParam.countryDetails.timezone
+                    ),
+                };
+            }
+
+            requestQuery = {
+                ...requestQuery,
+                partyId: pageParam?.query?.party?.partyId,
+                quotationNumberSearchQuery:
+                    pageParam?.quotationNumberSearchQuery,
+            };
+        }
+
+        return await asyncHandler<T>(async () => {
+            return axios.post<ApiResponse<T>>(
+                `${this.hostPath}/${this.getAllQuotationsPath}`,
+                {
+                    pageSize: pageParam?.pageSize,
+                    companyId: pageParam?.companyId,
+                    query: requestQuery,
+                    cursor: pageParam?.cursor,
+                    select: pageParam?.select,
+                }
+            );
+        });
+    };
+
+    getQuotation = async (quotationId: number, companyId: number) => {
+        return await asyncHandler<GetQuotationResponse>(() => {
+            return axios.get<ApiResponse<GetQuotationResponse>>(
+                `${this.hostPath}/${this.getQuotationPath}`,
+                {
+                    params: {
+                        companyId,
+                        quotationId,
+                    },
+                }
+            );
+        });
+    };
+
+    addQuotation = async (
+        quotationForm: QuotationForm,
+        companyId: number,
+        companyTimezone: string,
+        decimalRoundTo: number
+    ) => {
+        let items: any = [];
+
+        /* Quotation Items req body   */
+        Object.values(quotationForm.items).forEach((item) => {
+            items.push({
+                itemId: item.item?.itemId,
+                itemName: item.item?.itemName,
+                companyId: companyId,
+                unitId: item.item?.unitId,
+                unitName: item.item?.unitName,
+                unitsSold: Number(item.units),
+                pricePerUnit: Number(item.pricePerUnit),
+                subtotal: Number(item.subtotal),
+                tax: Number(item.tax),
+                taxPercent: item.taxPercent,
+                totalAfterTax: Number(item.totalAfterTax),
+            });
+        });
+
+        let requestBody;
+        requestBody = {
+            createdAt: convertLocalUTCToTimezoneUTC(
+                quotationForm.createdAt,
+                dateTimeFormat24hr,
+                companyTimezone
+            ),
+            quotationNumber: quotationForm.quotationNumber
+                ? Number(quotationForm.quotationNumber)
+                : null,
+            companyId: companyId,
+            partyId: quotationForm?.party?.partyId,
+            partyName: quotationForm?.party?.partyName,
+            createdBy: quotationForm.createdBy,
+            subtotal: Number(quotationForm.subtotal),
+            discount: Number(quotationForm.discount),
+            totalAfterDiscount: Number(quotationForm.totalAfterDiscount),
+            taxPercent: quotationForm.taxPercent,
+            taxName: quotationForm.taxName,
+            tax: Number(quotationForm.tax),
+            totalAfterTax: Number(quotationForm.totalAfterTax),
+            decimalRoundTo: decimalRoundTo,
+            items: items,
+        };
+
+        return await asyncHandler<AddUpdateQuotationResponse>(() => {
+            return axios.post<ApiResponse<AddUpdateQuotationResponse>>(
+                `${this.hostPath}/${this.addQuotationPath}`,
+                requestBody
+            );
+        });
+    };
+
+    updateQuotation = async (
+        quotationId: number,
+        oldQuotationItems: QuotationItem[],
+        quotationForm: QuotationForm,
+        companyId: number,
+        companyTimezone: string,
+        decimalRoundTo: number
+    ) => {
+        let items: any = [];
+
+        /* Quotation Items req body   */
+        Object.values(quotationForm.items).forEach((item) => {
+            items.push({
+                itemId: item.item?.itemId,
+                itemName: item.item?.itemName,
+                companyId: companyId,
+                unitId: item.item?.unitId,
+                unitName: item.item?.unitName,
+                unitsSold: Number(item.units),
+                pricePerUnit: Number(item.pricePerUnit),
+                subtotal: Number(item.subtotal),
+                tax: Number(item.tax),
+                taxPercent: item.taxPercent,
+                totalAfterTax: Number(item.totalAfterTax),
+            });
+        });
+
+        let requestBody = {
+            quotationId: quotationId,
+            quotationNumber: quotationForm.quotationNumber
+                ? Number(quotationForm.quotationNumber)
+                : null,
+            companyId: companyId,
+            partyId: quotationForm.party.partyId,
+            partyName: quotationForm.party.partyName,
+            createdBy: quotationForm.createdBy,
+            subtotal: Number(quotationForm.subtotal),
+            discount: Number(quotationForm.discount),
+            totalAfterDiscount: Number(quotationForm.totalAfterDiscount),
+            taxPercent: quotationForm.taxPercent,
+            taxName: quotationForm.taxName,
+            tax: Number(quotationForm.tax),
+            totalAfterTax: Number(quotationForm.totalAfterTax),
+            decimalRoundTo: decimalRoundTo,
+            oldItems: oldQuotationItems,
+            items: items,
+        };
+
+        return await asyncHandler<AddUpdateQuotationResponse>(() => {
+            return axios.put<ApiResponse<AddUpdateQuotationResponse>>(
+                `${this.hostPath}/${this.updateQuotationPath}`,
                 requestBody
             );
         });

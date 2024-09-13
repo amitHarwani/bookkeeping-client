@@ -118,6 +118,15 @@ export interface SaleTypeInSalesList {
     totalAfterTax: string;
     updatedAt: Date;
 }
+export interface QuotationTypeInQuotationsList {
+    partyName: string;
+    quotationNumber: number;
+    saleInvoiceNumber: number;
+    totalAfterTax: number;
+    createdAt: string;
+    updatedAt: string;
+    quotationId: number;
+}
 export interface FilterPurchaseForm {
     party?: ThirdParty;
     purchaseType?: "ALL" | "CASH" | "CREDIT";
@@ -134,6 +143,13 @@ export interface FilterSalesForm {
     fromTransactionDateTime?: Date;
     toTransactionDateTime?: Date;
     getOnlyOverduePayments: boolean;
+}
+
+export interface FilterQuotationForm {
+    party?: PartyTypeInInvoicePartySelector,
+    filterByDate?: boolean,
+    fromTransactionDateTime?: Date;
+    toTransactionDateTime?: Date;
 }
 
 export interface PartyTypeInInvoicePartySelector {
@@ -190,6 +206,22 @@ export interface SaleInvoiceForm {
 
     paymentCompletionDate: Date | null,
     isFullyPaid: boolean,
+}
+
+export interface QuotationForm {
+    createdAt: Date,
+    autogenerateQuotationNumber: boolean,
+    quotationNumber: number | null;
+    party: PartyTypeInInvoicePartySelector | null;
+    createdBy: string,
+    items: { [itemId: number]: SaleInvoiceItem };
+    discount: string;
+    subtotal: string;
+    totalAfterDiscount: string;
+    tax: string;
+    totalAfterTax: string;
+    taxPercent: number,
+    taxName: string,
 }
 
 export interface ItemTypeInInvoiceItem {

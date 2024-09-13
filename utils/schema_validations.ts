@@ -186,12 +186,12 @@ export const AdjustItemFormValidation = Yup.object().shape({
 
 export const AddUpdatePartyValidation = Yup.object().shape({
     partyName: Yup.string().trim().required("party name is required"),
-    defaultSaleCreditAllowanceInDays: Yup.number().required(
-        "default sale credit allowance is required"
-    ).typeError("invalid default sale allowance"),
-    defaultPurchaseCreditAllowanceInDays: Yup.number().required(
-        "default purchase credit allowance is required"
-    ).typeError("invalid default purchase allowance"),
+    defaultSaleCreditAllowanceInDays: Yup.number()
+        .required("default sale credit allowance is required")
+        .typeError("invalid default sale allowance"),
+    defaultPurchaseCreditAllowanceInDays: Yup.number()
+        .required("default purchase credit allowance is required")
+        .typeError("invalid default purchase allowance"),
     country: Yup.object().required("country is required"),
     phoneCode: Yup.string().required("phone code is required"),
     phoneNumber: Yup.number()
@@ -221,93 +221,189 @@ export const AddUpdatePartyValidation = Yup.object().shape({
     }),
 });
 
-
 export const FilterPurchaseFormValidation = Yup.object().shape({
     party: Yup.object().notRequired().nullable(),
     purchaseType: Yup.string().required(),
     fromTransactionDateTime: Yup.date().notRequired(),
-    toTransactionDateTime: Yup.date().notRequired().test("toTransactionDateTest", "to date cannot be before from date", (value, context) => {
-        const from = context?.options?.context?.fromTransactionDateTime;
-        if(moment(value).isBefore(from)){
-            return false;
-        }
-        return true;
-    }),
-    getOnlyOverduePayments: Yup.boolean()
-})
+    toTransactionDateTime: Yup.date()
+        .notRequired()
+        .test(
+            "toTransactionDateTest",
+            "to date cannot be before from date",
+            (value, context) => {
+                const from = context?.options?.context?.fromTransactionDateTime;
+                if (moment(value).isBefore(from)) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+    getOnlyOverduePayments: Yup.boolean(),
+});
 
 export const FilterSaleFormValidation = Yup.object().shape({
     party: Yup.object().notRequired().nullable(),
     purchaseType: Yup.string().required(),
     fromTransactionDateTime: Yup.date().notRequired(),
-    toTransactionDateTime: Yup.date().notRequired().test("toTransactionDateTest", "to date cannot be before from date", (value, context) => {
-        const from = context?.options?.context?.fromTransactionDateTime;
-        if(moment(value).isBefore(from)){
-            return false;
-        }
-        return true;
-    }),
-    getOnlyOverduePayments: Yup.boolean()
-})
+    toTransactionDateTime: Yup.date()
+        .notRequired()
+        .test(
+            "toTransactionDateTest",
+            "to date cannot be before from date",
+            (value, context) => {
+                const from = context?.options?.context?.fromTransactionDateTime;
+                if (moment(value).isBefore(from)) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+    getOnlyOverduePayments: Yup.boolean(),
+});
+
+export const FilterQuotationFormValidation = Yup.object().shape({
+    party: Yup.object().notRequired().nullable(),
+    fromTransactionDateTime: Yup.date().notRequired(),
+    toTransactionDateTime: Yup.date()
+        .notRequired()
+        .test(
+            "toTransactionDateTest",
+            "to date cannot be before from date",
+            (value, context) => {
+                const from = context?.options?.context?.fromTransactionDateTime;
+                if (from && value && moment(value).isBefore(from)) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+});
 
 export const AddUpdateInvoiceItemValidation = Yup.object().shape({
     item: Yup.object().required("item is required"),
-    units: Yup.number().typeError("invalid unit").test("units", "unit must be greater than 0", (value) => {
-        if(Number(value) <= 0){
-            return false;
-        }
-        return true;
-    }),
+    units: Yup.number()
+        .typeError("invalid unit")
+        .test("units", "unit must be greater than 0", (value) => {
+            if (Number(value) <= 0) {
+                return false;
+            }
+            return true;
+        }),
     pricePerUnit: Yup.number().typeError("invalid price"),
-})
+});
 export const PurchaseInvoiceFormValidation = Yup.object().shape({
     party: Yup.object().required("party is required"),
-    invoiceNumber: Yup.number().required("invoice number is required").typeError("invalid invoice number"),
+    invoiceNumber: Yup.number()
+        .required("invoice number is required")
+        .typeError("invalid invoice number"),
     items: Yup.object().test("items", "no items added", (value) => {
-        if(value && Object.values(value).length === 0){
+        if (value && Object.values(value).length === 0) {
             return false;
         }
         return true;
     }),
     discount: Yup.number().nullable().typeError("invalid discount"),
     isCredit: Yup.boolean(),
-    amountPaid: Yup.number().typeError("invalid amount paid").test("amountPaid", "amount paid cannot be greater than total amount", (value, context) => {
-        const totalAfterTax = Number(context?.options?.context?.totalAfterTax);
-        if(Number(value) > totalAfterTax){
-            return false;
-        }
-        return true;
-    }),
-    receiptNumber: Yup.string().nullable()
-    
-})
+    amountPaid: Yup.number()
+        .typeError("invalid amount paid")
+        .test(
+            "amountPaid",
+            "amount paid cannot be greater than total amount",
+            (value, context) => {
+                const totalAfterTax = Number(
+                    context?.options?.context?.totalAfterTax
+                );
+                if (Number(value) > totalAfterTax) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+    receiptNumber: Yup.string().nullable(),
+});
 
 export const SaleInvoiceFormValidation = Yup.object().shape({
-    party: Yup.object().nullable().typeError("invalid party").test("party", "select party for non-open bills", (value, context) => {
-        const isNoPartyBill = Number(context?.options?.context?.isNoPartyBill);
-        if(!isNoPartyBill && !value){
-            return false;
-        }
-        return true;
-    }),
+    party: Yup.object()
+        .nullable()
+        .typeError("invalid party")
+        .test("party", "select party for non-open bills", (value, context) => {
+            const isNoPartyBill = Number(
+                context?.options?.context?.isNoPartyBill
+            );
+            if (!isNoPartyBill && !value) {
+                return false;
+            }
+            return true;
+        }),
     isNoPartyBill: Yup.boolean(),
-    invoiceNumber: Yup.number().nullable().typeError("invalid invoice number"),
+    invoiceNumber: Yup.number()
+        .nullable()
+        .typeError("invalid invoice number")
+        .test(
+            "invoiceNumber",
+            "invoice number is required",
+            (value, context) => {
+                const autogenerateInvoice = Number(
+                    context?.options?.context?.autogenerateInvoice
+                );
+                /* invoice number is required when autogenerateInvoice is false */
+                if (!autogenerateInvoice && !value) {
+                    return false;
+                }
+                return true;
+            }
+        ),
     items: Yup.object().test("items", "no items added", (value) => {
-        if(value && Object.values(value).length === 0){
+        if (value && Object.values(value).length === 0) {
             return false;
         }
         return true;
     }),
     discount: Yup.number().nullable().typeError("invalid discount"),
     isCredit: Yup.boolean(),
-    amountPaid: Yup.number().typeError("invalid amount paid").test("amountPaid", "amount paid cannot be greater than total amount", (value, context) => {
-        const totalAfterTax = Number(context?.options?.context?.totalAfterTax);
-        if(Number(value) > totalAfterTax){
+    amountPaid: Yup.number()
+        .typeError("invalid amount paid")
+        .test(
+            "amountPaid",
+            "amount paid cannot be greater than total amount",
+            (value, context) => {
+                const totalAfterTax = Number(
+                    context?.options?.context?.totalAfterTax
+                );
+                if (Number(value) > totalAfterTax) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+});
+
+export const QuotationFormValidation = Yup.object().shape({
+    party: Yup.object()
+        .typeError("invalid party")
+        .required("party is required"),
+    quotationNumber: Yup.number()
+        .nullable()
+        .typeError("invalid quotation number")
+        .test(
+            "quotationNumber",
+            "quotation number is required",
+            (value, context) => {
+                const autogenerateQuotationNumber = Number(
+                    context?.options?.context?.autogenerateQuotationNumber
+                );
+                /* quotation number is required when it autogenerateQuotationNumber is false */
+                if (!autogenerateQuotationNumber && !value) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+    items: Yup.object().test("items", "no items added", (value) => {
+        if (value && Object.values(value).length === 0) {
             return false;
         }
         return true;
     }),
-    
-})
-
-
+    discount: Yup.number().nullable().typeError("invalid discount"),
+});
