@@ -251,3 +251,5 @@ export interface SaleInvoiceItem {
     taxPercent: number
 }
 
+export type QuickActionTypes = "SALE" | "PURCHASE" | "ITEMS"
+

@@ -100,7 +100,8 @@ const GetPurchase = () => {
                 values,
                 selectedCompany?.companyId as number,
                 companyState.country?.timezone as string,
-                selectedCompany?.decimalRoundTo as number
+                selectedCompany?.decimalRoundTo as number,
+                Number(purchaseDetails?.data?.purchase?.amountPaid) || 0
             ),
     });
 
@@ -183,6 +184,7 @@ const GetPurchase = () => {
                     partyName: partyInfo.partyName,
                     defaultPurchaseCreditAllowanceInDays:
                         partyInfo.defaultPurchaseCreditAllowanceInDays,
+                    defaultSaleCreditAllowanceInDays: partyInfo.defaultSaleCreditAllowanceInDays,
                     updatedAt: partyInfo.updatedAt,
                 },
                 amountDue: Number(purchaseData.amountDue),

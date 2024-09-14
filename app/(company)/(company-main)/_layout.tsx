@@ -368,7 +368,7 @@ const CompanyMainLayout = () => {
                     })}
                 >
                     <Drawer.Screen
-                        name="dashboard"
+                        name="(dashboard)"
                         options={{
                             drawerLabel: capitalizeText(i18n.t("dashboard")),
                             headerTitle: () => (

@@ -99,7 +99,8 @@ const GetSale = () => {
                 values,
                 selectedCompany?.companyId as number,
                 companyState.country?.timezone as string,
-                selectedCompany?.decimalRoundTo as number
+                selectedCompany?.decimalRoundTo as number,
+                Number(saleDetails?.data?.sale?.amountPaid) || 0
             ),
     });
 

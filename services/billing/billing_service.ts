@@ -26,6 +26,7 @@ import {
     FilterPurchasesQuery,
     FilterQuotationQuery,
     FilterSalesQuery,
+    GetCashFlowSummaryResponse,
     GetPartyResponse,
     GetPurchaseResponse,
     GetQuotationResponse,
@@ -57,6 +58,26 @@ class BillingService {
     getQuotationPath = "quotation/get-quotation";
     addQuotationPath = "quotation/add-quotation";
     updateQuotationPath = "quotation/update-quotation";
+    getCashFlowSummaryPath = "summary/get-cashflow-summary";
+
+    getCashFlowSummary = async (
+        companyId: number,
+        dateTimeRange: {
+            from: string,
+            to: string
+        }
+    ) => {
+        return await asyncHandler<GetCashFlowSummaryResponse>(() => {
+            return axios.post(
+                `${this.hostPath}/${this.getCashFlowSummaryPath}`,
+                {
+                    companyId,
+                    from: dateTimeRange.from,
+                    to: dateTimeRange.to
+                }
+            );
+        });
+    };
 
     getAllPurchases = async <T>({
         pageParam,
@@ -225,7 +246,8 @@ class BillingService {
         purchaseForm: PurchaseInvoiceForm,
         companyId: number,
         companyTimezone: string,
-        decimalRoundTo: number
+        decimalRoundTo: number,
+        oldAmountPaid: number
     ) => {
         let items: any = [];
 
@@ -280,6 +302,7 @@ class BillingService {
                   )
                 : null,
             amountPaid: Number(purchaseForm.amountPaid),
+            oldAmountPaid: oldAmountPaid,
             amountDue: Number(purchaseForm.amountDue),
             isFullyPaid: Number(purchaseForm.amountDue) === 0,
             paymentCompletionDate:
@@ -471,7 +494,8 @@ class BillingService {
         saleForm: SaleInvoiceForm,
         companyId: number,
         companyTimezone: string,
-        decimalRoundTo: number
+        decimalRoundTo: number,
+        oldAmountPaid: number
     ) => {
         let items: any = [];
 
@@ -535,6 +559,7 @@ class BillingService {
                   )
                 : null,
             amountPaid: Number(saleForm.amountPaid),
+            oldAmountPaid: oldAmountPaid,
             amountDue: Number(saleForm.amountDue),
             isFullyPaid: Number(saleForm.amountDue) === 0,
             paymentCompletionDate:

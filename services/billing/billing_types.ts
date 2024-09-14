@@ -238,7 +238,6 @@ export class GetPurchaseResponse {
     ) {}
 }
 
-
 export interface FilterSalesQuery {
     partyId?: number;
     purchaseType?: "ALL" | "CASH" | "CREDIT";
@@ -252,7 +251,6 @@ export interface FilterQuotationQuery {
     fromDate?: string;
     toDate?: string;
     quotationNumberSearchQuery?: number;
-
 }
 
 export class GetAllSalesResponse {
@@ -286,10 +284,7 @@ export class AddUpdateSaleResponse {
 }
 
 export class GetSaleResponse {
-    constructor(
-        public sale: Sale,
-        public saleItems: Array<SaleItem>
-    ) {}
+    constructor(public sale: Sale, public saleItems: Array<SaleItem>) {}
 }
 
 export class GetAllQuotationsResponse {
@@ -318,9 +313,7 @@ export class GetQuotationResponse {
     constructor(
         public quotation: Quotation,
         public quotationItems: Array<QuotationItem>
-    ){
-
-    }
+    ) {}
 }
 
 export class AddUpdateQuotationResponse {
@@ -328,5 +321,14 @@ export class AddUpdateQuotationResponse {
         public quotation: Quotation,
         public quotationItems: Array<QuotationItem>,
         public message: string
-    ){}
+    ) {}
+}
+
+export class GetCashFlowSummaryResponse {
+    constructor(
+        public cashIn: number,
+        public cashOut: number,
+        public collectionsDue: number,
+        public paymentsDue: number
+    ) {}
 }

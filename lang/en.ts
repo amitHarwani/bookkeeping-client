@@ -176,6 +176,11 @@ export default {
     quotation: "quotation",
     quotationUpdatedSuccessfully: "quotation update successfully",
     convertToInvoice: "convert to invoice",
-    viewInvoice: "view invoice"
+    viewInvoice: "view invoice",
+    quickActions: "quick actions",
+    cashIn: "cash in",
+    cashOut: "cash out",
+    collectionsDue: "collections due",
+    paymentsDue: "payments due"
 
 }
