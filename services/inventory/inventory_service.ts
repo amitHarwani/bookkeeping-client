@@ -8,6 +8,7 @@ import {
     GetAllItemsResponse,
     GetAllUnitsResponse,
     GetItemResponse,
+    GetLowStockItemsResponse,
     Item,
     UpdateItemResponse,
 } from "./inventory_types";
@@ -23,6 +24,7 @@ class InventoryService {
     getAllUnitsPath = "unit/get-all-units";
     addUnitPath = "unit/add-unit";
     adjustItemPath = "item/adjust-item";
+    getLowStockItemsPath = "insights/get-low-stock-items";
 
     getAllItems = async <T>({
         pageParam,
@@ -32,7 +34,7 @@ class InventoryService {
             companyId: number;
             cursor?: { itemId: number; updatedAt: string };
             query?: FilterItemsQuery;
-            select?: [keyof Item]
+            select?: [keyof Item];
         };
     }) => {
         return await asyncHandler<T>(() => {
@@ -43,7 +45,7 @@ class InventoryService {
                     companyId: pageParam.companyId,
                     cursor: pageParam?.cursor,
                     query: pageParam?.query,
-                    select: pageParam?.select
+                    select: pageParam?.select,
                 }
             );
         });
@@ -102,7 +104,7 @@ class InventoryService {
                                       purchasePrice: Number(
                                           itemForm.priceOfCurrentStock
                                       ),
-                                      purchaseId: null
+                                      purchaseId: null,
                                   },
                               ]
                             : null,
@@ -140,6 +142,24 @@ class InventoryService {
                 reason: adjustItemDetails.reason,
                 pricePerUnit: Number(adjustItemDetails.pricePerUnit),
                 stockAdjusted: Number(adjustItemDetails.stockAdjusted),
+            });
+        });
+    };
+
+    getLowStockItems = async ({
+        pageParam,
+    }: {
+        pageParam: {
+            pageSize: number;
+            companyId: number;
+            cursor?: { itemId: number };
+        };
+    }) => {
+        return await asyncHandler<GetLowStockItemsResponse>(() => {
+            return axios.post(`${this.hostPath}/${this.getLowStockItemsPath}`, {
+                companyId: pageParam.companyId,
+                pageSize: pageParam.pageSize,
+                cursor: pageParam?.cursor,
             });
         });
     };

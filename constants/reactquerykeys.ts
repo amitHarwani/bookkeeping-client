@@ -18,5 +18,6 @@ export enum ReactQueryKeys {
     quotations = "quotations",
     getQuotation = "getQuotation",
     cashFlowSummary = "cashFlowSummary",
-    getTopSellersForCurrentMonth = "getTopSellersForCurrentMonth"
+    getTopSellersForCurrentMonth = "getTopSellersForCurrentMonth",
+    getLowStockItems = "getLowStockItems"
 }

@@ -182,6 +182,7 @@ export default {
     cashOut: "cash out",
     collectionsDue: "collections due",
     paymentsDue: "payments due",
-    topSellersThisMonth: "top sellers, this month"
+    topSellersThisMonth: "top sellers, this month",
+    lowStockItems: "low stock items"
 
 }

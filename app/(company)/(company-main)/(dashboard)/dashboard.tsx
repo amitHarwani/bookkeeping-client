@@ -19,6 +19,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import inventory_service from "@/services/inventory/inventory_service";
 
 const Dashboard = () => {
     const userACL = useAppSelector((state) => state.company.userACL);
@@ -40,6 +41,10 @@ const Dashboard = () => {
     const isTopSellersAccessible = useMemo(() => {
         return isFeatureAccessible(PLATFORM_FEATURES.GET_TOPSELLING_ITEMS);
     }, [userACL]);
+
+    const isLowStockItemsAccessible = useMemo(() => {
+        return isFeatureAccessible(PLATFORM_FEATURES.GET_LOWSTOCK_ITEMS);
+    }, []);
 
     /* Quick Actions data array */
     const quickActions: Array<QuickActionTypes> = useMemo(() => {
@@ -118,6 +123,23 @@ const Dashboard = () => {
         enabled: false,
     });
 
+    const {
+        isFetching: fetchingLowStockItems,
+        data: lowStockItemsData,
+        error: errorFetchingLowStockItems,
+        refetch: refetchLowStockItems,
+    } = useQuery({
+        queryKey: [ReactQueryKeys.getLowStockItems, companyId],
+        queryFn: () =>
+            inventory_service.getLowStockItems({
+                pageParam: {
+                    companyId: companyId,
+                    pageSize: 5,
+                },
+            }),
+        enabled: false,
+    });
+
     /* On change of from and to date time */
     useEffect(() => {
         /* If get cash flow summary is accessible, fetch cash flow summary */
@@ -127,11 +149,15 @@ const Dashboard = () => {
         if (isTopSellersAccessible) {
             refetchTopSellers();
         }
+        if (isLowStockItemsAccessible) {
+            refetchLowStockItems();
+        }
     }, [
         fromDateTime,
         toDateTime,
         isCashFlowSummaryAccessible,
         isTopSellersAccessible,
+        isLowStockItemsAccessible,
     ]);
 
     /* On focus compute from and to date for requests */
@@ -142,8 +168,16 @@ const Dashboard = () => {
     );
     /* Show loading spinner when making API Calls */
     const showLoadingSpinner = useMemo(() => {
-        return fetchingCashFlowSummaryData || fetchingTopSellers ? true : false;
-    }, [fetchingCashFlowSummaryData, fetchingTopSellers]);
+        return fetchingCashFlowSummaryData ||
+            fetchingTopSellers ||
+            fetchingLowStockItems
+            ? true
+            : false;
+    }, [
+        fetchingCashFlowSummaryData,
+        fetchingTopSellers,
+        fetchingLowStockItems,
+    ]);
 
     return (
         <ScrollView style={styles.mainContainer}>
@@ -214,6 +248,24 @@ const Dashboard = () => {
                         />
                     </View>
                 )}
+                {isLowStockItemsAccessible && lowStockItemsData && (
+                    <View>
+                        <Text
+                            style={[
+                                commonStyles.textSmallBold,
+                                commonStyles.capitalize,
+                            ]}
+                        >
+                            {i18n.t("lowStockItems")}
+                        </Text>
+                        <CustomBarchart
+                            data={lowStockItemsData.data.lowStockItems}
+                            xAxisKey="itemName"
+                            yAxisKey="difference"
+                            styles={{barFillColor: "#E86339"}}
+                        />
+                    </View>
+                )}
             </View>
         </ScrollView>
     );
@@ -225,7 +277,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         paddingHorizontal: 16,
         paddingTop: 24,
-        paddingBottom: 6
+        paddingBottom: 6,
     },
     container: {
         rowGap: 30,

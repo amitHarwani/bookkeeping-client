@@ -3,7 +3,7 @@ import { ItemTypeInInvoiceItem, ItemTypeInItemsList } from "@/constants/types";
 export interface PriceHistoryOfCurrentStockType {
     stock: number;
     purchasePrice: number;
-    purchaseId?: number
+    purchaseId?: number;
 }
 
 export interface Item {
@@ -18,7 +18,7 @@ export interface Item {
     defaultSellingPrice: string | null;
     defaultPurchasePrice: string | null;
     stock: string;
-    minStockToMaintain: number | null;
+    minStockToMaintain: string | null;
     priceHistoryOfCurrentStock: PriceHistoryOfCurrentStockType[] | null;
 }
 
@@ -44,20 +44,20 @@ export class GetAllItemsForItemsListResponse {
         public items: [ItemTypeInItemsList],
         public hasNextPage: boolean,
         public nextPageCursor?: {
-            itemId: number,
-            updatedAt: Date
+            itemId: number;
+            updatedAt: Date;
         }
-    ){}
+    ) {}
 }
 export class GetAllItemsForInvoiceItemSelectorResponse {
     constructor(
         public items: [ItemTypeInInvoiceItem],
         public hasNextPage: boolean,
         public nextPageCursor?: {
-            itemId: number,
-            updatedAt: Date
+            itemId: number;
+            updatedAt: Date;
         }
-    ){}
+    ) {}
 }
 
 export class GetAllUnitsResponse {
@@ -86,7 +86,18 @@ export class UpdateItemResponse {
     constructor(public item: Item, public message: string) {}
 }
 
-
 export class AdjustItemResponse {
-    constructor(public item: Item, public message: string){}
+    constructor(public item: Item, public message: string) {}
+}
+
+export class GetLowStockItemsResponse {
+    constructor(
+        public lowStockItems: Array<{
+            itemId: number;
+            itemName: string;
+            stock: string;
+            minStockToMaintain: string | null;
+            difference: string;
+        }>
+    ) {}
 }
