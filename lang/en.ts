@@ -181,6 +181,7 @@ export default {
     cashIn: "cash in",
     cashOut: "cash out",
     collectionsDue: "collections due",
-    paymentsDue: "payments due"
+    paymentsDue: "payments due",
+    topSellersThisMonth: "top sellers, this month"
 
 }

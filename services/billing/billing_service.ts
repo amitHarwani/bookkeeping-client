@@ -31,6 +31,7 @@ import {
     GetPurchaseResponse,
     GetQuotationResponse,
     GetSaleResponse,
+    GetTopSellersForCurrentMonthResponse,
     Purchase,
     PurchaseItem,
     QuotationItem,
@@ -59,12 +60,21 @@ class BillingService {
     addQuotationPath = "quotation/add-quotation";
     updateQuotationPath = "quotation/update-quotation";
     getCashFlowSummaryPath = "summary/get-cashflow-summary";
+    getTopSellersForCurrentMonthPath =
+        "summary/get-topsellers-for-current-month";
 
+    getTopSellersForCurrentMonth = async (companyId: number) => {
+        return await asyncHandler<GetTopSellersForCurrentMonthResponse>(() => {
+            return axios.get(
+                `${this.hostPath}/${this.getTopSellersForCurrentMonthPath}/${companyId}`
+            );
+        });
+    };
     getCashFlowSummary = async (
         companyId: number,
         dateTimeRange: {
-            from: string,
-            to: string
+            from: string;
+            to: string;
         }
     ) => {
         return await asyncHandler<GetCashFlowSummaryResponse>(() => {
@@ -73,7 +83,7 @@ class BillingService {
                 {
                     companyId,
                     from: dateTimeRange.from,
-                    to: dateTimeRange.to
+                    to: dateTimeRange.to,
                 }
             );
         });

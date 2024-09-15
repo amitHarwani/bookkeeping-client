@@ -1,31 +1,27 @@
 import { i18n } from "@/app/_layout";
-import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
-import CashSummaryItem from "@/components/custom/business/CashSummaryItem";
-import QuickActionButton from "@/components/custom/business/QuickActionButton";
-import {
-    dateFormat,
-    dateTimeFormat24hr,
-    timeFormat24hr,
-} from "@/constants/datetimes";
-import { PLATFORM_FEATURES } from "@/constants/features";
-import { ReactQueryKeys } from "@/constants/reactquerykeys";
-import { QuickActionTypes } from "@/constants/types";
-import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
-import billing_service from "@/services/billing/billing_service";
-import { useAppSelector } from "@/store";
-import { commonStyles } from "@/utils/common_styles";
-import { convertUTCStringToTimezonedDate } from "@/utils/common_utils";
-import { isFeatureAccessible } from "@/utils/feature_access_helper";
-import { useQuery } from "@tanstack/react-query";
-import { useFocusEffect } from "expo-router";
-import moment from "moment";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import CashInIcon from "@/assets/images/cash_in_icon.png";
 import CashOutIcon from "@/assets/images/cash_out_icon.png";
 import InfoIcon from "@/assets/images/info_icon.png";
+import CustomBarchart from "@/components/custom/basic/CustomBarchart";
+import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
+import CashSummaryItem from "@/components/custom/business/CashSummaryItem";
+import QuickActionButton from "@/components/custom/business/QuickActionButton";
+import { dateFormat, dateTimeFormat24hr } from "@/constants/datetimes";
+import { PLATFORM_FEATURES } from "@/constants/features";
+import { ReactQueryKeys } from "@/constants/reactquerykeys";
+import { QuickActionTypes } from "@/constants/types";
+import billing_service from "@/services/billing/billing_service";
+import { useAppSelector } from "@/store";
+import { commonStyles } from "@/utils/common_styles";
+import { isFeatureAccessible } from "@/utils/feature_access_helper";
+import { useQuery } from "@tanstack/react-query";
+import { useFocusEffect } from "@react-navigation/native";
+import moment from "moment";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const Dashboard = () => {
+    const userACL = useAppSelector((state) => state.company.userACL);
     /* Company state from redux */
     const companyState = useAppSelector((state) => state.company);
 
@@ -38,7 +34,12 @@ const Dashboard = () => {
     /* Whether cash flow summary is accessible to the user */
     const isCashFlowSummaryAccessible = useMemo(() => {
         return isFeatureAccessible(PLATFORM_FEATURES.GET_CASHFLOW_SUMMARY);
-    }, []);
+    }, [userACL]);
+
+    /* Whether top selling items chart is accessible */
+    const isTopSellersAccessible = useMemo(() => {
+        return isFeatureAccessible(PLATFORM_FEATURES.GET_TOPSELLING_ITEMS);
+    }, [userACL]);
 
     /* Quick Actions data array */
     const quickActions: Array<QuickActionTypes> = useMemo(() => {
@@ -56,7 +57,7 @@ const Dashboard = () => {
             actions.push("ITEMS");
         }
         return actions;
-    }, []);
+    }, [userACL]);
 
     const [fromDateTime, setFromDateTime] = useState<string>("");
     const [toDateTime, setToDateTime] = useState<string>("");
@@ -106,23 +107,43 @@ const Dashboard = () => {
         enabled: false,
     });
 
+    const {
+        isFetching: fetchingTopSellers,
+        data: topSellersData,
+        error: errorFetchingTopSellers,
+        refetch: refetchTopSellers,
+    } = useQuery({
+        queryKey: [ReactQueryKeys.getTopSellersForCurrentMonth, companyId],
+        queryFn: () => billing_service.getTopSellersForCurrentMonth(companyId),
+        enabled: false,
+    });
+
     /* On change of from and to date time */
     useEffect(() => {
         /* If get cash flow summary is accessible, fetch cash flow summary */
         if (isCashFlowSummaryAccessible && fromDateTime && toDateTime) {
             refetchCashFlowSumary();
         }
-    }, [fromDateTime, toDateTime]);
+        if (isTopSellersAccessible) {
+            refetchTopSellers();
+        }
+    }, [
+        fromDateTime,
+        toDateTime,
+        isCashFlowSummaryAccessible,
+        isTopSellersAccessible,
+    ]);
 
     /* On focus compute from and to date for requests */
-    useFocusEffect(() => {
-        computeFromToDateForRequests();
-    });
-
+    useFocusEffect(
+        React.useCallback(() => {
+            computeFromToDateForRequests();
+        }, [])
+    );
     /* Show loading spinner when making API Calls */
     const showLoadingSpinner = useMemo(() => {
-        return fetchingCashFlowSummaryData ? true : false;
-    }, [fetchingCashFlowSummaryData]);
+        return fetchingCashFlowSummaryData || fetchingTopSellers ? true : false;
+    }, [fetchingCashFlowSummaryData, fetchingTopSellers]);
 
     return (
         <ScrollView style={styles.mainContainer}>
@@ -176,6 +197,23 @@ const Dashboard = () => {
                         </View>
                     </>
                 )}
+                {isTopSellersAccessible && topSellersData && (
+                    <View>
+                        <Text
+                            style={[
+                                commonStyles.textSmallBold,
+                                commonStyles.capitalize,
+                            ]}
+                        >
+                            {i18n.t("topSellersThisMonth")}
+                        </Text>
+                        <CustomBarchart
+                            data={topSellersData.data.topSellingItems}
+                            xAxisKey="itemName"
+                            yAxisKey="totalUnitsSold"
+                        />
+                    </View>
+                )}
             </View>
         </ScrollView>
     );
@@ -187,6 +225,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         paddingHorizontal: 16,
         paddingTop: 24,
+        paddingBottom: 6
     },
     container: {
         rowGap: 30,
