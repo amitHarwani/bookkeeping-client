@@ -1,7 +1,14 @@
 import { GenericObject } from "@/constants/types";
-import React from "react";
+import React, { useCallback } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { VictoryBar, VictoryChart, VictoryTheme } from "victory-native";
+import {
+    VictoryAxis,
+    VictoryBar,
+    VictoryChart,
+    VictoryContainer,
+    VictoryLabel,
+    VictoryTheme,
+} from "victory-native";
 
 interface CustomBarchartProps {
     data: Array<GenericObject>;
@@ -11,12 +18,24 @@ interface CustomBarchartProps {
         barFillColor?: string;
     };
 }
+
 const CustomBarchart = ({
     data,
     xAxisKey,
     yAxisKey,
     styles,
 }: CustomBarchartProps) => {
+    const formatTickLabels = useCallback(() => {
+        const labels = data.map((item) => {
+            let label = item[xAxisKey] as string;
+
+            if (label.length > 6) {
+                label = label.substring(0, 5) + "...";
+            }
+            return label;
+        });
+        return labels.reverse();
+    }, [data]);
     return (
         <View>
             <VictoryChart
@@ -24,6 +43,16 @@ const CustomBarchart = ({
                 domainPadding={50}
                 horizontal
             >
+                <VictoryAxis
+                    style={{
+                        grid: { stroke: "grey" },
+                    }}
+                    dependentAxis
+                />
+                <VictoryAxis
+                    tickFormat={formatTickLabels()}
+                    tickValues={data.map((_, index) => index)}
+                />
                 <VictoryBar
                     style={{
                         data: {

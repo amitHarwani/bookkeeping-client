@@ -156,11 +156,14 @@ class InventoryService {
         };
     }) => {
         return await asyncHandler<GetLowStockItemsResponse>(() => {
-            return axios.post(`${this.hostPath}/${this.getLowStockItemsPath}`, {
-                companyId: pageParam.companyId,
-                pageSize: pageParam.pageSize,
-                cursor: pageParam?.cursor,
-            });
+            return axios.post<ApiResponse<GetLowStockItemsResponse>>(
+                `${this.hostPath}/${this.getLowStockItemsPath}`,
+                {
+                    companyId: pageParam.companyId,
+                    pageSize: pageParam.pageSize,
+                    cursor: pageParam?.cursor,
+                }
+            );
         });
     };
 }

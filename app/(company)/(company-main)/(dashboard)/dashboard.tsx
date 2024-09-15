@@ -18,8 +18,19 @@ import { useQuery } from "@tanstack/react-query";
 import { useFocusEffect } from "@react-navigation/native";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+    FlatList,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import inventory_service from "@/services/inventory/inventory_service";
+import ForwardSquareIcon from "@/assets/images/forward_square_icon.png";
+import { Href, router } from "expo-router";
+import { AppRoutes } from "@/constants/routes";
 
 const Dashboard = () => {
     const userACL = useAppSelector((state) => state.company.userACL);
@@ -44,7 +55,7 @@ const Dashboard = () => {
 
     const isLowStockItemsAccessible = useMemo(() => {
         return isFeatureAccessible(PLATFORM_FEATURES.GET_LOWSTOCK_ITEMS);
-    }, []);
+    }, [userACL]);
 
     /* Quick Actions data array */
     const quickActions: Array<QuickActionTypes> = useMemo(() => {
@@ -140,6 +151,19 @@ const Dashboard = () => {
         enabled: false,
     });
 
+    const lowStockItemsFormatted = useMemo(() => {
+        if(lowStockItemsData){
+            return lowStockItemsData.data.lowStockItems.map((item) => {
+                return {
+                    ...item,
+                    minStockToMaintain: Number(item.minStockToMaintain),
+                    difference: Number(item.difference),
+                    stock: Number(item.stock),
+                }
+            })
+        }
+        return [];
+    }, [lowStockItemsData])   
     /* On change of from and to date time */
     useEffect(() => {
         /* If get cash flow summary is accessible, fetch cash flow summary */
@@ -250,19 +274,33 @@ const Dashboard = () => {
                 )}
                 {isLowStockItemsAccessible && lowStockItemsData && (
                     <View>
-                        <Text
-                            style={[
-                                commonStyles.textSmallBold,
-                                commonStyles.capitalize,
-                            ]}
-                        >
-                            {i18n.t("lowStockItems")}
-                        </Text>
+                        <View style={styles.lowStockItemsHeadingContainer}>
+                            <Text
+                                style={[
+                                    commonStyles.textSmallBold,
+                                    commonStyles.capitalize,
+                                ]}
+                            >
+                                {i18n.t("lowStockItems")}
+                            </Text>
+                            <Pressable
+                                onPress={() => {
+                                    router.push(
+                                        `${AppRoutes.getLowStockItems}` as Href
+                                    );
+                                }}
+                            >
+                                <Image
+                                    source={ForwardSquareIcon}
+                                    style={styles.forwardSquareIcon}
+                                />
+                            </Pressable>
+                        </View>
                         <CustomBarchart
-                            data={lowStockItemsData.data.lowStockItems}
+                            data={lowStockItemsFormatted}
                             xAxisKey="itemName"
                             yAxisKey="difference"
-                            styles={{barFillColor: "#E86339"}}
+                            styles={{ barFillColor: "#E86339" }}
                         />
                     </View>
                 )}
@@ -291,6 +329,15 @@ const styles = StyleSheet.create({
     cashSummaryContainer: {
         flexDirection: "row",
         columnGap: 5,
+    },
+    lowStockItemsHeadingContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    forwardSquareIcon: {
+        width: 24,
+        height: 24,
     },
 });
 export default Dashboard;

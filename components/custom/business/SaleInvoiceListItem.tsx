@@ -35,7 +35,7 @@ const SaleInvoiceListItem = ({
                 disabled={isDisabled}
             >
                 <View>
-                    <Text style={[commonStyles.textSmallBold]}>
+                    <Text style={[commonStyles.textSmallBold, styles.itemName]} numberOfLines={2}>
                         {item.item?.itemName}
                     </Text>
                     <Text
@@ -68,6 +68,9 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 12,
         columnGap: 20,
+    },
+    itemName: {
+        maxWidth: "75%",
     },
     minusIcon: {
         width: 12,
