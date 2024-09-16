@@ -253,3 +253,9 @@ export interface SaleInvoiceItem {
 
 export type QuickActionTypes = "SALE" | "PURCHASE" | "ITEMS"
 
+export interface TableColDefType {
+    id: string,
+    text: string,
+    extraCellStyles?: Object
+    extraCellProps?: Object
+}

@@ -183,6 +183,8 @@ export default {
     collectionsDue: "collections due",
     paymentsDue: "payments due",
     topSellersThisMonth: "top sellers, this month",
-    lowStockItems: "low stock items"
+    lowStockItems: "low stock items",
+    totalUnitsSold: "total units sold",
+    minStock: "min stock"
 
 }

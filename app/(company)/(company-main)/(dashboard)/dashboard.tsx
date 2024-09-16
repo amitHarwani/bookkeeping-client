@@ -1,21 +1,26 @@
 import { i18n } from "@/app/_layout";
 import CashInIcon from "@/assets/images/cash_in_icon.png";
 import CashOutIcon from "@/assets/images/cash_out_icon.png";
+import ForwardSquareIcon from "@/assets/images/forward_square_icon.png";
 import InfoIcon from "@/assets/images/info_icon.png";
-import CustomBarchart from "@/components/custom/basic/CustomBarchart";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
+import Table from "@/components/custom/basic/Table";
 import CashSummaryItem from "@/components/custom/business/CashSummaryItem";
 import QuickActionButton from "@/components/custom/business/QuickActionButton";
 import { dateFormat, dateTimeFormat24hr } from "@/constants/datetimes";
 import { PLATFORM_FEATURES } from "@/constants/features";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
+import { AppRoutes } from "@/constants/routes";
+import { lowStockItemsColDef, topSellersColDef } from "@/constants/tablecoldefs";
 import { QuickActionTypes } from "@/constants/types";
 import billing_service from "@/services/billing/billing_service";
+import inventory_service from "@/services/inventory/inventory_service";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
-import { useQuery } from "@tanstack/react-query";
 import { useFocusEffect } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query";
+import { Href, router } from "expo-router";
 import moment from "moment";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -27,10 +32,6 @@ import {
     Text,
     View,
 } from "react-native";
-import inventory_service from "@/services/inventory/inventory_service";
-import ForwardSquareIcon from "@/assets/images/forward_square_icon.png";
-import { Href, router } from "expo-router";
-import { AppRoutes } from "@/constants/routes";
 
 const Dashboard = () => {
     const userACL = useAppSelector((state) => state.company.userACL);
@@ -152,18 +153,18 @@ const Dashboard = () => {
     });
 
     const lowStockItemsFormatted = useMemo(() => {
-        if(lowStockItemsData){
+        if (lowStockItemsData) {
             return lowStockItemsData.data.lowStockItems.map((item) => {
                 return {
                     ...item,
                     minStockToMaintain: Number(item.minStockToMaintain),
                     difference: Number(item.difference),
                     stock: Number(item.stock),
-                }
-            })
+                };
+            });
         }
         return [];
-    }, [lowStockItemsData])   
+    }, [lowStockItemsData]);
     /* On change of from and to date time */
     useEffect(() => {
         /* If get cash flow summary is accessible, fetch cash flow summary */
@@ -256,7 +257,7 @@ const Dashboard = () => {
                     </>
                 )}
                 {isTopSellersAccessible && topSellersData && (
-                    <View>
+                    <View style={styles.topSellersContainer}>
                         <Text
                             style={[
                                 commonStyles.textSmallBold,
@@ -265,15 +266,16 @@ const Dashboard = () => {
                         >
                             {i18n.t("topSellersThisMonth")}
                         </Text>
-                        <CustomBarchart
+                        <Table
                             data={topSellersData.data.topSellingItems}
-                            xAxisKey="itemName"
-                            yAxisKey="totalUnitsSold"
+                            idKey="itemName"
+                            colDef={topSellersColDef}
                         />
+
                     </View>
                 )}
                 {isLowStockItemsAccessible && lowStockItemsData && (
-                    <View>
+                    <View style={styles.lowStockItemsContainer}>
                         <View style={styles.lowStockItemsHeadingContainer}>
                             <Text
                                 style={[
@@ -296,11 +298,11 @@ const Dashboard = () => {
                                 />
                             </Pressable>
                         </View>
-                        <CustomBarchart
+                        <Table
                             data={lowStockItemsFormatted}
-                            xAxisKey="itemName"
-                            yAxisKey="difference"
-                            styles={{ barFillColor: "#E86339" }}
+                            idKey="itemName"
+                            colDef={lowStockItemsColDef}
+                            isAtEndOfScreen
                         />
                     </View>
                 )}
@@ -330,6 +332,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         columnGap: 5,
     },
+    topSellersContainer: {
+        rowGap: 15
+    },
+    lowStockItemsContainer: {
+        rowGap: 15
+    },
     lowStockItemsHeadingContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -339,5 +347,6 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
     },
+
 });
 export default Dashboard;
