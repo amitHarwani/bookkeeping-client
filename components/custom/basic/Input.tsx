@@ -98,6 +98,7 @@ const Input = ({
                         styles.input,
                         commonStyles.textMedium,
                         extraInputStyles,
+                        isDisabled && commonStyles.textDisabled
                     ]}
                     placeholder={placeholder}
                     onChangeText={inputChangeHandler}

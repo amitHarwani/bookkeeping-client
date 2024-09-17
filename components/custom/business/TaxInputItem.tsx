@@ -13,9 +13,16 @@ interface TaxInputItemProps {
     onDeregistered?(): void;
     onChange?(taxRegistrationNumber: string): void;
     value?: { isTaxRegistered: boolean; registrationNumber: string };
-    isDisabled?: boolean
+    isDisabled?: boolean;
 }
-const TaxInputItem = ({ taxInfo, onRegistered,onDeregistered,  onChange, value, isDisabled = false }: TaxInputItemProps) => {
+const TaxInputItem = ({
+    taxInfo,
+    onRegistered,
+    onDeregistered,
+    onChange,
+    value,
+    isDisabled = false,
+}: TaxInputItemProps) => {
     /* Whether the user has registered for this tax */
     const [isTaxRegistered, setIsTaxRegistered] = useState(false);
 
@@ -41,7 +48,7 @@ const TaxInputItem = ({ taxInfo, onRegistered,onDeregistered,  onChange, value, 
             setIsTaxRegistered(false);
 
             /* If onDeregister function is passed, call it to notify that the user has deregistered with this tax */
-            if(typeof onDeregistered === "function"){
+            if (typeof onDeregistered === "function") {
                 onDeregistered();
             }
         }

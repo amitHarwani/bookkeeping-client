@@ -23,6 +23,9 @@ export const commonStyles = StyleSheet.create({
         color: "blue",
         textDecorationLine: "underline",
     },
+    textDisabled: {
+        color: "#A9A9A9"
+    },
     textWhite: {
         color: "#FFFFFF"
     },
@@ -148,6 +151,12 @@ export const commonStyles = StyleSheet.create({
     },
     /* Tick Mark icon */
     tickmarkIcon: {
+        width: 24,
+        height: 24,
+    },
+
+    /* Settings Icon */
+    settingsIcon: {
         width: 24,
         height: 24,
     },

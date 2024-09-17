@@ -185,6 +185,10 @@ export default {
     topSellersThisMonth: "top sellers, this month",
     lowStockItems: "low stock items",
     totalUnitsSold: "total units sold",
-    minStock: "min stock"
+    minStock: "min stock",
+    companySettings: "company settings",
+    settings: "settings",
+    companyUpdatedSuccessfully: "company updated successfully",
+    updateCompany: "update company"
 
 }

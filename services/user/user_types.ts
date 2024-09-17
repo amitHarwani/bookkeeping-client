@@ -74,3 +74,10 @@ export class AddCompanyResponse {
 export class GetAccessibleFeaturesOfCompanyResponse {
     constructor(public acl: number[]) {}
 }
+
+export class UpdateCompanyResponse {
+    constructor(
+        public company: CompanyWithTaxDetails,
+        public message: string
+    ) {}
+}

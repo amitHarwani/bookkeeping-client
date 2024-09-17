@@ -24,13 +24,13 @@ export interface RegisterForm {
     termsAgreed: boolean;
 }
 
-export interface AddCompanyForm {
+export interface AddUpdateCompanyForm {
     companyName: string;
     country?: Country;
     address: string;
     phoneCode: string;
     mobileNumber: string;
-    localDayStartTime: string;
+    localDayStartTime: Date;
     decimalRoundTo: number;
     taxDetails?: {
         [taxId: number]: { taxId: number; registrationNumber: string };

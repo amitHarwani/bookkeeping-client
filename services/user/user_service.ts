@@ -1,4 +1,4 @@
-import { AddCompanyForm, LoginForm, RegisterForm } from "@/constants/types";
+import { AddUpdateCompanyForm, LoginForm, RegisterForm } from "@/constants/types";
 import { asyncHandler } from "../async_handler";
 import axios from "axios";
 import {
@@ -9,10 +9,12 @@ import {
     LoginResponse,
     RefreshTokenResponse,
     RegisterUserResponse,
+    UpdateCompanyResponse,
 } from "./user_types";
 import { ApiResponse } from "../api_response";
 import momentTimezone from "moment-timezone";
 import { timeFormat24hr } from "@/constants/datetimes";
+import { convertLocalUTCToTimezoneUTC } from "@/utils/common_utils";
 
 export class UserService {
     private hostPath = process.env.EXPO_PUBLIC_USER_SERVICE;
@@ -23,6 +25,7 @@ export class UserService {
     public getAllCompaniesPath = "company/get-accessible-companies";
     public getCompanyPath = "company/get-company";
     public addCompanyPath = "company/add-company";
+    public updateCompanyPath = "company/update-company";
     public getAccessibleFeaturesOfCompanyPath =
         "company/get-accessible-features-of-company";
 
@@ -91,13 +94,13 @@ export class UserService {
     };
 
     addCompany = async (
-        companyDetails: AddCompanyForm,
+        companyDetails: AddUpdateCompanyForm,
         mainBranchId?: number
     ) => {
+
         /* Moment timezone object of localDayStartTime */
         const dayStartTimeMoment = momentTimezone.tz(
             companyDetails.localDayStartTime,
-            timeFormat24hr,
             companyDetails.country?.timezone as string
         );
 
@@ -120,6 +123,37 @@ export class UserService {
             });
         });
     };
+
+    updateCompany = async (
+        companyId: number,
+        companyDetails: AddUpdateCompanyForm,
+    ) => {
+
+        /* Moment timezone object of localDayStartTime */
+        const dayStartTimeMoment = momentTimezone.tz(
+            companyDetails.localDayStartTime,
+            companyDetails.country?.timezone as string
+        );
+
+        /* Converting local day start time to utc */
+        const dayStartTimeInUTC = dayStartTimeMoment
+            .utc()
+            .format(timeFormat24hr);
+
+        return await asyncHandler<UpdateCompanyResponse>(() => {
+            return axios.put(`${this.hostPath}/${this.updateCompanyPath}`, {
+                companyId: companyId,
+                companyName: companyDetails.companyName,
+                countryId: companyDetails.country?.countryId,
+                address: companyDetails.address,
+                phoneNumber: `${companyDetails.phoneCode}${companyDetails.mobileNumber}`,
+                dayStartTime: dayStartTimeInUTC,
+                taxDetails: Object.values(companyDetails.taxDetails as Object),
+                decimalRoundTo: companyDetails.decimalRoundTo,
+            });
+        });
+    };
+
 
     getAccessibleFeaturesOfCompany = async (companyId: number) => {
         return await asyncHandler<GetAccessibleFeaturesOfCompanyResponse>(

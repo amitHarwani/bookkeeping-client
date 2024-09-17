@@ -35,7 +35,7 @@ const CompanyListItem = ({
                 <Image
                     source={SettingsIcon}
                     resizeMode="contain"
-                    style={styles.settingsIcon}
+                    style={commonStyles.settingsIcon}
                 />
             </Pressable>
         </View>
@@ -58,9 +58,5 @@ const styles = StyleSheet.create({
     },
     settingsContainer: {
         padding: 16,
-    },
-    settingsIcon: {
-        width: 24,
-        height: 24,
-    },
+    }
 });

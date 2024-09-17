@@ -41,7 +41,7 @@ export const RegisterFormValidation = Yup.object().shape({
     ),
 });
 
-export const AddCompanyFormValidation = Yup.object().shape({
+export const AddUpdateCompanyFormValidation = Yup.object().shape({
     companyName: Yup.string().trim().required("company name is required"),
     address: Yup.string().trim().required("address is required"),
     country: Yup.object().required("country is required"),
@@ -58,7 +58,7 @@ export const AddCompanyFormValidation = Yup.object().shape({
             }
             return false;
         }),
-    localDayStartTime: Yup.string().required(
+    localDayStartTime: Yup.date().required(
         "local day start time is required"
     ),
     decimalRoundTo: Yup.number()

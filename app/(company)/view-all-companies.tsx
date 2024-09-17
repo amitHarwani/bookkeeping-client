@@ -101,6 +101,7 @@ const ViewAllCompanies = () => {
                                         companyPressHandler(item);
                                     }}
                                     settingsPressHandler={(companyId) => {
+                                        dispatch(selectCompany({company: item}))
                                         router.push(
                                             `${AppRoutes.companySettings}/${companyId}` as Href
                                         );

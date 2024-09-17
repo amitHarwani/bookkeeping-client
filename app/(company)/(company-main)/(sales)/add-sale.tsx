@@ -2,12 +2,13 @@ import { i18n } from "@/app/_layout";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import AddUpdatePurchaseInvoice from "@/components/custom/widgets/AddUpdatePurchaseInvoice";
 import AddUpdateSaleInvoice from "@/components/custom/widgets/AddUpdateSaleInvoice";
+import { AppRoutes } from "@/constants/routes";
 import { PurchaseInvoiceForm, SaleInvoiceForm } from "@/constants/types";
 import BillingService from "@/services/billing/billing_service";
 import { useAppSelector } from "@/store";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
 import { useMutation } from "@tanstack/react-query";
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import React, { useEffect, useMemo } from "react";
 import { StyleSheet, ToastAndroid } from "react-native";
 
@@ -49,7 +50,7 @@ const AddSale = () => {
         return null;
     }, [addSaleMutation.error]);
 
-    /* Success: Show toast message and go back */
+    /* Success: Show toast message and go to get sale screen */
     useEffect(() => {
         if (addSaleMutation.isSuccess && addSaleMutation.data.success) {
             ToastAndroid.show(
@@ -57,7 +58,7 @@ const AddSale = () => {
                 ToastAndroid.LONG
             );
 
-            router.back();
+            router.replace(`${AppRoutes.getSale}/${addSaleMutation.data.data.sale.saleId}` as Href);
         }
     }, [addSaleMutation.isSuccess]);
 

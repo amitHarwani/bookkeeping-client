@@ -97,7 +97,7 @@ const CustomDateTimePicker = ({
                 disabled={isDisabled}
                 onPress={() => setIsDateTimePickerShown(true)}
             >
-                <Text>{valueShown}</Text>
+                <Text style={[isDisabled && commonStyles.textDisabled]}>{valueShown}</Text>
             </Pressable>
             {errorMessage && (
                 <Text

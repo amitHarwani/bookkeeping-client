@@ -135,7 +135,7 @@ const Dropdown = ({
                         commonStyles.textMedium,
                         commonStyles.capitalize,
                         !selectedItem && styles.placeholderText,
-                        isDisabled && styles.disabledText,
+                        isDisabled && commonStyles.textDisabled,
                     ]}
                 >
                     {selectedItem?.[textKey] || i18n.t("select")}
@@ -255,9 +255,6 @@ export default Dropdown;
 const styles = StyleSheet.create({
     container: {
         rowGap: 8,
-    },
-    disabledText: {
-        color: "#A9A9A9",
     },
     dropdownButton: {
         paddingHorizontal: 16,
