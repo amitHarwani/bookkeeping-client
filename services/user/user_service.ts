@@ -1,10 +1,17 @@
-import { AddUpdateCompanyForm, LoginForm, RegisterForm } from "@/constants/types";
+import {
+    AddUpdateCompanyForm,
+    AddUpdateRoleForm,
+    LoginForm,
+    RegisterForm,
+} from "@/constants/types";
 import { asyncHandler } from "../async_handler";
 import axios from "axios";
 import {
     AddCompanyResponse,
+    AddRoleResponse,
     GetAccessibleFeaturesOfCompanyResponse,
     GetAllCompaniesResponse,
+    GetCompanyAdminACLResponse,
     GetCompanyResponse,
     LoginResponse,
     RefreshTokenResponse,
@@ -15,6 +22,7 @@ import { ApiResponse } from "../api_response";
 import momentTimezone from "moment-timezone";
 import { timeFormat24hr } from "@/constants/datetimes";
 import { convertLocalUTCToTimezoneUTC } from "@/utils/common_utils";
+import { Role } from "react-native";
 
 export class UserService {
     private hostPath = process.env.EXPO_PUBLIC_USER_SERVICE;
@@ -28,6 +36,9 @@ export class UserService {
     public updateCompanyPath = "company/update-company";
     public getAccessibleFeaturesOfCompanyPath =
         "company/get-accessible-features-of-company";
+    public getAllRolesPath = "role/get-all-roles";
+    public addRolePath = "role/add-role";
+    public getCompanyAdminACLPath = "role/get-company-admin-acl";
 
     registerUser = async (userForm: RegisterForm) => {
         return await asyncHandler<RegisterUserResponse>(() => {
@@ -97,7 +108,6 @@ export class UserService {
         companyDetails: AddUpdateCompanyForm,
         mainBranchId?: number
     ) => {
-
         /* Moment timezone object of localDayStartTime */
         const dayStartTimeMoment = momentTimezone.tz(
             companyDetails.localDayStartTime,
@@ -126,9 +136,8 @@ export class UserService {
 
     updateCompany = async (
         companyId: number,
-        companyDetails: AddUpdateCompanyForm,
+        companyDetails: AddUpdateCompanyForm
     ) => {
-
         /* Moment timezone object of localDayStartTime */
         const dayStartTimeMoment = momentTimezone.tz(
             companyDetails.localDayStartTime,
@@ -154,7 +163,6 @@ export class UserService {
         });
     };
 
-
     getAccessibleFeaturesOfCompany = async (companyId: number) => {
         return await asyncHandler<GetAccessibleFeaturesOfCompanyResponse>(
             () => {
@@ -163,6 +171,49 @@ export class UserService {
                 );
             }
         );
+    };
+
+    getAllRoles = async <T>({
+        pageParam,
+    }: {
+        pageParam: {
+            companyId: number;
+            pageSize: number;
+            select?: Array<keyof Role>;
+            cursor?: { roleId: number };
+        };
+    }) => {
+        return await asyncHandler<T>(() => {
+            return axios.post(`${this.hostPath}/${this.getAllRolesPath}`, {
+                companyId: pageParam.companyId,
+                pageSize: pageParam.pageSize,
+                select: pageParam?.select,
+                cursor: pageParam?.cursor,
+            });
+        });
+    };
+
+    addRole = async (companyId: number, details: AddUpdateRoleForm) => {
+        return await asyncHandler<AddRoleResponse>(() => {
+            return axios.post(`${this.hostPath}/${this.addRolePath}`, {
+                companyId,
+                roleName: details.roleName,
+                acl: Object.keys(details.acl),
+            });
+        });
+    };
+
+    getCompanyAdminACL = async (companyId: number) => {
+        return await asyncHandler<GetCompanyAdminACLResponse>(() => {
+            return axios.get(
+                `${this.hostPath}/${this.getCompanyAdminACLPath}`,
+                {
+                    params: {
+                        companyId,
+                    },
+                }
+            );
+        });
     };
 }
 

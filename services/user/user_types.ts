@@ -1,3 +1,5 @@
+import { RoleTypeInRolesList } from "@/constants/types";
+
 export interface User {
     fullName: string;
     email: string;
@@ -31,6 +33,13 @@ export interface Company {
 
 export interface CompanyWithTaxDetails extends Company {
     taxDetails: Array<{ taxId: number; registrationNumber: string }>;
+}
+
+export interface Role {
+    companyId: number;
+    roleId: number;
+    roleName: string;
+    acl: number[];
 }
 
 export class RegisterUserResponse {
@@ -80,4 +89,23 @@ export class UpdateCompanyResponse {
         public company: CompanyWithTaxDetails,
         public message: string
     ) {}
+}
+
+export class GetAllRolesForRolesListResponse {
+    constructor(
+        public roles: Array<RoleTypeInRolesList>,
+        public nextPageCursor?: { roleId: number }
+    ) {}
+}
+
+export class AddRoleResponse {
+    constructor(public role: Role, public message: string) {}
+}
+
+export class UpdateRoleResponse {
+    constructor(public role: Role, public message: string) {}
+}
+
+export class GetCompanyAdminACLResponse {
+    constructor(public acl: Array<number>) {}
 }

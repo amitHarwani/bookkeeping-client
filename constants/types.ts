@@ -259,3 +259,13 @@ export interface TableColDefType {
     extraCellStyles?: Object
     extraCellProps?: Object
 }
+
+export interface RoleTypeInRolesList {
+    roleId: number,
+    roleName: string
+}
+
+export interface AddUpdateRoleForm {
+    roleName: string,
+    acl: {[featureId: number]: boolean}
+}

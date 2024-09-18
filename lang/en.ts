@@ -189,6 +189,11 @@ export default {
     companySettings: "company settings",
     settings: "settings",
     companyUpdatedSuccessfully: "company updated successfully",
-    updateCompany: "update company"
+    updateCompany: "update company",
+    roles: "roles",
+    noRolesFound: "no roles found",
+    admin: "admin",
+    addRole: "add role",
+    roleAddedSuccessfully: "role added successfully"
 
 }

@@ -16,5 +16,8 @@ export enum AppRoutes {
     getSale = "get-sale",
     addQuotation = "add-quotation",
     getQuotation = "get-quotation",
-    getLowStockItems = "get-low-stock-items"
+    getLowStockItems = "get-low-stock-items",
+    roles = "roles",
+    addRole = "add-role",
+    getRole = "get-role"
 }

@@ -20,5 +20,7 @@ export enum ReactQueryKeys {
     cashFlowSummary = "cashFlowSummary",
     getTopSellersForCurrentMonth = "getTopSellersForCurrentMonth",
     getLowStockItems = "getLowStockItems",
-    getAllLowStockItems = "getAllLowStockItems"
+    getAllLowStockItems = "getAllLowStockItems",
+    roles = "roles",
+    getCompanyAdminACL = "getCompanyAdminACL"
 }
