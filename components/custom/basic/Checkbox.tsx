@@ -12,6 +12,7 @@ interface CheckboxProps {
     onChange?(data: GenericObject, isChecked: boolean): void;
     value?: boolean;
     errorMessage?: string | null;
+    isDisabled?: boolean
 }
 const Checkbox = ({
     description,
@@ -20,6 +21,7 @@ const Checkbox = ({
     value,
     onChange,
     errorMessage,
+    isDisabled = false
 }: CheckboxProps) => {
     const [isChecked, setIsChecked] = useState(false);
 
@@ -33,7 +35,7 @@ const Checkbox = ({
 
     /* For default values to be passed form parent */
     useEffect(() => {
-        if (value && value != isChecked) {
+        if (typeof value === "boolean" && value != isChecked) {
             setIsChecked(value);
         }
     }, [value]);
@@ -47,6 +49,7 @@ const Checkbox = ({
                         styles.checkboxButton,
                         isChecked && styles.checkedButton,
                     ]}
+                    disabled={isDisabled}
                 >
                     {isChecked && (
                         <Image
@@ -59,7 +62,7 @@ const Checkbox = ({
                 {descriptionComponent ? (
                     descriptionComponent
                 ) : (
-                    <Text>{description}</Text>
+                    <Text style={[isDisabled && commonStyles.textDisabled]}>{description}</Text>
                 )}
             </View>
             {errorMessage && (

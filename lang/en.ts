@@ -194,6 +194,9 @@ export default {
     noRolesFound: "no roles found",
     admin: "admin",
     addRole: "add role",
-    roleAddedSuccessfully: "role added successfully"
+    roleAddedSuccessfully: "role added successfully",
+    roleName: "role name",
+    enterRoleName: "enter role name",
+    updateRole: "update role"
 
 }

@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, ToastAndroid, View } from "react-native";
 import React, { useEffect, useMemo } from "react";
-import { AddUpdateRoleForm } from "@/constants/types";
+import { AddUpdateRoleForm, GenericObject } from "@/constants/types";
 import ErrorMessage from "../basic/ErrorMessage";
 import { useFormik } from "formik";
 import { useQuery } from "@tanstack/react-query";
@@ -11,12 +11,16 @@ import { capitalizeText } from "@/utils/common_utils";
 import { i18n } from "@/app/_layout";
 import { router } from "expo-router";
 import LoadingSpinnerOverlay from "../basic/LoadingSpinnerOverlay";
+import Input from "../basic/Input";
+import Checkbox from "../basic/Checkbox";
+import CustomButton from "../basic/CustomButton";
+import { AddUpdateRoleValidation } from "@/utils/schema_validations";
 
 interface AddUpdateRole {
     operation?: "ADD" | "UPDATE";
     isEditEnabled?: boolean;
     formValues?: AddUpdateRoleForm;
-    apiErrorMessage?: string;
+    apiErrorMessage?: string | null;
     onRoleAddOrUpdate(values: AddUpdateRoleForm): void;
 }
 
@@ -27,14 +31,47 @@ const AddUpdateRole = ({
     apiErrorMessage,
     onRoleAddOrUpdate,
 }: AddUpdateRole) => {
+    /* Selected company from redux */
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
     );
 
+    /* All enabled features */
     const allEnabledFeatures = useAppSelector(
         (state) => state.platformFeatures.platformFeatures
     );
 
+    /* Input is disabled in case of update operation and when edit is disabled */
+    const isInputsDisabled = useMemo(() => {
+        if (operation === "UPDATE" && !isEditEnabled) {
+            return true;
+        }
+        return false;
+    }, [operation, isEditEnabled]);
+
+    /* Stores key as the feature id and value as the feature id which depends on this feature. */
+    const dependentFeaturesMap = useMemo(() => {
+        const map: Map<number, Array<number>> = new Map();
+
+        /* For each feature */
+        Object.values(allEnabledFeatures).forEach((feature) => {
+            /* If the feature is dependent on any other feature */
+            if (feature?.dependentFeatureId) {
+                /* Get all the dependent features of the dependentFeatureID */
+                const dependentFeatures =
+                    map.get(feature.dependentFeatureId) || [];
+
+                /* Add current feature to the list */
+                dependentFeatures.push(feature.featureId);
+
+                /* Update the map */
+                map.set(feature.dependentFeatureId, dependentFeatures);
+            }
+        });
+        return map;
+    }, [allEnabledFeatures]);
+
+    /* Fetching ACL of the companies admin */
     const {
         isFetching: fetchingCompanyAdminACL,
         data: companyAdminACLResponse,
@@ -50,6 +87,29 @@ const AddUpdateRole = ({
             ),
     });
 
+    /* Features list to be shown */
+    const featuresList = useMemo(() => {
+        if (
+            allEnabledFeatures &&
+            companyAdminACLResponse?.data &&
+            companyAdminACLResponse.success
+        ) {
+            /* Forming map of company admins ACL for performance  */
+            const companyAdminACLMap = new Map();
+
+            companyAdminACLResponse.data.acl.forEach((featureId) =>
+                companyAdminACLMap.set(featureId, true)
+            );
+
+            /* Returning all features which are enabled and included in company admin ACL */
+            return Object.values(allEnabledFeatures).filter((feature) =>
+                companyAdminACLMap.get(feature.featureId) ? true : false
+            );
+        }
+        return [];
+    }, [companyAdminACLResponse, allEnabledFeatures]);
+
+    /* Form values */
     const initialFormValues: AddUpdateRoleForm = useMemo(() => {
         if (formValues) {
             return formValues;
@@ -62,9 +122,31 @@ const AddUpdateRole = ({
 
     const formik = useFormik({
         initialValues: initialFormValues,
+        validationSchema: AddUpdateRoleValidation,
         onSubmit: (values) => onRoleAddOrUpdate(values),
     });
 
+    const handleCheckboxChange = (data: GenericObject, isChecked: boolean) => {
+        /* Current ACL */
+        const temp = formik.values.acl;
+
+        /* If it is checked, add to the ACL */
+        if (isChecked) {
+            temp[data.featureId] = true;
+        } else {
+            /* Else delete from ACL object */
+            delete temp?.[data.featureId];
+
+            /* Delete any features dependent on current feature */
+            dependentFeaturesMap
+                ?.get(data?.featureId)
+                ?.forEach((dependentFeatureId) => {
+                    delete temp?.[dependentFeatureId];
+                });
+        }
+        /* Update form ACL */
+        formik.setFieldValue("acl", temp);
+    };
     /* Loading spinner when fetching acl of company admin */
     const showLoadingSpinner = useMemo(() => {
         return fetchingCompanyAdminACL ? true : false;
@@ -84,6 +166,7 @@ const AddUpdateRole = ({
             router.back();
         }
     }, [errorFetchingCompanyAdminACL]);
+
     return (
         <ScrollView style={styles.mainContainer}>
             {showLoadingSpinner && <LoadingSpinnerOverlay />}
@@ -91,6 +174,53 @@ const AddUpdateRole = ({
                 <View style={styles.formContainer}>
                     {apiErrorMessage && (
                         <ErrorMessage message={apiErrorMessage} />
+                    )}
+
+                    <Input
+                        label={i18n.t("roleName")}
+                        placeholder={capitalizeText(i18n.t("enterRoleName"))}
+                        value={formik.values.roleName}
+                        onBlur={formik.handleBlur("roleName")}
+                        onChangeText={formik.handleChange("roleName")}
+                        errorMessage={
+                            formik.touched.roleName && formik.errors.roleName
+                                ? formik.errors.roleName
+                                : null
+                        }
+                        isDisabled={isInputsDisabled}
+                    />
+
+                    {featuresList.map((feature) => (
+                        <Checkbox
+                            key={feature.featureId}
+                            data={feature}
+                            description={capitalizeText(feature.featureName)}
+                            value={
+                                formik?.values?.acl?.[feature.featureId]
+                                    ? true
+                                    : false
+                            }
+                            onChange={handleCheckboxChange}
+                            isDisabled={
+                                (feature?.dependentFeatureId &&
+                                    !formik.values.acl?.[
+                                        feature?.dependentFeatureId
+                                    ]) ||
+                                isInputsDisabled
+                                    ? true
+                                    : false
+                            }
+                        />
+                    ))}
+                    {!isInputsDisabled && (
+                        <CustomButton
+                            text={
+                                operation === "ADD"
+                                    ? i18n.t("addRole")
+                                    : i18n.t("updateRole")
+                            }
+                            onPress={() => formik.handleSubmit()}
+                        />
                     )}
                 </View>
             </View>

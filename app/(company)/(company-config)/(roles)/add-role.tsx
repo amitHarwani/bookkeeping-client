@@ -1,5 +1,6 @@
 import { i18n } from "@/app/_layout";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
+import AddUpdateRole from "@/components/custom/widgets/AddUpdateRole";
 import { AddUpdateRoleForm } from "@/constants/types";
 import UserService from "@/services/user/user_service";
 import { useAppSelector } from "@/store";
@@ -54,7 +55,11 @@ const AddRole = () => {
     return (
         <>
             {showLoadingSpinner && <LoadingSpinnerOverlay />}
-
+            <AddUpdateRole 
+                operation="ADD"
+                onRoleAddOrUpdate={(values) => addRoleMutation.mutate(values)}
+                apiErrorMessage={apiErrorMessage}
+            />
            
         </>
     );

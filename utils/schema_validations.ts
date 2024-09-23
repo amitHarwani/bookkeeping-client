@@ -407,3 +407,9 @@ export const QuotationFormValidation = Yup.object().shape({
     }),
     discount: Yup.number().nullable().typeError("invalid discount"),
 });
+
+
+export const AddUpdateRoleValidation = Yup.object().shape({
+    roleName: Yup.string().trim().required("role name is required"),
+    acl: Yup.object()
+})

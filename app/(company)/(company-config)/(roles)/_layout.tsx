@@ -24,6 +24,9 @@ const RolesLayout = () => {
         ) {
             navigation.setOptions({ headerShown: false });
         }
+        else{
+            navigation.setOptions({headerShown: true})
+        }
     }, [path]);
     return (
         <Stack
