@@ -13,10 +13,12 @@ import {
     GetAllCompaniesResponse,
     GetCompanyAdminACLResponse,
     GetCompanyResponse,
+    GetRoleResponse,
     LoginResponse,
     RefreshTokenResponse,
     RegisterUserResponse,
     UpdateCompanyResponse,
+    UpdateRoleResponse,
 } from "./user_types";
 import { ApiResponse } from "../api_response";
 import momentTimezone from "moment-timezone";
@@ -38,6 +40,8 @@ export class UserService {
         "company/get-accessible-features-of-company";
     public getAllRolesPath = "role/get-all-roles";
     public addRolePath = "role/add-role";
+    public updateRolePath = "role/update-role";
+    public getRolePath = "role/get-role";
     public getCompanyAdminACLPath = "role/get-company-admin-acl";
 
     registerUser = async (userForm: RegisterForm) => {
@@ -197,6 +201,35 @@ export class UserService {
         return await asyncHandler<AddRoleResponse>(() => {
             return axios.post(`${this.hostPath}/${this.addRolePath}`, {
                 companyId,
+                roleName: details.roleName,
+                acl: Object.keys(details.acl),
+            });
+        });
+    };
+
+    getRole = async (roleId: number, companyId: number) => {
+        return await asyncHandler<GetRoleResponse>(() => {
+            return axios.get<ApiResponse<GetRoleResponse>>(
+                `${this.hostPath}/${this.getRolePath}`,
+                {
+                    params: {
+                        companyId,
+                        roleId,
+                    },
+                }
+            );
+        });
+    };
+
+    updateRole = async (
+        companyId: number,
+        roleId: number,
+        details: AddUpdateRoleForm
+    ) => {
+        return await asyncHandler<UpdateRoleResponse>(() => {
+            return axios.put(`${this.hostPath}/${this.updateRolePath}`, {
+                companyId,
+                roleId,
                 roleName: details.roleName,
                 acl: Object.keys(details.acl),
             });

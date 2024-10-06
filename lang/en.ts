@@ -197,6 +197,9 @@ export default {
     roleAddedSuccessfully: "role added successfully",
     roleName: "role name",
     enterRoleName: "enter role name",
-    updateRole: "update role"
+    updateRole: "update role",
+    errorFetchingRole: "error fetching role",
+    roleUpdatedSuccessfully: "role updated successfully",
+    role: "role"
 
 }

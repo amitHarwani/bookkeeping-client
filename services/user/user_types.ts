@@ -109,3 +109,7 @@ export class UpdateRoleResponse {
 export class GetCompanyAdminACLResponse {
     constructor(public acl: Array<number>) {}
 }
+
+export class GetRoleResponse {
+    constructor(public role: Role) {}
+}

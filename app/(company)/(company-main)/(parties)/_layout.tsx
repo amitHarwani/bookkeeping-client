@@ -6,6 +6,7 @@ import React, { useEffect } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import BackIcon from "@/assets/images/back_icon.png";
 import { AppRoutes } from "@/constants/routes";
+import { commonStyles } from "@/utils/common_styles";
 
 const PartiesLayout = () => {
     const selectedCompany = useAppSelector(
@@ -31,7 +32,7 @@ const PartiesLayout = () => {
             screenOptions={({ navigation }) => ({
                 headerLeft: () => (
                     <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Image style={styles.backIcon} source={BackIcon} />
+                        <Image style={[commonStyles.backIcon, {marginRight: 16}]} source={BackIcon} />
                     </TouchableOpacity>
                 ),
                 headerStyle: {
@@ -62,11 +63,7 @@ const PartiesLayout = () => {
 };
 
 const styles = StyleSheet.create({
-    backIcon: {
-        width: 24,
-        height: 24,
-        marginRight: 16,
-    },
+    
 });
 
 export default PartiesLayout;

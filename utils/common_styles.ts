@@ -160,4 +160,10 @@ export const commonStyles = StyleSheet.create({
         width: 24,
         height: 24,
     },
+
+    /* Back Icon */
+    backIcon: {
+        width: 24,
+        height: 24,
+    },
 })
