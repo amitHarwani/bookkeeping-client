@@ -5,10 +5,11 @@ import { commonStyles } from "@/utils/common_styles";
 interface BottomTabItemProps {
     icon: number;
     title: string;
+    isFocussed?: boolean
 }
-const BottomTabItem = ({ icon, title }: BottomTabItemProps) => {
+const BottomTabItem = ({ icon, title, isFocussed = true }: BottomTabItemProps) => {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, !isFocussed && styles.notInFocus]}>
             <Image source={icon} style={styles.icon} />
             <Text
                 style={[
@@ -30,6 +31,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         rowGap: 2,
+    },
+    notInFocus: {
+        opacity: 0.5
     },
     icon: {
         width: 24,

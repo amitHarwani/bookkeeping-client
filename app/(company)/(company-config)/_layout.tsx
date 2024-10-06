@@ -59,10 +59,11 @@ const CompanySettingsLayout = () => {
                     name="company-settings/[companyId]"
                     options={{
                         headerShown: true,
-                        tabBarIcon: () => (
+                        tabBarIcon: ({focused}) => (
                             <BottomTabItem
                                 icon={SettingsIcon}
                                 title={i18n.t("companySettings")}
+                                isFocussed={focused}
                             />
                         ),
                         tabBarItemStyle: {
@@ -83,10 +84,11 @@ const CompanySettingsLayout = () => {
                                 subHeading={selectedCompany?.companyName || ""}
                             />
                         ),
-                        tabBarIcon: () => (
+                        tabBarIcon: ({focused}) => (
                             <BottomTabItem
                                 icon={UserIcon}
                                 title={i18n.t("roles")}
+                                isFocussed={focused}
                             />
                         ),
                         tabBarItemStyle: {
