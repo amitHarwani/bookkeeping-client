@@ -200,6 +200,13 @@ export default {
     updateRole: "update role",
     errorFetchingRole: "error fetching role",
     roleUpdatedSuccessfully: "role updated successfully",
-    role: "role"
+    role: "role",
+    users: "users",
+    addUser: "add user",
+    noUsersFound: "no users found",
+    errorFetchingRoles: "error fetching roles",
+    updateUser: "update user",
+    userAddedSuccessfully: "user added successfully",
+    unauthorized: "unauthorized"
 
 }

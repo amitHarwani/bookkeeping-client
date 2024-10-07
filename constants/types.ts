@@ -4,6 +4,7 @@ import {
 } from "@/services/billing/billing_types";
 import { Item, Unit } from "@/services/inventory/inventory_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
+import { GetAllRolesForRolesListResponse } from "@/services/user/user_types";
 
 export type GenericObject = {
     [key: string]: any;
@@ -268,4 +269,15 @@ export interface RoleTypeInRolesList {
 export interface AddUpdateRoleForm {
     roleName: string,
     acl: {[featureId: number]: boolean}
+}
+
+export interface AddUpdateUserForm {
+    fullName: string,
+    email: string,
+    password: string,
+    country?: Country,
+    phoneCode: string,
+    mobileNumber: string,
+    isActive: boolean,
+    role?: RoleTypeInRolesList 
 }

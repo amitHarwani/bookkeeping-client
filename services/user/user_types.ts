@@ -113,3 +113,11 @@ export class GetCompanyAdminACLResponse {
 export class GetRoleResponse {
     constructor(public role: Role) {}
 }
+
+export class GetAllUsersOfCompanyResponse {
+    constructor(public users: Array<User>) {}
+}
+
+export class AddUserResponse {
+    constructor(public user: User, public message: string) {}
+}

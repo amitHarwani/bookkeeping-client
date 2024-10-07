@@ -1,4 +1,5 @@
 import {
+    ActivityIndicator,
     Button,
     FlatList,
     Image,
@@ -35,6 +36,7 @@ interface DropdownProps {
     isSearchable?: boolean;
     searchPlaceholder?: string;
     extraContainerStyles?: Object;
+    extraDropdownBtnStyles?: Object
     extraOptionTextSyles?: Object;
     errorMessage?: string | null;
     customActionButtonText?: string;
@@ -43,6 +45,8 @@ interface DropdownProps {
     isDisabled?: boolean;
     isDynamicSearchable?: boolean;
     onSearchChangeHandler?(text: string): void;
+    onFlatListEndReached?(): void;
+    isFetchingMoreItems?: boolean;
 }
 const Dropdown = ({
     label,
@@ -54,6 +58,7 @@ const Dropdown = ({
     searchPlaceholder,
     extraContainerStyles,
     extraOptionTextSyles,
+    extraDropdownBtnStyles,
     errorMessage,
     customActionButtonText,
     customActionButtonHandler,
@@ -61,6 +66,8 @@ const Dropdown = ({
     isDisabled = false,
     isDynamicSearchable = false,
     onSearchChangeHandler,
+    onFlatListEndReached,
+    isFetchingMoreItems = false
 }: DropdownProps) => {
     const [isOptionsShown, setIsOptionsShown] = useState(false);
     const [selectedItem, setSelectedItem] = useState<GenericObject>();
@@ -126,6 +133,7 @@ const Dropdown = ({
                 style={[
                     styles.dropdownButton,
                     !!errorMessage && styles.errorDropdownButton,
+                    extraDropdownBtnStyles
                 ]}
                 onPress={toggleOptionsMenu}
                 disabled={isDisabled}
@@ -219,7 +227,13 @@ const Dropdown = ({
                                     </Pressable>
                                 )}
                                 keyExtractor={(item) => item[textKey]}
+                                onEndReached={() =>
+                                    typeof onFlatListEndReached ===
+                                        "function" && onFlatListEndReached()
+                                }
+                                onEndReachedThreshold={0}
                             />
+                            {isFetchingMoreItems && <ActivityIndicator size="large" />}
                         </View>
                         {customActionButtonText &&
                             customActionButtonHandler && (
@@ -279,5 +293,5 @@ const styles = StyleSheet.create({
     },
     placeholderText: {
         color: "#8F9098",
-    }
+    },
 });

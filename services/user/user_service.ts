@@ -1,6 +1,7 @@
 import {
     AddUpdateCompanyForm,
     AddUpdateRoleForm,
+    AddUpdateUserForm,
     LoginForm,
     RegisterForm,
 } from "@/constants/types";
@@ -9,8 +10,10 @@ import axios from "axios";
 import {
     AddCompanyResponse,
     AddRoleResponse,
+    AddUserResponse,
     GetAccessibleFeaturesOfCompanyResponse,
     GetAllCompaniesResponse,
+    GetAllUsersOfCompanyResponse,
     GetCompanyAdminACLResponse,
     GetCompanyResponse,
     GetRoleResponse,
@@ -43,6 +46,9 @@ export class UserService {
     public updateRolePath = "role/update-role";
     public getRolePath = "role/get-role";
     public getCompanyAdminACLPath = "role/get-company-admin-acl";
+
+    public getAllUsersOfCompanyPath = "user/get-all-users-of-company";
+    public addUserPath = "user/add-user";
 
     registerUser = async (userForm: RegisterForm) => {
         return await asyncHandler<RegisterUserResponse>(() => {
@@ -244,6 +250,37 @@ export class UserService {
                     params: {
                         companyId,
                     },
+                }
+            );
+        });
+    };
+
+    getAllUsersOfCompany = async (companyId: number) => {
+        return await asyncHandler<GetAllUsersOfCompanyResponse>(() => {
+            return axios.get(
+                `${this.hostPath}/${this.getAllUsersOfCompanyPath}`,
+                {
+                    params: {
+                        companyId,
+                    },
+                }
+            );
+        });
+    };
+
+    addUser = async (details: AddUpdateUserForm, companyId: number) => {
+        return await asyncHandler<AddUserResponse>(() => {
+            return axios.post<ApiResponse<AddUserResponse>>(
+                `${this.hostPath}/${this.addUserPath}`,
+                {
+                    countryId: details.country?.countryId as number,
+                    fullName: details.fullName,
+                    email: details.email,
+                    password: details.password,
+                    mobileNumber: `${details.phoneCode}${details.mobileNumber}`,
+                    isActive: details.isActive,
+                    companyId: companyId,
+                    roleId: details.role?.roleId as number,
                 }
             );
         });

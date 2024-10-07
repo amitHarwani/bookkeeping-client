@@ -37,6 +37,7 @@ const InvoiceItemSelector = ({
         data: itemsData,
         error: errorFetchingItems,
         fetchNextPage: fetchNextPageOfItems,
+        isFetchingNextPage,
         refetch: refetchItems,
     } = useInfiniteQuery({
         queryKey: [
@@ -132,6 +133,8 @@ const InvoiceItemSelector = ({
                 value={selectedItem}
                 searchPlaceholder={capitalizeText(i18n.t("searchByItemName"))}
                 errorMessage={errorMessage}
+                onFlatListEndReached={fetchNextPageOfItems}
+                isFetchingMoreItems={isFetchingNextPage}
             />
         </>
     );

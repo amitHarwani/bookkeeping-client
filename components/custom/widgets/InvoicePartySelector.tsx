@@ -41,6 +41,7 @@ const InvoicePartySelector = ({
         data: partiesData,
         error: errorFetchingParties,
         fetchNextPage: fetchNextPageOfParties,
+        isFetchingNextPage,
         refetch: refetchParties,
     } = useInfiniteQuery({
         queryKey: [
@@ -142,6 +143,8 @@ const InvoicePartySelector = ({
                 extraContainerStyles ? extraContainerStyles : undefined
             }
             isDisabled={isDisabled}
+            onFlatListEndReached={fetchNextPageOfParties}
+            isFetchingMoreItems={isFetchingNextPage}
         />
     );
 };

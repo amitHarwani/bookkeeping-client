@@ -66,7 +66,7 @@ const Register = () => {
     } = useQuery({
         queryKey: [ReactQueryKeys.allCountries],
         queryFn: SysAdminService.getAllCountries,
-        staleTime: Infinity
+        staleTime: Infinity,
     });
 
     /* To register a user */
@@ -220,6 +220,13 @@ const Register = () => {
                                             }}
                                             extraContainerStyles={{
                                                 flexGrow: 0.4,
+                                                height:
+                                                    (touched.phoneCode &&
+                                                        errors.phoneCode) ||
+                                                    (touched.mobileNumber &&
+                                                        errors.mobileNumber)
+                                                        ? 80
+                                                        : "auto",
                                             }}
                                             errorMessage={
                                                 touched.phoneCode &&
@@ -331,7 +338,12 @@ const Register = () => {
                                 />
 
                                 <View style={styles.haveAnAccountContainer}>
-                                    <Text style={[commonStyles.textSmall, commonStyles.capitalize]}>
+                                    <Text
+                                        style={[
+                                            commonStyles.textSmall,
+                                            commonStyles.capitalize,
+                                        ]}
+                                    >
                                         {i18n.t("alreadyHaveAnAccount")}
                                     </Text>
                                     <Link
@@ -364,7 +376,7 @@ const styles = StyleSheet.create({
         paddingBottom: 12,
         rowGap: 24,
         flex: 1,
-        backgroundColor: "#FFFFFF"
+        backgroundColor: "#FFFFFF",
     },
     formContainer: {
         rowGap: 16,
@@ -380,8 +392,8 @@ const styles = StyleSheet.create({
     },
     haveAnAccountContainer: {
         flexDirection: "row",
-        columnGap: 2
-    }
+        columnGap: 2,
+    },
 });
 
 export default Register;
