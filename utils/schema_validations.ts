@@ -411,29 +411,36 @@ export const AddUpdateRoleValidation = Yup.object().shape({
     acl: Yup.object(),
 });
 
-export const AddUpdateUserValidation = Yup.object().shape({
-    fullName: Yup.string().trim().required("full name is required"),
-    email: Yup.string()
-        .trim()
-        .email("invalid email")
-        .required("email is required"),
-    password: Yup.string()
-        .required("password is required")
-        .min(8, "password must be atleast 8 characters long"),
-    country: Yup.object().required("country is required"),
-    phoneCode: Yup.string().required("phone code is required"),
-    mobileNumber: Yup.number()
-        .required("mobile number is required")
-        .test("length", "invalid number", (value, context) => {
-            /* Length of mobile number check */
-            if (
-                value.toString().length ==
-                context?.options?.context?.country?.maxPhoneNumberDigits
-            ) {
-                return true;
-            }
-            return false;
-        }),
-    isActive: Yup.boolean().required("is active is required"),
-    role: Yup.object().required("role is required")
-});
+export const AddUpdateUserValidation = (operation: "ADD" | "UPDATE") => {
+    const validationSchema = Yup.object().shape({
+        fullName: Yup.string().trim().required("full name is required"),
+        email: Yup.string()
+            .trim()
+            .email("invalid email")
+            .required("email is required"),
+        password:
+            operation === "ADD"
+                ? Yup.string()
+                      .required("password is required")
+                      .min(8, "password must be atleast 8 characters long")
+                : Yup.string().optional(),
+        country: Yup.object().required("country is required"),
+        phoneCode: Yup.string().required("phone code is required"),
+        mobileNumber: Yup.number()
+            .required("mobile number is required")
+            .test("length", "invalid number", (value, context) => {
+                /* Length of mobile number check */
+                if (
+                    value.toString().length ==
+                    context?.options?.context?.country?.maxPhoneNumberDigits
+                ) {
+                    return true;
+                }
+                return false;
+            }),
+        isActive: Yup.boolean().required("is active is required"),
+        role: Yup.object().required("role is required"),
+    });
+
+    return validationSchema;
+};

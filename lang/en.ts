@@ -207,6 +207,8 @@ export default {
     errorFetchingRoles: "error fetching roles",
     updateUser: "update user",
     userAddedSuccessfully: "user added successfully",
-    unauthorized: "unauthorized"
+    unauthorized: "unauthorized",
+    userUpdatedSuccessfully: "user updated successfully",
+    user: "user"
 
 }

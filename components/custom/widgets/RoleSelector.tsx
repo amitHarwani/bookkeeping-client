@@ -120,6 +120,9 @@ const RoleSelector = ({
 
     /* If value is passed set selected role */
     useEffect(() => {
+        if(value?.roleName == `${companyId}_ADMIN`){
+            value.roleName = "ADMIN"
+        }
         setSelectedRole(value);
     }, [value]);
 

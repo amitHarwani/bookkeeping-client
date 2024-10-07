@@ -121,3 +121,23 @@ export class GetAllUsersOfCompanyResponse {
 export class AddUserResponse {
     constructor(public user: User, public message: string) {}
 }
+
+export class GetUserResponse {
+    constructor(
+        public user: User,
+        public userCompanyMappings: Array<{ companyId: number; roleId: number }>
+    ) {}
+}
+
+export class UpdateUserResponse {
+    constructor(public user: User) {}
+}
+
+export class UpdateUserAccessResponse {
+    constructor(
+        public user: User,
+        public roleId: number,
+        public companyId: number,
+        public message: string
+    ) {}
+}

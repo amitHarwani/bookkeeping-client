@@ -17,11 +17,14 @@ import {
     GetCompanyAdminACLResponse,
     GetCompanyResponse,
     GetRoleResponse,
+    GetUserResponse,
     LoginResponse,
     RefreshTokenResponse,
     RegisterUserResponse,
     UpdateCompanyResponse,
     UpdateRoleResponse,
+    UpdateUserAccessResponse,
+    UpdateUserResponse,
 } from "./user_types";
 import { ApiResponse } from "../api_response";
 import momentTimezone from "moment-timezone";
@@ -49,6 +52,9 @@ export class UserService {
 
     public getAllUsersOfCompanyPath = "user/get-all-users-of-company";
     public addUserPath = "user/add-user";
+    public getUserPath = "user/get-user";
+    public updateUserPath = "user/update-user";
+    public updateUserAccessPath = "user/update-user-access";
 
     registerUser = async (userForm: RegisterForm) => {
         return await asyncHandler<RegisterUserResponse>(() => {
@@ -281,6 +287,58 @@ export class UserService {
                     isActive: details.isActive,
                     companyId: companyId,
                     roleId: details.role?.roleId as number,
+                }
+            );
+        });
+    };
+
+    getUser = async (userId: string, companyId?: number) => {
+        return await asyncHandler<GetUserResponse>(() => {
+            return axios.get<ApiResponse<GetUserResponse>>(
+                `${this.hostPath}/${this.getUserPath}`,
+                {
+                    params: {
+                        userId,
+                        companyId: companyId || null,
+                    },
+                }
+            );
+        });
+    };
+
+    updateUser = async (
+        details: AddUpdateUserForm,
+        userId: string,
+        companyId?: number
+    ) => {
+        return await asyncHandler<UpdateUserResponse>(() => {
+            return axios.put<ApiResponse<UpdateUserResponse>>(
+                `${this.hostPath}/${this.updateUserPath}`,
+                {
+                    userId,
+                    companyId: companyId || null,
+                    countryId: details.country?.countryId,
+                    fullName: details.fullName,
+                    email: details.email,
+                    mobileNumber: `${details.phoneCode}${details.mobileNumber}`,
+                }
+            );
+        });
+    };
+
+    updateUserAccess = async (
+        details: AddUpdateUserForm,
+        userId: string,
+        companyId: number
+    ) => {
+        return await asyncHandler<UpdateUserAccessResponse>(() => {
+            return axios.patch<ApiResponse<UpdateUserAccessResponse>>(
+                `${this.hostPath}/${this.updateUserAccessPath}`,
+                {
+                    userId,
+                    companyId,
+                    roleId: details.role?.roleId,
+                    isActive: details.isActive,
                 }
             );
         });

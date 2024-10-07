@@ -105,7 +105,7 @@ const AddUpdateUser = ({
     const formik = useFormik({
         initialValues: initialFormValues,
         onSubmit: (values) => onUserAddOrUpdate(values),
-        validationSchema: AddUpdateUserValidation,
+        validationSchema: AddUpdateUserValidation(operation),
     });
 
     const showLoadingSpinner = useMemo(() => {
@@ -149,20 +149,25 @@ const AddUpdateUser = ({
                         isDisabled={isInputsDisabled}
                     />
 
-                    <Input
-                        label={i18n.t("password")}
-                        placeholder={capitalizeText(i18n.t("enterPassword"))}
-                        value={formik.values.password}
-                        onChangeText={formik.handleChange("password")}
-                        onBlur={formik.handleBlur("password")}
-                        errorMessage={
-                            formik.touched.password && formik.errors.password
-                                ? formik.errors.password
-                                : null
-                        }
-                        isDisabled={isInputsDisabled}
-                        isPasswordType
-                    />
+                    {operation === "ADD" && (
+                        <Input
+                            label={i18n.t("password")}
+                            placeholder={capitalizeText(
+                                i18n.t("enterPassword")
+                            )}
+                            value={formik.values.password}
+                            onChangeText={formik.handleChange("password")}
+                            onBlur={formik.handleBlur("password")}
+                            errorMessage={
+                                formik.touched.password &&
+                                formik.errors.password
+                                    ? formik.errors.password
+                                    : null
+                            }
+                            isDisabled={isInputsDisabled}
+                            isPasswordType
+                        />
+                    )}
 
                     <Dropdown
                         label={i18n.t("country")}
@@ -177,6 +182,9 @@ const AddUpdateUser = ({
                             formik.touched.country && formik.errors.country
                                 ? formik.errors.country
                                 : null
+                        }
+                        customEqualsFunction={(country1, country2) =>
+                            country1?.countryId == country2?.countryId
                         }
                         value={formik.values.country}
                         isDisabled={isInputsDisabled}
@@ -194,6 +202,14 @@ const AddUpdateUser = ({
                                         selectedCode?.key
                                     );
                                 }}
+                                customEqualsFunction={(code1, code2) =>
+                                    code1?.key == code2?.key
+                                }
+                                value={
+                                    formik.values.phoneCode
+                                        ? { key: formik.values.phoneCode }
+                                        : undefined
+                                }
                                 extraContainerStyles={{
                                     flexGrow: 0.4,
                                     height:
