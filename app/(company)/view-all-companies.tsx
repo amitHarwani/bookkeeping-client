@@ -106,6 +106,15 @@ const ViewAllCompanies = () => {
                                             `${AppRoutes.companySettings}/${companyId}` as Href
                                         );
                                     }}
+                                    addBranchHandler={(companyId, companyName) => {
+                                        router.push({
+                                            pathname: `${AppRoutes.addBranch}` as Href,
+                                            params: {
+                                                companyId,
+                                                companyName
+                                            }
+                                        })
+                                    }}
                                 />
                             )}
                             ItemSeparatorComponent={() => (

@@ -4,17 +4,22 @@ import { CompanyWithTaxDetails } from "@/services/user/user_types";
 import SettingsIcon from "@/assets/images/settings_icon.png";
 import { fonts } from "@/constants/fonts";
 import { commonStyles } from "@/utils/common_styles";
+import { useAppSelector } from "@/store";
+import { i18n } from "@/app/_layout";
 
 interface CompanyListItemProps {
     companyDetails: CompanyWithTaxDetails;
     companyPressHandler(companyId: number): void;
     settingsPressHandler(companyId: number): void;
+    addBranchHandler(companyId: number, companyName: string): void;
 }
 const CompanyListItem = ({
     companyDetails,
     companyPressHandler,
     settingsPressHandler,
+    addBranchHandler,
 }: CompanyListItemProps) => {
+    const user = useAppSelector((state) => state.auth.user);
     return (
         <View style={styles.container}>
             <Pressable
@@ -24,9 +29,22 @@ const CompanyListItem = ({
                 <Text style={[commonStyles.textMediumXLBold]}>
                     {companyDetails.companyName}
                 </Text>
-                <Text style={[commonStyles.textSmall, commonStyles.textDarkGray]}>
+                <Text
+                    style={[commonStyles.textSmall, commonStyles.textDarkGray]}
+                >
                     {companyDetails.address}
                 </Text>
+                {companyDetails.isMainBranch && !user?.isSubUser && (
+                    <Pressable
+                        onPress={() =>
+                            addBranchHandler(companyDetails.companyId, companyDetails.companyName)
+                        }
+                    >
+                        <Text style={[commonStyles.linkText]}>
+                            {i18n.t("addBranch")}
+                        </Text>
+                    </Pressable>
+                )}
             </Pressable>
             <Pressable
                 style={styles.settingsContainer}
@@ -58,5 +76,5 @@ const styles = StyleSheet.create({
     },
     settingsContainer: {
         padding: 16,
-    }
+    },
 });

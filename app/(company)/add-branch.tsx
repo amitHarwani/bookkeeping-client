@@ -5,17 +5,20 @@ import UserService from "@/services/user/user_service";
 import { commonStyles } from "@/utils/common_styles";
 import { getApiErrorMessage } from "@/utils/common_utils";
 import { useMutation } from "@tanstack/react-query";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { i18n } from "../_layout";
 
-const AddCompany = () => {
+const AddBranch = () => {
+    const mainCompanyId = Number(useLocalSearchParams().companyId);
+    const mainCompanyName = useLocalSearchParams().companyName;
+
     /* Whether success modal is shown */
     const [isSuccessModalShown, setIsSuccessModalShown] = useState(false);
 
-    /* Mutation to add a company */
+    /* Mutation to add a country */
     const addCompanyMutation = useMutation({
         mutationFn: ({
             companyDetails,
@@ -57,22 +60,34 @@ const AddCompany = () => {
                 <View style={styles.container}>
                     <SuccessModal
                         isSuccessModalShown={isSuccessModalShown}
-                        description={i18n.t("companyAddedSuccessfully")}
+                        description={i18n.t("branchAddedSuccessfully")}
                         onSuccessModalClose={() => {
                             setIsSuccessModalShown(false);
                         }}
                         primaryActionButtonText={i18n.t("continue")}
                         primaryActionButtonHandler={goBack}
                     />
-                    <Text style={commonStyles.mainHeading}>
-                        {i18n.t("addYourCompany")}
-                    </Text>
+
+                    <View style={styles.headingContainer}>
+                        <Text style={commonStyles.mainHeading}>
+                            {i18n.t("addBranch")}
+                        </Text>
+
+                        <Text
+                            style={[
+                                commonStyles.textSmallBold,
+                                commonStyles.textGray,
+                            ]}
+                        >
+                            {mainCompanyName}
+                        </Text>
+                    </View>
 
                     <AddUpdateCompany
                         onSubmit={(values) =>
                             addCompanyMutation.mutate({
                                 companyDetails: values,
-                                mainBranchId: undefined,
+                                mainBranchId: mainCompanyId,
                             })
                         }
                         apiCallInProgress={addCompanyInProgress}
@@ -84,7 +99,7 @@ const AddCompany = () => {
     );
 };
 
-export default AddCompany;
+export default AddBranch;
 
 const styles = StyleSheet.create({
     mainContainer: {
@@ -97,4 +112,7 @@ const styles = StyleSheet.create({
         rowGap: 24,
         paddingBottom: 12,
     },
+    headingContainer: {
+        rowGap: 2
+    }
 });

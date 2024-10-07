@@ -21,5 +21,6 @@ export enum AppRoutes {
     addRole = "add-role",
     getRole = "get-role",
     addUser = "add-user",
-    getUser = "get-user"
+    getUser = "get-user",
+    addBranch = "add-branch"
 }

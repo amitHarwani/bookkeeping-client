@@ -209,6 +209,8 @@ export default {
     userAddedSuccessfully: "user added successfully",
     unauthorized: "unauthorized",
     userUpdatedSuccessfully: "user updated successfully",
-    user: "user"
+    user: "user",
+    addBranch: "add branch",
+    branchAddedSuccessfully: "branch added successfully",
 
 }
