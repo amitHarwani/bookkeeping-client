@@ -212,5 +212,9 @@ export default {
     user: "user",
     addBranch: "add branch",
     branchAddedSuccessfully: "branch added successfully",
+    itemTransfers: "item transfers",
+    addTransfer: "add transfer",
+    noTransfersFound: "no transfers found",
+    transferType: "transfer type"
 
 }

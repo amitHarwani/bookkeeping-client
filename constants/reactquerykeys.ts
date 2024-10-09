@@ -25,5 +25,6 @@ export enum ReactQueryKeys {
     getCompanyAdminACL = "getCompanyAdminACL",
     getRole = "getRole",
     users = "users",
-    getUser = "getUser"
+    getUser = "getUser",
+    itemTransfers = "itemTransfers"
 }

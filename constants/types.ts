@@ -281,3 +281,23 @@ export interface AddUpdateUserForm {
     isActive: boolean,
     role?: RoleTypeInRolesList 
 }
+
+export enum TransferType {
+    all= "ALL",
+    received = "RECEIVED",
+    sent = "SENT"
+}
+export interface FilterTransfersForm {
+    type?: TransferType,
+    filterByDate?: boolean,
+    fromDate?: Date,
+    toDate?: Date
+}
+export interface TransferTypeInTransfersList {
+    transferId: number;
+    createdAt: Date;
+    fromCompanyId: number;
+    toCompanyId: number;
+    fromCompanyName: string;
+    toCompanyName: string;
+}

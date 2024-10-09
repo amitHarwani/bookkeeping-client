@@ -5,15 +5,25 @@ import {
     AddUnitResponse,
     AdjustItemResponse,
     FilterItemsQuery,
+    FilterTransfersQuery,
     GetAllItemsResponse,
     GetAllUnitsResponse,
     GetItemResponse,
     GetLowStockItemsResponse,
     Item,
+    Transfer,
     UpdateItemResponse,
 } from "./inventory_types";
 import { ApiResponse } from "../api_response";
-import { AddItemForm, AdjustItemForm, UpdateItemForm } from "@/constants/types";
+import {
+    AddItemForm,
+    AdjustItemForm,
+    FilterTransfersForm,
+    UpdateItemForm,
+} from "@/constants/types";
+import { convertLocalUTCToTimezoneUTC } from "@/utils/common_utils";
+import { dateFormat, dateTimeFormat24hr } from "@/constants/datetimes";
+import { Country } from "../sysadmin/sysadmin_types";
 
 class InventoryService {
     hostPath = process.env.EXPO_PUBLIC_INVENTORY_SERVICE;
@@ -25,6 +35,7 @@ class InventoryService {
     addUnitPath = "unit/add-unit";
     adjustItemPath = "item/adjust-item";
     getLowStockItemsPath = "insights/get-low-stock-items";
+    getAllTransfersPath = "transfers/get-all-transfers";
 
     getAllItems = async <T>({
         pageParam,
@@ -162,6 +173,62 @@ class InventoryService {
                     companyId: pageParam.companyId,
                     pageSize: pageParam.pageSize,
                     cursor: pageParam?.cursor,
+                }
+            );
+        });
+    };
+
+    getAllTransfers = async <T>({
+        pageParam,
+    }: {
+        pageParam: {
+            pageSize: number;
+            companyId: number;
+            cursor?: { transferId: number; createdAt: string };
+            query?: FilterTransfersForm;
+            countryDetails: Country;
+            select?: [keyof Transfer];
+        };
+    }) => {
+        /* Query for filters */
+        let filtersQuery: FilterTransfersQuery = {};
+
+        /* If query is passed */
+        if (pageParam?.query) {
+            /* If from date is passed */
+            if (pageParam?.query?.fromDate) {
+                /* Converting to UTC time, selected time is companies local time */
+                filtersQuery = {
+                    ...filtersQuery,
+                    fromDate: convertLocalUTCToTimezoneUTC(
+                        pageParam?.query?.fromDate,
+                        dateTimeFormat24hr,
+                        pageParam.countryDetails.timezone
+                    ),
+                };
+                filtersQuery = {
+                    ...filtersQuery,
+                    toDate: convertLocalUTCToTimezoneUTC(
+                        pageParam?.query?.toDate as Date,
+                        dateTimeFormat24hr,
+                        pageParam.countryDetails.timezone
+                    ),
+                };
+            }
+            /* If type is passed add it to the filters query */
+            if (pageParam.query?.type) {
+                filtersQuery = { ...filtersQuery, type: pageParam.query.type };
+            }
+        }
+        return await asyncHandler<T>(() => {
+            return axios.post<ApiResponse<T>>(
+                `${this.hostPath}/${this.getAllTransfersPath}`,
+                {
+                    pageSize: pageParam.pageSize,
+                    companyId: pageParam.companyId,
+                    cursor: pageParam?.cursor,
+                    query: filtersQuery,
+                    select: pageParam?.select,
                 }
             );
         });

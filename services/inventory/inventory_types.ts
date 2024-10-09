@@ -1,4 +1,9 @@
-import { ItemTypeInInvoiceItem, ItemTypeInItemsList } from "@/constants/types";
+import {
+    ItemTypeInInvoiceItem,
+    ItemTypeInItemsList,
+    TransferType,
+    TransferTypeInTransfersList,
+} from "@/constants/types";
 
 export interface PriceHistoryOfCurrentStockType {
     stock: number;
@@ -26,6 +31,16 @@ export interface Unit {
     unitId: number;
     unitName: string;
     companyId: number;
+}
+
+export interface Transfer {
+    transferId: number;
+    createdAt: Date;
+    fromCompanyId: number;
+    toCompanyId: number;
+    fromCompanyName: string;
+    toCompanyName: string;
+    doneBy: string;
 }
 
 export class GetAllItemsResponse {
@@ -98,9 +113,26 @@ export class GetLowStockItemsResponse {
             stock: string;
             minStockToMaintain: string | null;
             difference: string;
-            updatedAt: Date,
-            unitName: string
+            updatedAt: Date;
+            unitName: string;
         }>,
-        public nextPageCursor?: {itemId: number}
+        public nextPageCursor?: { itemId: number }
+    ) {}
+}
+
+export interface FilterTransfersQuery {
+    type?: TransferType;
+    fromDate?: string;
+    toDate?: string;
+}
+
+export class GetAllTransfersForTransfersListResponse {
+    constructor(
+        public transfers: TransferTypeInTransfersList,
+        public hasNextPage: boolean,
+        public nextPageCursor?: {
+            transferId: number;
+            createdAt: Date;
+        }
     ) {}
 }

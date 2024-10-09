@@ -444,3 +444,21 @@ export const AddUpdateUserValidation = (operation: "ADD" | "UPDATE") => {
 
     return validationSchema;
 };
+
+export const FilterTransfersFormValidation = Yup.object().shape({
+    type: Yup.string().required(),
+    fromDate: Yup.date().notRequired(),
+    toDate: Yup.date()
+        .notRequired()
+        .test(
+            "toDateTest",
+            "to date cannot be before from date",
+            (value, context) => {
+                const from = context?.options?.context?.fromDate;
+                if (moment(value).isBefore(from)) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+});

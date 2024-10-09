@@ -153,16 +153,15 @@ const CompanyMainLayout = () => {
     );
 
     /* Setting redux state */
-    const {showLoadingSpinner, errorMessage} =useSetReduxStateForCompany();
+    const { showLoadingSpinner, errorMessage } = useSetReduxStateForCompany();
 
     /* On error, show error message and go back */
     useEffect(() => {
-        if(errorMessage){
+        if (errorMessage) {
             ToastAndroid.show(errorMessage, ToastAndroid.LONG);
             router.back();
         }
-    }, [errorMessage])
-
+    }, [errorMessage]);
 
     return (
         <>
@@ -312,6 +311,31 @@ const CompanyMainLayout = () => {
                             drawerItemStyle: {
                                 display: isFeatureAccessible(
                                     PLATFORM_FEATURES.GET_QUOTATIONS
+                                )
+                                    ? "flex"
+                                    : "none",
+                                marginTop: -10,
+                            },
+                        }}
+                    />
+
+                    <Drawer.Screen
+                        name="(itemtransfers)"
+                        options={{
+                            drawerLabel: capitalizeText(
+                                i18n.t("itemTransfers")
+                            ),
+                            headerTitle: () => (
+                                <CustomNavHeader
+                                    mainHeading={i18n.t("itemTransfers")}
+                                    subHeading={
+                                        selectedCompany?.companyName || ""
+                                    }
+                                />
+                            ),
+                            drawerItemStyle: {
+                                display: isFeatureAccessible(
+                                    PLATFORM_FEATURES.GET_TRANSFERS
                                 )
                                     ? "flex"
                                     : "none",
