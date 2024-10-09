@@ -6,7 +6,6 @@ import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import FilterButton from "@/components/custom/basic/FilterButton";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import RadioButton from "@/components/custom/basic/RadioButton";
-import ItemTransferListItem from "@/components/custom/business/ItemTransferListItem";
 import ListEmptyComponent from "@/components/custom/business/ListEmptyComponent";
 import { PLATFORM_FEATURES } from "@/constants/features";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
@@ -32,6 +31,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { Href, router } from "expo-router";
 import { Formik } from "formik";
 
+import TransferListItem from "@/components/custom/business/TransferListItem";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     ActivityIndicator,
@@ -229,7 +229,7 @@ const ItemTransfers = () => {
                         .map((transferPage) => transferPage.data.transfers)
                         .flat()}
                     renderItem={({ item }) => (
-                        <ItemTransferListItem
+                        <TransferListItem
                             transfer={item}
                             onPress={(transfer) =>
                                 router.push(

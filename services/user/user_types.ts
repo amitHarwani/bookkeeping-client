@@ -1,4 +1,4 @@
-import { RoleTypeInRolesList } from "@/constants/types";
+import { CompanyGroupType, RoleTypeInRolesList } from "@/constants/types";
 
 export interface User {
     fullName: string;
@@ -140,4 +140,10 @@ export class UpdateUserAccessResponse {
         public companyId: number,
         public message: string
     ) {}
+}
+
+export class GetCompanyGroupResponse {
+    constructor(
+        public companies: Array<CompanyGroupType>
+    ){}
 }

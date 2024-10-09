@@ -4,7 +4,11 @@ import {
 } from "@/services/billing/billing_types";
 import { Item, Unit } from "@/services/inventory/inventory_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
-import { GetAllRolesForRolesListResponse } from "@/services/user/user_types";
+import {
+    Company,
+    CompanyWithTaxDetails,
+    GetAllRolesForRolesListResponse,
+} from "@/services/user/user_types";
 
 export type GenericObject = {
     [key: string]: any;
@@ -114,7 +118,7 @@ export interface PurchaseTypeInPurchaseList {
 export interface SaleTypeInSalesList {
     saleId: number;
     partyName: string | null;
-    isNoPartyBill: boolean,
+    isNoPartyBill: boolean;
     invoiceNumber: number;
     totalAfterTax: string;
     updatedAt: Date;
@@ -147,8 +151,8 @@ export interface FilterSalesForm {
 }
 
 export interface FilterQuotationForm {
-    party?: PartyTypeInInvoicePartySelector,
-    filterByDate?: boolean,
+    party?: PartyTypeInInvoicePartySelector;
+    filterByDate?: boolean;
     fromTransactionDateTime?: Date;
     toTransactionDateTime?: Date;
 }
@@ -157,11 +161,11 @@ export interface PartyTypeInInvoicePartySelector {
     partyId: number;
     partyName: string;
     updatedAt: Date;
-    defaultPurchaseCreditAllowanceInDays: number
-    defaultSaleCreditAllowanceInDays: number
+    defaultPurchaseCreditAllowanceInDays: number;
+    defaultSaleCreditAllowanceInDays: number;
 }
 export interface PurchaseInvoiceForm {
-    createdAt: Date,
+    createdAt: Date;
     party?: PartyTypeInInvoicePartySelector;
     invoiceNumber?: number;
     items: { [itemId: number]: PurchaseInvoiceItem };
@@ -170,25 +174,25 @@ export interface PurchaseInvoiceForm {
     totalAfterDiscount: string;
     tax: string;
     totalAfterTax: string;
-    taxPercent: number,
-    taxName: string,
-    isCredit: boolean,
+    taxPercent: number;
+    taxName: string;
+    isCredit: boolean;
 
-    paymentDueDate: Date | null,
-    amountPaid: number,
-    amountDue: number,
+    paymentDueDate: Date | null;
+    amountPaid: number;
+    amountDue: number;
 
-    paymentCompletionDate: Date | null,
-    isFullyPaid: boolean,
-    receiptNumber: string | null
+    paymentCompletionDate: Date | null;
+    isFullyPaid: boolean;
+    receiptNumber: string | null;
 }
 
 export interface SaleInvoiceForm {
-    createdAt: Date,
-    isNoPartyBill: boolean,
+    createdAt: Date;
+    isNoPartyBill: boolean;
     party: PartyTypeInInvoicePartySelector | null;
-    doneBy: string,
-    autogenerateInvoice: boolean,
+    doneBy: string;
+    autogenerateInvoice: boolean;
     invoiceNumber: number | null;
     quotationNumber: number | null;
     items: { [itemId: number]: SaleInvoiceItem };
@@ -197,32 +201,32 @@ export interface SaleInvoiceForm {
     totalAfterDiscount: string;
     tax: string;
     totalAfterTax: string;
-    taxPercent: number,
-    taxName: string,
-    isCredit: boolean,
+    taxPercent: number;
+    taxName: string;
+    isCredit: boolean;
 
-    paymentDueDate: Date | null,
-    amountPaid: number,
-    amountDue: number,
+    paymentDueDate: Date | null;
+    amountPaid: number;
+    amountDue: number;
 
-    paymentCompletionDate: Date | null,
-    isFullyPaid: boolean,
+    paymentCompletionDate: Date | null;
+    isFullyPaid: boolean;
 }
 
 export interface QuotationForm {
-    createdAt: Date,
-    autogenerateQuotationNumber: boolean,
+    createdAt: Date;
+    autogenerateQuotationNumber: boolean;
     quotationNumber: number | null;
     party: PartyTypeInInvoicePartySelector | null;
-    createdBy: string,
+    createdBy: string;
     items: { [itemId: number]: SaleInvoiceItem };
     discount: string;
     subtotal: string;
     totalAfterDiscount: string;
     tax: string;
     totalAfterTax: string;
-    taxPercent: number,
-    taxName: string,
+    taxPercent: number;
+    taxName: string;
 }
 
 export interface ItemTypeInInvoiceItem {
@@ -239,7 +243,7 @@ export interface PurchaseInvoiceItem {
     subtotal: string;
     tax: string;
     totalAfterTax: string;
-    taxPercent: number
+    taxPercent: number;
 }
 
 export interface SaleInvoiceItem {
@@ -249,55 +253,79 @@ export interface SaleInvoiceItem {
     subtotal: string;
     tax: string;
     totalAfterTax: string;
-    taxPercent: number
+    taxPercent: number;
 }
 
-export type QuickActionTypes = "SALE" | "PURCHASE" | "ITEMS"
+export type QuickActionTypes = "SALE" | "PURCHASE" | "ITEMS";
 
 export interface TableColDefType {
-    id: string,
-    text: string,
-    extraCellStyles?: Object
-    extraCellProps?: Object
+    id: string;
+    text: string;
+    extraCellStyles?: Object;
+    extraCellProps?: Object;
 }
 
 export interface RoleTypeInRolesList {
-    roleId: number,
-    roleName: string
+    roleId: number;
+    roleName: string;
 }
 
 export interface AddUpdateRoleForm {
-    roleName: string,
-    acl: {[featureId: number]: boolean}
+    roleName: string;
+    acl: { [featureId: number]: boolean };
 }
 
 export interface AddUpdateUserForm {
-    fullName: string,
-    email: string,
-    password: string,
-    country?: Country,
-    phoneCode: string,
-    mobileNumber: string,
-    isActive: boolean,
-    role?: RoleTypeInRolesList 
+    fullName: string;
+    email: string;
+    password: string;
+    country?: Country;
+    phoneCode: string;
+    mobileNumber: string;
+    isActive: boolean;
+    role?: RoleTypeInRolesList;
 }
 
 export enum TransferType {
-    all= "ALL",
+    all = "ALL",
     received = "RECEIVED",
-    sent = "SENT"
+    sent = "SENT",
 }
 export interface FilterTransfersForm {
-    type?: TransferType,
-    filterByDate?: boolean,
-    fromDate?: Date,
-    toDate?: Date
+    type?: TransferType;
+    filterByDate?: boolean;
+    fromDate?: Date;
+    toDate?: Date;
 }
 export interface TransferTypeInTransfersList {
     transferId: number;
-    createdAt: Date;
+    createdAt: string;
     fromCompanyId: number;
     toCompanyId: number;
     fromCompanyName: string;
     toCompanyName: string;
+}
+
+export interface AddUpdateTransferForm {
+    toCompany?: CompanyGroupType;
+    items: {[itemId: number]: TransferItemType};
+    createdAt?: Date;
+}
+
+export interface TransferItemType {
+    item: ItemTypeInTransferItemSelector,
+    unitsTransferred: number;
+}
+export interface ItemTypeInTransferItemSelector {
+    itemId: number;
+    itemName: string;
+    unitId: number;
+    unitName: string;
+    updatedAt: Date;
+    stock: string;
+}
+
+export interface CompanyGroupType {
+    companyId: number,
+    companyName: string
 }

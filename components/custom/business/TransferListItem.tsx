@@ -10,18 +10,25 @@ import React, { useMemo } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import ArrowSent from "@/assets/images/arrow_sent.png";
 import ArrowReceived from "@/assets/images/arrow_received.png";
+import { convertUTCStringToTimezonedDate } from "@/utils/common_utils";
+import {
+    dateTimeFormat24hr,
+    displayedDateTimeFormat,
+} from "@/constants/datetimes";
+import moment from "moment";
 
-interface ItemTransferListItemProps {
+interface TransferListItemProps {
     transfer: TransferTypeInTransfersList;
     onPress(transfer: TransferTypeInTransfersList): void;
 }
-const ItemTransferListItem = ({
-    transfer,
-    onPress,
-}: ItemTransferListItemProps) => {
+const TransferListItem = ({ transfer, onPress }: TransferListItemProps) => {
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
     );
+
+    const timezone = useAppSelector(
+        (state) => state.company.country?.timezone
+    ) as string;
 
     /* Transfer type */
     const transferType = useMemo(() => {
@@ -35,13 +42,21 @@ const ItemTransferListItem = ({
 
     return (
         <Pressable onPress={() => onPress(transfer)} style={styles.container}>
-            <View>
-                <Text style={[commonStyles.textSmall]} numberOfLines={2}>
-                    {transferType == TransferType.sent
-                        ? transfer.toCompanyName
-                        : transfer.fromCompanyName}
-                </Text>
-            </View>
+            <Text style={[commonStyles.textSmall]} numberOfLines={2}>
+                {moment(
+                    convertUTCStringToTimezonedDate(
+                        transfer.createdAt as string,
+                        dateTimeFormat24hr,
+                        timezone
+                    )
+                ).format(displayedDateTimeFormat)}
+            </Text>
+
+            <Text style={[commonStyles.textSmall, {maxWidth: "50%"}]} numberOfLines={1}>
+                {transferType == TransferType.sent
+                    ? transfer.toCompanyName
+                    : transfer.fromCompanyName}
+            </Text>
 
             <Image
                 source={
@@ -55,7 +70,7 @@ const ItemTransferListItem = ({
     );
 };
 
-export default ItemTransferListItem;
+export default TransferListItem;
 
 const styles = StyleSheet.create({
     container: {

@@ -15,6 +15,7 @@ import {
     GetAllCompaniesResponse,
     GetAllUsersOfCompanyResponse,
     GetCompanyAdminACLResponse,
+    GetCompanyGroupResponse,
     GetCompanyResponse,
     GetRoleResponse,
     GetUserResponse,
@@ -44,6 +45,8 @@ export class UserService {
     public updateCompanyPath = "company/update-company";
     public getAccessibleFeaturesOfCompanyPath =
         "company/get-accessible-features-of-company";
+    public getCompanyGroupPath = "company/get-company-group";
+
     public getAllRolesPath = "role/get-all-roles";
     public addRolePath = "role/add-role";
     public updateRolePath = "role/update-role";
@@ -339,6 +342,20 @@ export class UserService {
                     companyId,
                     roleId: details.role?.roleId,
                     isActive: details.isActive,
+                }
+            );
+        });
+    };
+
+    getCompanyGroup = async (companyId: number, mainCompanyId: number) => {
+        return await asyncHandler<GetCompanyGroupResponse>(() => {
+            return axios.get<ApiResponse<GetCompanyGroupResponse>>(
+                `${this.hostPath}/${this.getCompanyGroupPath}`,
+                {
+                    params: {
+                        companyId,
+                        mainCompanyId,
+                    },
                 }
             );
         });

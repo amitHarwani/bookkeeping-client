@@ -26,5 +26,7 @@ export enum ReactQueryKeys {
     getRole = "getRole",
     users = "users",
     getUser = "getUser",
-    itemTransfers = "itemTransfers"
+    itemTransfers = "itemTransfers",
+    getCompanyGroup = "getCompanyGroup",
+    getTransfer = "getTransfer"
 }

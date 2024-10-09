@@ -35,12 +35,21 @@ export interface Unit {
 
 export interface Transfer {
     transferId: number;
-    createdAt: Date;
+    createdAt: string;
     fromCompanyId: number;
     toCompanyId: number;
     fromCompanyName: string;
     toCompanyName: string;
     doneBy: string;
+}
+export interface TransferItem {
+    transferId: number;
+    itemId: number;
+    itemName: string;
+    unitId: number;
+    unitName: string;
+    unitsTransferred: string;
+    priceHistoryOfStockTransferred: PriceHistoryOfCurrentStockType[] | null;
 }
 
 export class GetAllItemsResponse {
@@ -134,5 +143,20 @@ export class GetAllTransfersForTransfersListResponse {
             transferId: number;
             createdAt: Date;
         }
+    ) {}
+}
+
+export class GetTransferResponse {
+    constructor(
+        public transfer: Transfer,
+        public transferItems: Array<TransferItem>
+    ) {}
+}
+
+export class AddTransferResponse {
+    constructor(
+        public transfer: Transfer,
+        public transferItems: Array<TransferItem>,
+        public message: string
     ) {}
 }

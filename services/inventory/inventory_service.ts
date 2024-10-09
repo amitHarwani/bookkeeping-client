@@ -1,29 +1,31 @@
-import { asyncHandler } from "../async_handler";
-import axios from "axios";
-import {
-    AddItemResponse,
-    AddUnitResponse,
-    AdjustItemResponse,
-    FilterItemsQuery,
-    FilterTransfersQuery,
-    GetAllItemsResponse,
-    GetAllUnitsResponse,
-    GetItemResponse,
-    GetLowStockItemsResponse,
-    Item,
-    Transfer,
-    UpdateItemResponse,
-} from "./inventory_types";
-import { ApiResponse } from "../api_response";
+import { dateTimeFormat24hr } from "@/constants/datetimes";
 import {
     AddItemForm,
+    AddUpdateTransferForm,
     AdjustItemForm,
     FilterTransfersForm,
     UpdateItemForm,
 } from "@/constants/types";
 import { convertLocalUTCToTimezoneUTC } from "@/utils/common_utils";
-import { dateFormat, dateTimeFormat24hr } from "@/constants/datetimes";
+import axios from "axios";
+import { ApiResponse } from "../api_response";
+import { asyncHandler } from "../async_handler";
 import { Country } from "../sysadmin/sysadmin_types";
+import {
+    AddItemResponse,
+    AddTransferResponse,
+    AddUnitResponse,
+    AdjustItemResponse,
+    FilterItemsQuery,
+    FilterTransfersQuery,
+    GetAllUnitsResponse,
+    GetItemResponse,
+    GetLowStockItemsResponse,
+    GetTransferResponse,
+    Item,
+    Transfer,
+    UpdateItemResponse,
+} from "./inventory_types";
 
 class InventoryService {
     hostPath = process.env.EXPO_PUBLIC_INVENTORY_SERVICE;
@@ -36,6 +38,8 @@ class InventoryService {
     adjustItemPath = "item/adjust-item";
     getLowStockItemsPath = "insights/get-low-stock-items";
     getAllTransfersPath = "transfers/get-all-transfers";
+    getTransferPath = "transfers/get-transfer";
+    addTransferPath = "transfers/add-transfer";
 
     getAllItems = async <T>({
         pageParam,
@@ -229,6 +233,55 @@ class InventoryService {
                     cursor: pageParam?.cursor,
                     query: filtersQuery,
                     select: pageParam?.select,
+                }
+            );
+        });
+    };
+
+    getTransfer = async (companyId: number, transferId: number) => {
+        return await asyncHandler<GetTransferResponse>(() => {
+            return axios.get<ApiResponse<GetTransferResponse>>(
+                `${this.hostPath}/${this.getTransferPath}`,
+                {
+                    params: {
+                        transferId,
+                        companyId,
+                    },
+                }
+            );
+        });
+    };
+    addTransfer = async (
+        fromCompanyId: number,
+        fromCompanyName: string,
+        details: AddUpdateTransferForm
+    ) => {
+        let items: Array<{
+            itemId: number;
+            itemName: string;
+            unitId: number;
+            unitName: string;
+            unitsTransferred: number;
+        }> = [];
+
+        Object.values(details.items).forEach((item) => {
+            items.push({
+                itemId: item.item.itemId,
+                itemName: item.item.itemName,
+                unitId: item.item.unitId,
+                unitName: item.item.unitName,
+                unitsTransferred: Number(item.unitsTransferred),
+            });
+        });
+        return await asyncHandler<AddTransferResponse>(() => {
+            return axios.post<ApiResponse<AddTransferResponse>>(
+                `${this.hostPath}/${this.addTransferPath}`,
+                {
+                    fromCompanyId,
+                    fromCompanyName,
+                    toCompanyId: details.toCompany?.companyId,
+                    toCompanyName: details.toCompany?.companyName,
+                    items: items,
                 }
             );
         });

@@ -1,80 +1,78 @@
 import { i18n } from "@/app/_layout";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
-import AddUpdatePurchaseInvoice from "@/components/custom/widgets/AddUpdatePurchaseInvoice";
 import AddUpdateSaleInvoice from "@/components/custom/widgets/AddUpdateSaleInvoice";
-import { AppRoutes } from "@/constants/routes";
-import { PurchaseInvoiceForm, SaleInvoiceForm } from "@/constants/types";
-import BillingService from "@/services/billing/billing_service";
+import AddUpdateTransfer from "@/components/custom/widgets/AddUpdateTransfer";
+import {
+    AddUpdateTransferForm
+} from "@/constants/types";
+import InventoryService from "@/services/inventory/inventory_service";
 import { useAppSelector } from "@/store";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
 import { useMutation } from "@tanstack/react-query";
-import { Href, router } from "expo-router";
+import { router } from "expo-router";
 import React, { useEffect, useMemo } from "react";
 import { StyleSheet, ToastAndroid } from "react-native";
 
-const AddSale = () => {
+const AddTransfer = () => {
     /* Company State from redux */
     const companyState = useAppSelector((state) => state.company);
-
-    /* Decimal points to round to when showing the value */
-    const decimalPoints = useMemo(() => {
-        return companyState.selectedCompany?.decimalRoundTo || 2;
-    }, [companyState]);
 
     /* Selected Company */
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
     );
 
-    /* Add Sale mutation */
-    const addSaleMutation = useMutation({
-        mutationFn: (values: SaleInvoiceForm) =>
-            BillingService.addSale(
-                values,
-                selectedCompany?.companyId as number,
-                companyState.country?.timezone as string,
-                decimalPoints
-            ),
+    /* Company ID & Company Name from selected company */
+    const companyId = useMemo(() => selectedCompany?.companyId as number, []);
+    const companyName = useMemo(
+        () => selectedCompany?.companyName as string,
+        []
+    );
+
+    /* Add Transfer mutation */
+    const addTransferMutation = useMutation({
+        mutationFn: (values: AddUpdateTransferForm) =>
+            InventoryService.addTransfer(companyId, companyName, values),
     });
 
-    /* Show loading spinner when sale is being added */
+    /* Show loading spinner when transfer is being added */
     const showLoadingSpinner = useMemo(() => {
-        return addSaleMutation.isPending ? true : false;
-    }, [addSaleMutation.isPending]);
+        return addTransferMutation.isPending ? true : false;
+    }, [addTransferMutation.isPending]);
 
     /* API Error  */
     const apiErrorMessage = useMemo(() => {
-        if (addSaleMutation.error) {
-            return getApiErrorMessage(addSaleMutation.error);
+        if (addTransferMutation.error) {
+            return getApiErrorMessage(addTransferMutation.error);
         }
         return null;
-    }, [addSaleMutation.error]);
+    }, [addTransferMutation.error]);
 
-    /* Success: Show toast message and go to get sale screen */
+    /* Success: Show toast message and go back */
     useEffect(() => {
-        if (addSaleMutation.isSuccess && addSaleMutation.data.success) {
+        if (addTransferMutation.isSuccess && addTransferMutation.data.success) {
             ToastAndroid.show(
-                capitalizeText(`${i18n.t("saleAddedSuccessfully")}`),
+                capitalizeText(`${i18n.t("itemsTransferredSuccessfully")}`),
                 ToastAndroid.LONG
             );
 
-            router.replace(`${AppRoutes.getSale}/${addSaleMutation.data.data.sale.saleId}` as Href);
+            router.back();
         }
-    }, [addSaleMutation.isSuccess]);
+    }, [addTransferMutation.isSuccess]);
 
     return (
         <>
             {showLoadingSpinner && <LoadingSpinnerOverlay />}
 
-            <AddUpdateSaleInvoice
+            <AddUpdateTransfer
                 operation="ADD"
-                onAddUpdateSale={(values) => addSaleMutation.mutate(values)}
+                onAddUpdateTransfer={(values) => addTransferMutation.mutate(values)}
                 apiErrorMessage={apiErrorMessage}
             />
         </>
     );
 };
 
-export default AddSale;
+export default AddTransfer;
 
 const styles = StyleSheet.create({});

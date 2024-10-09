@@ -462,3 +462,32 @@ export const FilterTransfersFormValidation = Yup.object().shape({
             }
         ),
 });
+
+export const AddUpdateTransferFormValidation = Yup.object().shape({
+    toCompany: Yup.object().required("to company is required"),
+    items: Yup.object().test("items", "no items added", (value) => {
+        if (value && Object.values(value).length === 0) {
+            return false;
+        }
+        return true;
+    }),
+});
+
+export const AddUpdateTransferItemValidation = Yup.object().shape({
+    item: Yup.object().required("item is required"),
+    unitsTransferred: Yup.number()
+        .typeError("invalid unit")
+        .test("units", "unit must be greater than 0", (value) => {
+            if (Number(value) <= 0) {
+                return false;
+            }
+            return true;
+        })
+        .test("unitsAvailable", "stock not available", (value, context) => {
+            const item = context?.options?.context?.item;
+            if(item && Number(item?.stock) < Number(value)){
+                return false;
+            }
+            return true;
+        })
+});

@@ -215,6 +215,11 @@ export default {
     itemTransfers: "item transfers",
     addTransfer: "add transfer",
     noTransfersFound: "no transfers found",
-    transferType: "transfer type"
-
+    transferType: "transfer type",
+    itemsTransferredSuccessfully: "items transferred successfully",
+    transferDateTime: "transfer date time",
+    transferTo: "transfer to",
+    transfer: "transfer",
+    from: "from",
+    to: "to",
 }
