@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useAppSelector } from "@/store";
 import { Stack, useNavigation, usePathname } from "expo-router";
 import { AppRoutes } from "@/constants/routes";
@@ -7,6 +7,7 @@ import BackIcon from "@/assets/images/back_icon.png";
 import { commonStyles } from "@/utils/common_styles";
 import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
 import { i18n } from "@/app/_layout";
+import { CommonActions } from "@react-navigation/native";
 
 const PurchaseLayout = () => {
     const selectedCompany = useAppSelector(
@@ -28,11 +29,27 @@ const PurchaseLayout = () => {
             navigator.setOptions({ headerShown: true });
         }
     }, [pathName]);
+
+    /* To reset the stack navigator to purchases screen, when going back
+        Since there is a navigation from dashboard to /add-purchases, and hence going back
+        the reset to purchases needs to be done
+    */
+    const reset = useCallback(() => {
+        navigator.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: "purchases" }],
+            })
+        );
+    }, []);
     return (
         <Stack
             screenOptions={({ navigation }) => ({
                 headerLeft: () => (
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <TouchableOpacity onPress={() => {
+                        reset();
+                        navigation.goBack()
+                    }}>
                         <Image
                             style={commonStyles.hamburgerBackIcon}
                             source={BackIcon}

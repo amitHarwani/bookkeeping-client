@@ -56,8 +56,8 @@ const AddInvoiceItem = ({
         validationSchema: AddUpdateInvoiceItemValidation,
         onSubmit: (values) => {
             /* On submit pass values to parent and hide modal */
-            onInvoiceItemChange(values);
             toggleVisibility();
+            onInvoiceItemChange(values);
         },
     });
 
