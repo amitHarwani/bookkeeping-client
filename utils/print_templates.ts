@@ -6,7 +6,7 @@ import {
 import { Country } from "@/services/sysadmin/sysadmin_types";
 import { CompanyWithTaxDetails } from "@/services/user/user_types";
 import { getTaxHeading } from "./tax_helper";
-import { convertUTCStringToTimezonedDate } from "./common_utils";
+import { capitalizeText, convertUTCStringToTimezonedDate } from "./common_utils";
 import {
     dateTimeFormat24hr,
     displayedDateTimeFormat,
@@ -20,7 +20,12 @@ export const getSaleInvoiceHTML = (
     username: string,
     partyDetails?: GetPartyResponse
 ) => {
+    /* Decimal points to round to */
     const decimalPoints = companyDetails.decimalRoundTo;
+
+    /* Computing totals before discount is applied */
+    let tempTaxTotal = 0;
+    let tempSubTotal = 0;
 
     return `<!DOCTYPE html>
     <html lang="en">
@@ -96,8 +101,7 @@ export const getSaleInvoiceHTML = (
                     <p class="font-size-14 font-weight-600">${
                         companyDetails.companyName
                     }</p>
-                    <p class="font-size-14">${companyDetails.companyName}</p>
-                    <p class="font-size-14">${countryDetails.countryName}</p>
+                    <p class="font-size-14">${capitalizeText(countryDetails.countryName)}</p>
                     ${
                         saleDetails?.sale?.companyTaxNumber
                             ? `<p class="font-size-14">${getTaxHeading(
@@ -150,7 +154,7 @@ export const getSaleInvoiceHTML = (
                             dateTimeFormat24hr,
                             countryDetails.timezone
                         )
-                    ).format(displayedDateTimeFormat)}/p>
+                    ).format(displayedDateTimeFormat)}</p>
                 </div>
             </div>
     
@@ -162,18 +166,21 @@ export const getSaleInvoiceHTML = (
                             <th>Item Name</th>
                             <th>Quantity</th>
                             <th>Rate</th>
-                            <th>Tax</th>
+                            <th>${saleDetails.sale.taxName.toUpperCase()} (${
+        saleDetails.sale.taxPercent
+    }%)</th>
                             <th>Amount</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${saleDetails.saleItems.map(
-                            (saleItem, index) =>
-                                `
+                        ${saleDetails.saleItems.map((saleItem, index) => {
+                            tempTaxTotal += Number(saleItem.tax);
+                            tempSubTotal += Number(saleItem.totalAfterTax);
+                            return `
                                 <tr>
                             <td>${index + 1}</td>
                             <td>${saleItem.itemName}</td>
-                            <td>${saleItem.unitName} ${saleItem.unitsSold}</td>
+                            <td>${saleItem.unitsSold} ${saleItem.unitName}</td>
                             <td>${saleItem.pricePerUnit}</td>
                             <td>${Number(saleItem.tax).toFixed(
                                 decimalPoints
@@ -182,8 +189,21 @@ export const getSaleInvoiceHTML = (
                                 decimalPoints
                             )}</td>
                         </tr>
-                                `
-                        )}
+                                `;
+                        })}
+                        <tr
+                            style="
+                                padding-top: 20px;
+                            "
+                        >
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
                         <tr
                             style="
                                 border: 1px solid black;
@@ -194,9 +214,9 @@ export const getSaleInvoiceHTML = (
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>}</td>
+                            <td class="font-weight-700">Total</td>
+                            <td>${tempTaxTotal.toFixed(decimalPoints)}</td>
+                            <td>${tempSubTotal.toFixed(decimalPoints)}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -216,7 +236,9 @@ export const getSaleInvoiceHTML = (
                     <p class="font-size-14 font-weight-700">Subtotal</p>
                     <p class="font-size-14 font-weight-700">Discount</p>
                     <p class="font-size-14 font-weight-700">Total After Discount</p>
-                    <p class="font-size-14 font-weight-700">Tax</p>
+                    <p class="font-size-14 font-weight-700">${saleDetails.sale.taxName.toUpperCase()} (${
+        saleDetails.sale.taxPercent
+    }%)</p>
                     <p class="font-size-14 font-weight-700">Total</p>
                     <p class="font-size-14 font-weight-700">Received</p>
                     <p class="font-size-14 font-weight-700">Balance</p>
@@ -278,9 +300,14 @@ export const getQuotationHTML = (
     companyDetails: CompanyWithTaxDetails,
     countryDetails: Country,
     username: string,
-    partyDetails: GetPartyResponse,
+    partyDetails: GetPartyResponse
 ) => {
+    /* Decimal points to round to */
     const decimalPoints = companyDetails.decimalRoundTo;
+
+    /* Computing totals before discount is applied */
+    let tempTaxTotal = 0;
+    let tempSubTotal = 0;
 
     return `<!DOCTYPE html>
     <html lang="en">
@@ -374,7 +401,7 @@ export const getQuotationHTML = (
                     <p style="text-transform: uppercase" class="font-size-38">
                         QUOTATION
                     </p>
-                    <p class="font-size-14 font-weight-600">Invoice Number: ${
+                    <p class="font-size-14 font-weight-600">Quotation Number: ${
                         quotationDetails.quotation.quotationNumber
                     }</p>
                 </div>
@@ -404,13 +431,13 @@ export const getQuotationHTML = (
                 </div>
     
                 <div style="display: flex; row-gap: 2px">
-                    <p class="font-size-14">Invoice Date: ${moment(
+                    <p class="font-size-14">Quotation Date: ${moment(
                         convertUTCStringToTimezonedDate(
                             quotationDetails.quotation.createdAt,
                             dateTimeFormat24hr,
                             countryDetails.timezone
                         )
-                    ).format(displayedDateTimeFormat)}/p>
+                    ).format(displayedDateTimeFormat)}</p>
                 </div>
             </div>
     
@@ -422,19 +449,25 @@ export const getQuotationHTML = (
                             <th>Item Name</th>
                             <th>Quantity</th>
                             <th>Rate</th>
-                            <th>Tax</th>
+                            <th>${quotationDetails.quotation.taxName.toUpperCase()} (${
+        quotationDetails.quotation.taxPercent
+    }%)</th>
                             <th>Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${quotationDetails.quotationItems.map(
-                            (quotationItem, index) =>
-                                `
+                            (quotationItem, index) => {
+                                tempTaxTotal += Number(quotationItem.tax);
+                                tempSubTotal += Number(
+                                    quotationItem.totalAfterTax
+                                );
+                                return `
                                 <tr>
                             <td>${index + 1}</td>
                             <td>${quotationItem.itemName}</td>
-                            <td>${quotationItem.unitName} ${
-                                    quotationItem.unitsSold
+                            <td>${quotationItem.unitsSold} ${
+                                    quotationItem.unitName
                                 }</td>
                             <td>${quotationItem.pricePerUnit}</td>
                             <td>${Number(quotationItem.tax).toFixed(
@@ -444,8 +477,22 @@ export const getQuotationHTML = (
                                 decimalPoints
                             )}</td>
                         </tr>
-                                `
+                                `;
+                            }
                         )}
+                        <tr
+                            style="
+                                padding-top: 20px;
+                            "
+                        >
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
                         <tr
                             style="
                                 border: 1px solid black;
@@ -456,9 +503,9 @@ export const getQuotationHTML = (
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>}</td>
+                            <td class="font-weight-700">Total</td>
+                            <td>${tempTaxTotal.toFixed(decimalPoints)}</td>
+                            <td>${tempSubTotal.toFixed(decimalPoints)}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -478,7 +525,9 @@ export const getQuotationHTML = (
                     <p class="font-size-14 font-weight-700">Subtotal</p>
                     <p class="font-size-14 font-weight-700">Discount</p>
                     <p class="font-size-14 font-weight-700">Total After Discount</p>
-                    <p class="font-size-14 font-weight-700">Tax</p>
+                    <p class="font-size-14 font-weight-700">${quotationDetails.quotation.taxName.toUpperCase()} (${
+        quotationDetails.quotation.taxPercent
+    }%)</p>
                     <p class="font-size-14 font-weight-700">Total</p>
                 </div>
                 <div style="display: flex; flex-direction: column; row-gap: 6px">
