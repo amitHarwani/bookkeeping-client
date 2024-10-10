@@ -50,7 +50,7 @@ const InvoicePartySelector = ({
             {
                 isActive: true,
                 partyNameSearchQuery: partyNameSearched,
-                select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays", "defaultSaleCreditAllowanceInDays"],
+                select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays", "defaultSaleCreditAllowanceInDays", "taxDetails", "countryId"],
             },
         ],
         queryFn: BillingService.getAllParties<GetAllPartiesForInvoicePartySelectorResponse>,
@@ -62,7 +62,7 @@ const InvoicePartySelector = ({
                 isActive: true,
                 partyNameSearchQuery: partyNameSearched,
             },
-            select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays", "defaultSaleCreditAllowanceInDays"],
+            select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays", "defaultSaleCreditAllowanceInDays", "taxDetails", "countryId"],
         },
         getNextPageParam: (lastPage) => {
             if (lastPage.data.nextPageCursor) {
@@ -74,7 +74,7 @@ const InvoicePartySelector = ({
                         partyNameSearchQuery: partyNameSearched,
                     },
                     cursor: lastPage.data.nextPageCursor,
-                    select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays", "defaultSaleCreditAllowanceInDays"],
+                    select: ["partyId", "partyName", "defaultPurchaseCreditAllowanceInDays", "defaultSaleCreditAllowanceInDays", "taxDetails", "countryId"],
                 };
             }
             return null;
@@ -104,8 +104,8 @@ const InvoicePartySelector = ({
 
     /* On change of party */
     const partyChangeHandler = (newParty: GenericObject) => {
-        setSelectedParty(newParty as ThirdParty);
-        onChange(newParty as ThirdParty);
+        setSelectedParty(newParty as PartyTypeInInvoicePartySelector);
+        onChange(newParty as PartyTypeInInvoicePartySelector);
     };
 
     /* On change of search input */

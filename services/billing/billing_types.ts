@@ -83,6 +83,8 @@ export interface Sale {
     paymentCompletionDate: string | null;
     saleId: number;
     isNoPartyBill: boolean;
+    companyTaxNumber: string,
+    partyTaxNumber: string
 }
 
 export interface SaleItem {
@@ -119,6 +121,8 @@ export interface Quotation {
     quotationId: number;
     quotationNumber: number;
     saleId: number | null;
+    companyTaxNumber: string,
+    partyTaxNumber: string
 }
 
 export interface QuotationItem {

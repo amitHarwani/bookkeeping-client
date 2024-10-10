@@ -2,19 +2,18 @@ import { fonts } from "@/constants/fonts";
 import { StyleSheet } from "react-native";
 
 export const commonStyles = StyleSheet.create({
-
     /**  Text **/
     capitalize: {
-        textTransform: "capitalize"
+        textTransform: "capitalize",
     },
     uppercase: {
-        textTransform: "uppercase"
+        textTransform: "uppercase",
     },
     mainHeading: {
         fontFamily: fonts.Inter_Black,
         fontSize: 24,
         color: "#000000",
-        textTransform: "capitalize"
+        textTransform: "capitalize",
     },
     linkText: {
         textTransform: "capitalize",
@@ -24,50 +23,50 @@ export const commonStyles = StyleSheet.create({
         textDecorationLine: "underline",
     },
     textDisabled: {
-        color: "#A9A9A9"
+        color: "#A9A9A9",
     },
     textWhite: {
-        color: "#FFFFFF"
+        color: "#FFFFFF",
     },
     textGray: {
-        color: "#8F9098"
+        color: "#8F9098",
     },
     textDarkGray: {
-        color: "#71727A"
+        color: "#71727A",
     },
     textBlue: {
-        color: "#006FFD"
+        color: "#006FFD",
     },
     textError: {
-        color: "#FF616D"
+        color: "#FF616D",
     },
     textXLBlack: {
         fontFamily: fonts.Inter_Black,
-        fontSize: 24
+        fontSize: 24,
     },
     textLargeMedium: {
         fontFamily: fonts.Inter_Medium,
-        fontSize: 18
+        fontSize: 18,
     },
     textMediumBlack: {
         fontFamily: fonts.Inter_Black,
-        fontSize: 14
+        fontSize: 14,
     },
     textMediumXLBold: {
         fontFamily: fonts.Inter_ExtraBold,
-        fontSize: 14
+        fontSize: 14,
     },
     textMediumBold: {
         fontFamily: fonts.Inter_Bold,
-        fontSize: 14
+        fontSize: 14,
     },
     textMediumMid: {
         fontFamily: fonts.Inter_Medium,
-        fontSize: 14
+        fontSize: 14,
     },
     textMedium: {
         fontFamily: fonts.Inter_Regular,
-        fontSize: 14
+        fontSize: 14,
     },
     textSmallBold: {
         fontFamily: fonts.Inter_Bold,
@@ -75,18 +74,16 @@ export const commonStyles = StyleSheet.create({
     },
     textSmallSemiBold: {
         fontFamily: fonts.Inter_SemiBold,
-        fontSize: 12
+        fontSize: 12,
     },
     textSmallMedium: {
         fontFamily: fonts.Inter_Medium,
-        fontSize: 12
+        fontSize: 12,
     },
     textSmall: {
         fontFamily: fonts.Inter_Regular,
-        fontSize: 12
+        fontSize: 12,
     },
-
-
 
     /* Modal */
     modalEndMenuContainer: {
@@ -112,7 +109,7 @@ export const commonStyles = StyleSheet.create({
     optionContainer: {
         paddingHorizontal: 12,
         paddingVertical: 16,
-        borderRadius: 12
+        borderRadius: 12,
     },
     selectedOptionContainer: {
         backgroundColor: "#F8F9FE",
@@ -130,17 +127,16 @@ export const commonStyles = StyleSheet.create({
         color: "#000000",
     },
 
-    
     borderedImageIcon: {
         borderWidth: 1.5,
         borderColor: "#006FFD",
-        borderRadius: 12
+        borderRadius: 12,
     },
 
     /* Edit Icon */
     editIcon: {
-        width: 24, 
-        height: 24
+        width: 24,
+        height: 24,
     },
 
     /* Hamburger back icon */
@@ -166,4 +162,16 @@ export const commonStyles = StyleSheet.create({
         width: 24,
         height: 24,
     },
-})
+
+    /* Print Icon */
+    printIcon: {
+        width: 24,
+        height: 24,
+    },
+
+    /* Share Icon */
+    shareIcon: {
+        width: 24,
+        height: 24,
+    },
+});

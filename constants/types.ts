@@ -163,6 +163,8 @@ export interface PartyTypeInInvoicePartySelector {
     updatedAt: Date;
     defaultPurchaseCreditAllowanceInDays: number;
     defaultSaleCreditAllowanceInDays: number;
+    taxDetails: Array<TaxDetailsOfThirdPartyType> | null;
+    countryId: number
 }
 export interface PurchaseInvoiceForm {
     createdAt: Date;
@@ -191,6 +193,8 @@ export interface SaleInvoiceForm {
     createdAt: Date;
     isNoPartyBill: boolean;
     party: PartyTypeInInvoicePartySelector | null;
+    companyTaxNumber: string,
+    partyTaxNumber: string,
     doneBy: string;
     autogenerateInvoice: boolean;
     invoiceNumber: number | null;
@@ -227,6 +231,8 @@ export interface QuotationForm {
     totalAfterTax: string;
     taxPercent: number;
     taxName: string;
+    companyTaxNumber: string,
+    partyTaxNumber: string
 }
 
 export interface ItemTypeInInvoiceItem {

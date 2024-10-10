@@ -14,7 +14,12 @@ import {
     SaleInvoiceItem,
 } from "@/constants/types";
 import billing_service from "@/services/billing/billing_service";
-import { QuotationItem } from "@/services/billing/billing_types";
+import {
+    GetPartyResponse,
+    GetQuotationResponse,
+    QuotationItem,
+    TaxDetailsOfThirdPartyType,
+} from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import {
@@ -26,7 +31,20 @@ import { isFeatureAccessible } from "@/utils/feature_access_helper";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Href, router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, ToastAndroid } from "react-native";
+import {
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    ToastAndroid,
+    View,
+} from "react-native";
+import PrintIcon from "@/assets/images/print_icon.png";
+import ShareIcon from "@/assets/images/share_icon.png";
+import PrintPaper from "@/components/custom/widgets/PrintPaper";
+import { getQuotationHTML } from "@/utils/print_templates";
+import { CompanyWithTaxDetails } from "@/services/user/user_types";
+import { Country } from "@/services/sysadmin/sysadmin_types";
 
 const GetQuotation = () => {
     const authState = useAppSelector((state) => state.auth);
@@ -55,6 +73,12 @@ const GetQuotation = () => {
 
     /* is add sale component shown */
     const [isAddSaleVisbile, setIsAddSaleVisible] = useState(false);
+
+    /* Print State */
+    const [printState, setPrintState] = useState({
+        enabled: false,
+        isShareMode: false,
+    });
 
     /* Toggle Edit */
     const toggleEdit = useCallback(() => {
@@ -143,24 +167,78 @@ const GetQuotation = () => {
                     subHeading={selectedCompany?.companyName || ""}
                 />
             ),
-            headerRight: () =>
-                /* If edit is not enabled and the update feature is accessible, and quotation is not converted to invoice */
-                !isAddSaleVisbile &&
-                quotationDetails?.data.quotation.saleId == null &&
-                !isEditEnabled &&
-                isFeatureAccessible(PLATFORM_FEATURES.ADD_UPDATE_QUOTATION) ? (
-                    <Pressable onPress={toggleEdit}>
-                        <Image
-                            source={EditIcon}
-                            style={commonStyles.editIcon}
-                            resizeMode="contain"
-                        />
-                    </Pressable>
-                ) : (
-                    <></>
-                ),
+            headerRight: () => (
+                <View style={styles.headerRightContainer}>
+                    {
+                        /* If edit is not enabled and the update feature is accessible, and quotation is not converted to invoice */
+                        !isAddSaleVisbile &&
+                        quotationDetails?.data.quotation.saleId == null &&
+                        !isEditEnabled &&
+                        isFeatureAccessible(
+                            PLATFORM_FEATURES.ADD_UPDATE_QUOTATION
+                        ) ? (
+                            <Pressable onPress={toggleEdit}>
+                                <Image
+                                    source={EditIcon}
+                                    style={commonStyles.editIcon}
+                                    resizeMode="contain"
+                                />
+                            </Pressable>
+                        ) : (
+                            <></>
+                        )
+                    }
+                    {
+                        /* Only if API calls are not in progress, and edit is not enabled, show print icon */
+                        !fetchingQuotationDetails &&
+                            !fetchingPartyDetails &&
+                            !updateQuotationMutation.isPending &&
+                            !isAddSaleVisbile &&
+                            !isEditEnabled && (
+                                <>
+                                    <Pressable
+                                        onPress={() =>
+                                            setPrintState({
+                                                enabled: true,
+                                                isShareMode: false,
+                                            })
+                                        }
+                                    >
+                                        <Image
+                                            source={PrintIcon}
+                                            style={commonStyles.printIcon}
+                                            resizeMode="contain"
+                                        />
+                                    </Pressable>
+                                    <Pressable
+                                        onPress={() =>
+                                            setPrintState({
+                                                enabled: true,
+                                                isShareMode: true,
+                                            })
+                                        }
+                                    >
+                                        <Image
+                                            source={ShareIcon}
+                                            style={commonStyles.shareIcon}
+                                            resizeMode="contain"
+                                        />
+                                    </Pressable>
+                                </>
+                            )
+                    }
+                </View>
+            ),
         });
-    }, [navigation, quotationDetails, isEditEnabled, isAddSaleVisbile]);
+    }, [
+        navigation,
+        quotationDetails,
+        fetchingQuotationDetails,
+        fetchingPartyDetails,
+        updateQuotationMutation.isPending,
+        isEditEnabled,
+        isAddSaleVisbile,
+    ]);
 
     /* Quotation form values from quotation and party details fetched */
     const quotationFormValues: QuotationForm | undefined = useMemo(() => {
@@ -220,6 +298,9 @@ const GetQuotation = () => {
                     defaultSaleCreditAllowanceInDays:
                         partyInfo?.defaultSaleCreditAllowanceInDays as number,
                     updatedAt: partyInfo?.updatedAt as Date,
+                    countryId: partyInfo?.countryId as number,
+                    taxDetails:
+                        partyInfo?.taxDetails as Array<TaxDetailsOfThirdPartyType> | null,
                 },
                 discount: quotationData.discount,
                 subtotal: quotationData.subtotal,
@@ -228,6 +309,8 @@ const GetQuotation = () => {
                 taxName: quotationData.taxName,
                 totalAfterDiscount: quotationData.totalAfterDiscount,
                 totalAfterTax: quotationData.totalAfterTax,
+                companyTaxNumber: quotationData.companyTaxNumber,
+                partyTaxNumber: quotationData.partyTaxNumber,
                 items: itemsFormData,
             };
         }
@@ -253,6 +336,9 @@ const GetQuotation = () => {
                     defaultSaleCreditAllowanceInDays: quotationFormValues.party
                         ?.defaultSaleCreditAllowanceInDays as number,
                     updatedAt: quotationFormValues.party?.updatedAt as Date,
+                    countryId: quotationFormValues.party?.countryId as number,
+                    taxDetails: quotationFormValues.party
+                        ?.taxDetails as Array<TaxDetailsOfThirdPartyType> | null,
                 },
                 amountDue: 0,
                 amountPaid: Number(quotationFormValues.totalAfterTax),
@@ -267,6 +353,8 @@ const GetQuotation = () => {
                 paymentDueDate: null,
                 isFullyPaid: false,
                 isCredit: false,
+                companyTaxNumber: quotationFormValues.companyTaxNumber,
+                partyTaxNumber: quotationFormValues.partyTaxNumber,
                 items: quotationFormValues.items,
             };
         }
@@ -308,7 +396,6 @@ const GetQuotation = () => {
             );
         }
     }, [addSaleMutation.isSuccess]);
-
 
     /* Loading spinner visibility */
     const showLoadingSpinner = useMemo(() => {
@@ -358,8 +445,7 @@ const GetQuotation = () => {
                         updateQuotationMutation.mutate(values)
                     }
                     isConvertToInvoiceEnabled={
-                        quotationDetails?.data.quotation.saleId ==
-                        null
+                        quotationDetails?.data.quotation.saleId == null
                     }
                     onConvertToInvoice={() => toggleAddSaleScreen()}
                 />
@@ -378,10 +464,30 @@ const GetQuotation = () => {
                     }
                 />
             )}
+            {printState.enabled && (
+                <PrintPaper
+                    html={getQuotationHTML(
+                        quotationDetails?.data as GetQuotationResponse,
+                        companyState?.selectedCompany as CompanyWithTaxDetails,
+                        companyState.country as Country,
+                        authState.user?.fullName as string,
+                        partyDetails?.data as GetPartyResponse
+                    )}
+                    togglePrintModal={() =>
+                        setPrintState({ enabled: false, isShareMode: false })
+                    }
+                    isShareMode={printState.isShareMode}
+                />
+            )}
         </>
     );
 };
 
 export default GetQuotation;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    headerRightContainer: {
+        flexDirection: "row",
+        columnGap: 16,
+    },
+});

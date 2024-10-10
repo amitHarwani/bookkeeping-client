@@ -6,12 +6,13 @@ import AddUpdateSaleInvoice from "@/components/custom/widgets/AddUpdateSaleInvoi
 import { dateTimeFormat24hr } from "@/constants/datetimes";
 import { PLATFORM_FEATURES } from "@/constants/features";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
-import {
-    SaleInvoiceForm,
-    SaleInvoiceItem
-} from "@/constants/types";
+import { SaleInvoiceForm, SaleInvoiceItem } from "@/constants/types";
 import billing_service from "@/services/billing/billing_service";
-import { SaleItem } from "@/services/billing/billing_types";
+import {
+    GetSaleResponse,
+    SaleItem,
+    TaxDetailsOfThirdPartyType,
+} from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import {
@@ -26,11 +27,23 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Image,
     Pressable,
+    Share,
     StyleSheet,
-    ToastAndroid
+    ToastAndroid,
+    View,
 } from "react-native";
+import PrintIcon from "@/assets/images/print_icon.png";
+import ShareIcon from "@/assets/images/share_icon.png";
+import PrintPaper from "@/components/custom/widgets/PrintPaper";
+import { getSaleInvoiceHTML } from "@/utils/print_templates";
+import { CompanyWithTaxDetails } from "@/services/user/user_types";
+import { Country } from "@/services/sysadmin/sysadmin_types";
 
 const GetSale = () => {
+
+    /* Username */
+    const username = useAppSelector((state) => state.auth.user?.fullName);
+
     /* Company State */
     const companyState = useAppSelector((state) => state.company);
 
@@ -58,6 +71,12 @@ const GetSale = () => {
     const toggleEdit = useCallback(() => {
         setIsEditEnabled((prev) => !prev);
     }, [isEditEnabled]);
+
+    /* Print State */
+    const [printState, setPrintState] = useState({
+        enabled: false,
+        isShareMode: false,
+    });
 
     /* Fetching Sale Details */
     const {
@@ -117,22 +136,75 @@ const GetSale = () => {
                     subHeading={selectedCompany?.companyName || ""}
                 />
             ),
-            headerRight: () =>
-                /* If edit is not enabled and the update feature is accessible */
-                !isEditEnabled &&
-                isFeatureAccessible(PLATFORM_FEATURES.ADD_UPDATE_SALE) ? (
-                    <Pressable onPress={toggleEdit}>
-                        <Image
-                            source={EditIcon}
-                            style={commonStyles.editIcon}
-                            resizeMode="contain"
-                        />
-                    </Pressable>
-                ) : (
-                    <></>
-                ),
+            headerRight: () => (
+                <View style={styles.headerRightContainer}>
+                    {
+                        /* If edit is not enabled and the update feature is accessible */
+                        !isEditEnabled &&
+                        isFeatureAccessible(
+                            PLATFORM_FEATURES.ADD_UPDATE_SALE
+                        ) ? (
+                            <Pressable onPress={toggleEdit}>
+                                <Image
+                                    source={EditIcon}
+                                    style={commonStyles.editIcon}
+                                    resizeMode="contain"
+                                />
+                            </Pressable>
+                        ) : (
+                            <></>
+                        )
+                    }
+                    {
+                        /* Only if API calls are not in progress, and edit is not enabled, show print icon */
+                        !fetchingSaleDetails &&
+                            !fetchingPartyDetails &&
+                            !updateSaleMutation.isPending &&
+                            !isEditEnabled && (
+                                <>
+                                    <Pressable
+                                        onPress={() =>
+                                            setPrintState({
+                                                enabled: true,
+                                                isShareMode: false,
+                                            })
+                                        }
+                                    >
+                                        <Image
+                                            source={PrintIcon}
+                                            style={commonStyles.printIcon}
+                                            resizeMode="contain"
+                                        />
+                                    </Pressable>
+                                    <Pressable
+                                        onPress={() =>
+                                            setPrintState({
+                                                enabled: true,
+                                                isShareMode: true,
+                                            })
+                                        }
+                                    >
+                                        <Image
+                                            source={ShareIcon}
+                                            style={commonStyles.shareIcon}
+                                            resizeMode="contain"
+                                        />
+                                    </Pressable>
+                                </>
+                            )
+                    }
+                </View>
+            ),
         });
-    }, [navigation, saleDetails, isEditEnabled]);
+    }, [
+        navigation,
+        saleDetails,
+        partyDetails,
+        fetchingSaleDetails,
+        fetchingPartyDetails,
+        updateSaleMutation.isPending,
+        isEditEnabled,
+    ]);
 
     /* Invoice form values from sale and party details fetched */
     const invoiceFormValues: SaleInvoiceForm | undefined = useMemo(() => {
@@ -196,6 +268,9 @@ const GetSale = () => {
                           defaultSaleCreditAllowanceInDays:
                               partyInfo?.defaultSaleCreditAllowanceInDays as number,
                           updatedAt: partyInfo?.updatedAt as Date,
+                          countryId: partyInfo?.countryId as number,
+                          taxDetails:
+                              partyInfo?.taxDetails as Array<TaxDetailsOfThirdPartyType> | null,
                       },
                 amountDue: Number(saleData.amountDue),
                 amountPaid: Number(saleData.amountPaid),
@@ -222,6 +297,8 @@ const GetSale = () => {
                     : null,
                 isFullyPaid: saleData.isFullyPaid,
                 isCredit: saleData.isCredit,
+                companyTaxNumber: saleData.companyTaxNumber,
+                partyTaxNumber: saleData.partyTaxNumber,
                 items: itemsFormData,
             };
         }
@@ -299,10 +376,30 @@ const GetSale = () => {
                     }
                 />
             )}
+            {printState.enabled && (
+                <PrintPaper
+                    html={getSaleInvoiceHTML(
+                        saleDetails?.data as GetSaleResponse,
+                        companyState?.selectedCompany as CompanyWithTaxDetails,
+                        companyState.country as Country,
+                        username as string,
+                        partyDetails?.data
+                    )}
+                    togglePrintModal={() =>
+                        setPrintState({ enabled: false, isShareMode: false })
+                    }
+                    isShareMode={printState.isShareMode}
+                />
+            )}
         </>
     );
 };
 
 export default GetSale;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    headerRightContainer: {
+        flexDirection: "row",
+        columnGap: 16,
+    },
+});

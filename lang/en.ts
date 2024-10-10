@@ -222,4 +222,7 @@ export default {
     transfer: "transfer",
     from: "from",
     to: "to",
+    selectPrinter: "select printer",
+    selectedPrinter: "selected printer",
+    print: "print",
 }

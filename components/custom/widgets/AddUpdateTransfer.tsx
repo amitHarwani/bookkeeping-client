@@ -250,7 +250,7 @@ const AddUpdateTransfer = ({
 
                         {!isInputsDisabled && (
                             <CustomButton
-                                text={i18n.t("save")}
+                                text={i18n.t("addTransfer")}
                                 onPress={formik.handleSubmit}
                             />
                         )}

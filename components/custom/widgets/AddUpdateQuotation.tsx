@@ -10,7 +10,10 @@ import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText } from "@/utils/common_utils";
 import { QuotationFormValidation } from "@/utils/schema_validations";
-import { getInvoiceTaxDetails } from "@/utils/tax_helper";
+import {
+    getInvoiceTaxDetails,
+    getTaxIDForRegistrationNumberOnInvoice,
+} from "@/utils/tax_helper";
 import { useFormik } from "formik";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
@@ -73,7 +76,8 @@ const AddUpdateQuotation = ({
     }, [operation, isUpdateEnabled]);
 
     /* Tax Percent, and tax name on invoice */
-    const { invoiceTaxPercent, invoiceTaxName } = getInvoiceTaxDetails();
+    const { invoiceTaxPercent, invoiceTaxName, companyTaxNumber } =
+        getInvoiceTaxDetails();
 
     /* To store a selected invoice item if any */
     const selectedInvoiceItem = useRef<SaleInvoiceItem>();
@@ -106,6 +110,8 @@ const AddUpdateQuotation = ({
             totalAfterTax: "0",
             taxPercent: invoiceTaxPercent,
             taxName: invoiceTaxName,
+            companyTaxNumber: companyTaxNumber,
+            partyTaxNumber: "",
         };
     }, [formValues]);
 
@@ -238,6 +244,23 @@ const AddUpdateQuotation = ({
                         onChange={(party) => {
                             formik.setFieldTouched("party", true);
                             formik.setFieldValue("party", party);
+
+                            /* Tax ID displayed on invoice according to country */
+                            const taxIdOnInvoice =
+                                getTaxIDForRegistrationNumberOnInvoice(
+                                    party.countryId
+                                );
+
+                            /* Tax registration number of the particular tax id */
+                            const partyTaxNumber = party?.taxDetails?.find(
+                                (taxDetail) => taxDetail.taxId == taxIdOnInvoice
+                            );
+
+                            /* Setting the party tax number */
+                            formik.setFieldValue(
+                                "partyTaxNumber",
+                                partyTaxNumber?.registrationNumber || ""
+                            );
                         }}
                         errorMessage={
                             formik.touched.party && formik.errors.party

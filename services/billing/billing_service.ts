@@ -453,6 +453,8 @@ class BillingService {
                 dateTimeFormat24hr,
                 companyTimezone
             ),
+            companyTaxNumber: saleForm.companyTaxNumber,
+            partyTaxNumber: saleForm.partyTaxNumber,
             invoiceNumber: saleForm.invoiceNumber
                 ? Number(saleForm.invoiceNumber)
                 : null,
@@ -548,6 +550,8 @@ class BillingService {
             quotationNumber: saleForm.quotationNumber
                 ? Number(saleForm.quotationNumber)
                 : null,
+            companyTaxNumber: saleForm.companyTaxNumber,
+            partyTaxNumber: saleForm.partyTaxNumber,
             companyId: companyId,
             partyId: saleForm.party ? saleForm.party?.partyId : null,
             partyName: saleForm.party ? saleForm.party?.partyName : null,
@@ -711,6 +715,8 @@ class BillingService {
             tax: Number(quotationForm.tax),
             totalAfterTax: Number(quotationForm.totalAfterTax),
             decimalRoundTo: decimalRoundTo,
+            companyTaxNumber: quotationForm.companyTaxNumber,
+            partyTaxNumber: quotationForm.partyTaxNumber,
             items: items,
         };
 
@@ -755,8 +761,8 @@ class BillingService {
                 ? Number(quotationForm.quotationNumber)
                 : null,
             companyId: companyId,
-            partyId: quotationForm.party.partyId,
-            partyName: quotationForm.party.partyName,
+            partyId: quotationForm?.party?.partyId,
+            partyName: quotationForm?.party?.partyName,
             createdBy: quotationForm.createdBy,
             subtotal: Number(quotationForm.subtotal),
             discount: Number(quotationForm.discount),
@@ -767,6 +773,8 @@ class BillingService {
             totalAfterTax: Number(quotationForm.totalAfterTax),
             decimalRoundTo: decimalRoundTo,
             oldItems: oldQuotationItems,
+            companyTaxNumber: quotationForm.companyTaxNumber,
+            partyTaxNumber: quotationForm.partyTaxNumber,
             items: items,
         };
 
