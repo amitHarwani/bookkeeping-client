@@ -166,185 +166,192 @@ const CompanyMainLayout = () => {
     return (
         <>
             {showLoadingSpinner && <LoadingSpinnerOverlay />}
-
-            <GestureHandlerRootView style={{ flex: 1 }}>
-                <Drawer
-                    drawerContent={CustomDrawer}
-                    screenOptions={({ navigation }) => ({
-                        drawerActiveTintColor: "#006FFD",
-                        drawerActiveBackgroundColor: "#FFFFFF",
-                        headerStyle: {
-                            backgroundColor: "#FFFFFF",
-                            height: 100,
-                            shadowColor: "#FFFFFF",
-                        },
-                        headerLeft: () => (
-                            <TouchableOpacity
-                                onPress={() => navigation.openDrawer()}
-                            >
-                                <Image
-                                    style={styles.hamburgerIcon}
-                                    source={HamburgerIcon}
-                                />
-                            </TouchableOpacity>
-                        ),
-                    })}
-                >
-                    <Drawer.Screen
-                        name="(dashboard)"
-                        options={{
-                            drawerLabel: capitalizeText(i18n.t("dashboard")),
-                            headerTitle: () => (
-                                <CustomNavHeader
-                                    mainHeading={i18n.t("dashboard")}
-                                    subHeading={
-                                        selectedCompany?.companyName || ""
-                                    }
-                                />
-                            ),
-                        }}
-                    />
-                    <Drawer.Screen
-                        name="(items)"
-                        options={{
-                            drawerLabel: capitalizeText(i18n.t("items")),
-                            headerTitle: () => (
-                                <CustomNavHeader
-                                    mainHeading={i18n.t("items")}
-                                    subHeading={
-                                        selectedCompany?.companyName || ""
-                                    }
-                                />
-                            ),
-                            drawerItemStyle: {
-                                display: isFeatureAccessible(
-                                    PLATFORM_FEATURES.GET_ITEMS
-                                )
-                                    ? "flex"
-                                    : "none",
-                                marginTop: -10,
+            {!showLoadingSpinner && (
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                    <Drawer
+                        drawerContent={CustomDrawer}
+                        screenOptions={({ navigation }) => ({
+                            drawerActiveTintColor: "#006FFD",
+                            drawerActiveBackgroundColor: "#FFFFFF",
+                            headerStyle: {
+                                backgroundColor: "#FFFFFF",
+                                height: 100,
+                                shadowColor: "#FFFFFF",
                             },
-                        }}
-                    />
+                            headerLeft: () => (
+                                <TouchableOpacity
+                                    onPress={() => navigation.openDrawer()}
+                                >
+                                    <Image
+                                        style={styles.hamburgerIcon}
+                                        source={HamburgerIcon}
+                                    />
+                                </TouchableOpacity>
+                            ),
+                        })}
+                    >
+                        <Drawer.Screen
+                            name="(dashboard)"
+                            options={{
+                                drawerLabel: capitalizeText(
+                                    i18n.t("dashboard")
+                                ),
+                                headerTitle: () => (
+                                    <CustomNavHeader
+                                        mainHeading={i18n.t("dashboard")}
+                                        subHeading={
+                                            selectedCompany?.companyName || ""
+                                        }
+                                    />
+                                ),
+                            }}
+                        />
+                        <Drawer.Screen
+                            name="(items)"
+                            options={{
+                                drawerLabel: capitalizeText(i18n.t("items")),
+                                headerTitle: () => (
+                                    <CustomNavHeader
+                                        mainHeading={i18n.t("items")}
+                                        subHeading={
+                                            selectedCompany?.companyName || ""
+                                        }
+                                    />
+                                ),
+                                drawerItemStyle: {
+                                    display: isFeatureAccessible(
+                                        PLATFORM_FEATURES.GET_ITEMS
+                                    )
+                                        ? "flex"
+                                        : "none",
+                                    marginTop: -10,
+                                },
+                            }}
+                        />
 
-                    <Drawer.Screen
-                        name="(parties)"
-                        options={{
-                            drawerLabel: capitalizeText(i18n.t("parties")),
-                            headerTitle: () => (
-                                <CustomNavHeader
-                                    mainHeading={i18n.t("parties")}
-                                    subHeading={
-                                        selectedCompany?.companyName || ""
-                                    }
-                                />
-                            ),
-                            drawerItemStyle: {
-                                display: isFeatureAccessible(
-                                    PLATFORM_FEATURES.GET_PARTIES
-                                )
-                                    ? "flex"
-                                    : "none",
-                                marginTop: -10,
-                            },
-                        }}
-                    />
+                        <Drawer.Screen
+                            name="(parties)"
+                            options={{
+                                drawerLabel: capitalizeText(i18n.t("parties")),
+                                headerTitle: () => (
+                                    <CustomNavHeader
+                                        mainHeading={i18n.t("parties")}
+                                        subHeading={
+                                            selectedCompany?.companyName || ""
+                                        }
+                                    />
+                                ),
+                                drawerItemStyle: {
+                                    display: isFeatureAccessible(
+                                        PLATFORM_FEATURES.GET_PARTIES
+                                    )
+                                        ? "flex"
+                                        : "none",
+                                    marginTop: -10,
+                                },
+                            }}
+                        />
 
-                    <Drawer.Screen
-                        name="(purchases)"
-                        options={{
-                            drawerLabel: capitalizeText(i18n.t("purchases")),
-                            headerTitle: () => (
-                                <CustomNavHeader
-                                    mainHeading={i18n.t("purchases")}
-                                    subHeading={
-                                        selectedCompany?.companyName || ""
-                                    }
-                                />
-                            ),
-                            drawerItemStyle: {
-                                display: isFeatureAccessible(
-                                    PLATFORM_FEATURES.GET_PURCHASES
-                                )
-                                    ? "flex"
-                                    : "none",
-                                marginTop: -10,
-                            },
-                        }}
-                    />
+                        <Drawer.Screen
+                            name="(purchases)"
+                            options={{
+                                drawerLabel: capitalizeText(
+                                    i18n.t("purchases")
+                                ),
+                                headerTitle: () => (
+                                    <CustomNavHeader
+                                        mainHeading={i18n.t("purchases")}
+                                        subHeading={
+                                            selectedCompany?.companyName || ""
+                                        }
+                                    />
+                                ),
+                                drawerItemStyle: {
+                                    display: isFeatureAccessible(
+                                        PLATFORM_FEATURES.GET_PURCHASES
+                                    )
+                                        ? "flex"
+                                        : "none",
+                                    marginTop: -10,
+                                },
+                            }}
+                        />
 
-                    <Drawer.Screen
-                        name="(sales)"
-                        options={{
-                            drawerLabel: capitalizeText(i18n.t("sales")),
-                            headerTitle: () => (
-                                <CustomNavHeader
-                                    mainHeading={i18n.t("sales")}
-                                    subHeading={
-                                        selectedCompany?.companyName || ""
-                                    }
-                                />
-                            ),
-                            drawerItemStyle: {
-                                display: isFeatureAccessible(
-                                    PLATFORM_FEATURES.GET_SALES
-                                )
-                                    ? "flex"
-                                    : "none",
-                                marginTop: -10,
-                            },
-                        }}
-                    />
+                        <Drawer.Screen
+                            name="(sales)"
+                            options={{
+                                drawerLabel: capitalizeText(i18n.t("sales")),
+                                headerTitle: () => (
+                                    <CustomNavHeader
+                                        mainHeading={i18n.t("sales")}
+                                        subHeading={
+                                            selectedCompany?.companyName || ""
+                                        }
+                                    />
+                                ),
+                                drawerItemStyle: {
+                                    display: isFeatureAccessible(
+                                        PLATFORM_FEATURES.GET_SALES
+                                    )
+                                        ? "flex"
+                                        : "none",
+                                    marginTop: -10,
+                                },
+                            }}
+                        />
 
-                    <Drawer.Screen
-                        name="(quotations)"
-                        options={{
-                            drawerLabel: capitalizeText(i18n.t("quotations")),
-                            headerTitle: () => (
-                                <CustomNavHeader
-                                    mainHeading={i18n.t("quotations")}
-                                    subHeading={
-                                        selectedCompany?.companyName || ""
-                                    }
-                                />
-                            ),
-                            drawerItemStyle: {
-                                display: isFeatureAccessible(
-                                    PLATFORM_FEATURES.GET_QUOTATIONS
-                                )
-                                    ? "flex"
-                                    : "none",
-                                marginTop: -10,
-                            },
-                        }}
-                    />
+                        <Drawer.Screen
+                            name="(quotations)"
+                            options={{
+                                drawerLabel: capitalizeText(
+                                    i18n.t("quotations")
+                                ),
+                                headerTitle: () => (
+                                    <CustomNavHeader
+                                        mainHeading={i18n.t("quotations")}
+                                        subHeading={
+                                            selectedCompany?.companyName || ""
+                                        }
+                                    />
+                                ),
+                                drawerItemStyle: {
+                                    display: isFeatureAccessible(
+                                        PLATFORM_FEATURES.GET_QUOTATIONS
+                                    )
+                                        ? "flex"
+                                        : "none",
+                                    marginTop: -10,
+                                },
+                            }}
+                        />
 
-                    <Drawer.Screen
-                        name="(itemtransfers)"
-                        options={{
-                            drawerLabel: capitalizeText(
-                                i18n.t("itemTransfers")
-                            ),
-                            headerTitle: () => (
-                                <CustomNavHeader
-                                    mainHeading={i18n.t("itemTransfers")}
-                                    subHeading={
-                                        selectedCompany?.companyName || ""
-                                    }
-                                />
-                            ),
-                            drawerItemStyle: {
-                                display: isFeatureAccessible(
-                                    PLATFORM_FEATURES.GET_TRANSFERS
-                                )
-                                    ? "flex"
-                                    : "none",
-                                marginTop: -10,
-                            },
-                        }}
-                    />
-                </Drawer>
-            </GestureHandlerRootView>
+                        <Drawer.Screen
+                            name="(itemtransfers)"
+                            options={{
+                                drawerLabel: capitalizeText(
+                                    i18n.t("itemTransfers")
+                                ),
+                                headerTitle: () => (
+                                    <CustomNavHeader
+                                        mainHeading={i18n.t("itemTransfers")}
+                                        subHeading={
+                                            selectedCompany?.companyName || ""
+                                        }
+                                    />
+                                ),
+                                drawerItemStyle: {
+                                    display: isFeatureAccessible(
+                                        PLATFORM_FEATURES.GET_TRANSFERS
+                                    )
+                                        ? "flex"
+                                        : "none",
+                                    marginTop: -10,
+                                },
+                            }}
+                        />
+                    </Drawer>
+                </GestureHandlerRootView>
+            )}
         </>
     );
 };
