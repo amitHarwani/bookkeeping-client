@@ -142,6 +142,34 @@ export interface QuotationItem {
     quotationId: number;
 }
 
+export interface SaleReturn {
+    companyId: number;
+    saleId: number;
+    createdAt: string;
+    saleReturnId: number;
+    saleReturnNumber: number;
+    subtotal: string;
+    tax: string;
+    taxPercent: string;
+    taxName: string;
+    totalAfterTax: string;
+}
+export interface SaleReturnItem {
+    companyId: number;
+    createdAt: string;
+    saleReturnId: number;
+    subtotal: string;
+    tax: string;
+    taxPercent: string;
+    totalAfterTax: string;
+    itemId: number;
+    itemName: string;
+    unitId: number;
+    unitName: string;
+    pricePerUnit: string;
+    unitsSold: string;
+}
+
 export interface FilterPartiesQuery {
     isActive?: boolean;
     partyNameSearchQuery?: string;
@@ -345,4 +373,11 @@ export class GetTopSellersForCurrentMonthResponse {
             totalUnitsSold: string;
         }>
     ) {}
+}
+
+export class AddSaleReturnResponse {
+    constructor(
+        public saleReturn: SaleReturn,
+        public saleReturnItems: Array<SaleReturnItem>
+    ){}
 }

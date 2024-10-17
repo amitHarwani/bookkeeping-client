@@ -491,3 +491,49 @@ export const AddUpdateTransferItemValidation = Yup.object().shape({
             return true;
         })
 });
+
+export const AddUpdateReturnItemValidation = Yup.object().shape({
+    item: Yup.object().required("item is required"),
+    unitsReturned: Yup.number()
+        .typeError("invalid unit")
+        .test("unitsTypeValidation", "unit returned must be greater than 0", (value) => {
+            if (Number(value) <= 0) {
+                return false;
+            }
+            return true;
+        })
+        .test("unitsReturnedValidation", "unit returned cannot be greater than units in the transaction", (value, context) => {
+            const unitsSoldOrPurchased = context?.options?.context?.unitsSoldOrPurchased;
+            if (Number(value) > unitsSoldOrPurchased) {
+                return false;
+            }
+            return true;
+        }),
+});
+
+export const SaleReturnFormValidation = Yup.object().shape({
+    saleReturnNumber: Yup.number()
+        .nullable()
+        .typeError("invalid sale return number")
+        .test(
+            "saleReturnNumber",
+            "sale return number is required",
+            (value, context) => {
+                const autogenerateSaleReturnNumber = Number(
+                    context?.options?.context?.autogenerateSaleReturnNumber
+                );
+                /* sale return number is required when autogenerateSaleReturnNumber is false */
+                if (!autogenerateSaleReturnNumber && !value) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+    items: Yup.object().test("items", "no items added", (value) => {
+        if (value && Object.values(value).length === 0) {
+            return false;
+        }
+        return true;
+    })
+});
+

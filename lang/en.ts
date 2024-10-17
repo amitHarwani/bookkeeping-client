@@ -225,4 +225,14 @@ export default {
     selectPrinter: "select printer",
     selectedPrinter: "selected printer",
     print: "print",
+    addReturnItem: "add return item",
+    unitsSold: "units sold",
+    unitsPurchased: "units purchased",
+    unitsReturned: "units returned",
+    autogenerateSaleReturnNumber: "autogenerate sale return number",
+    saleReturnNumber: "sale return number",
+    enterSaleReturnNumber: "enter sale return number",
+    addSaleReturn: "add sale return",
+    errorUpdatingDetails: "error updating details",
+    saleReturnRecordedSuccessfully: "sale return recorded successfully"
 }

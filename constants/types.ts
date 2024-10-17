@@ -335,3 +335,35 @@ export interface CompanyGroupType {
     companyId: number,
     companyName: string
 }
+
+/* Dropdown when selecting a item */
+export interface ReturnItemSelectorType {
+    itemId: number;
+    itemName: string;
+    unitId: number,
+    unitName: string
+};
+
+/* Form when adding a return item */
+export interface ReturnItemType {
+    item?: ReturnItemSelectorType,
+    unitsSoldOrPurchased: number,
+    unitsReturned: number;
+    pricePerUnit: number;
+    subtotal: string;
+    tax: string;
+    totalAfterTax: string;
+    taxPercent: number;
+}
+
+export interface SaleReturnForm {
+    createdAt: Date;
+    autogenerateSaleReturnNumber: boolean;
+    saleReturnNumber: number | null;
+    items: { [itemId: number]: ReturnItemType };
+    subtotal: string;
+    tax: string;
+    totalAfterTax: string;
+    taxPercent: number;
+    taxName: string;
+}

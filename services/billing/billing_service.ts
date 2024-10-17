@@ -7,6 +7,7 @@ import {
     PurchaseInvoiceForm,
     QuotationForm,
     SaleInvoiceForm,
+    SaleReturnForm,
 } from "@/constants/types";
 import {
     convertLocalUTCToTimezoneUTC,
@@ -19,6 +20,7 @@ import { asyncHandler } from "../async_handler";
 import { Country } from "../sysadmin/sysadmin_types";
 import {
     AddPartyResponse,
+    AddSaleReturnResponse,
     AddUpdatePurchaseResponse,
     AddUpdateQuotationResponse,
     AddUpdateSaleResponse,
@@ -62,6 +64,8 @@ class BillingService {
     getCashFlowSummaryPath = "summary/get-cashflow-summary";
     getTopSellersForCurrentMonthPath =
         "summary/get-topsellers-for-current-month";
+
+    addSaleReturnPath = "sale-return/add-sale-return";
 
     getTopSellersForCurrentMonth = async (companyId: number) => {
         return await asyncHandler<GetTopSellersForCurrentMonthResponse>(() => {
@@ -862,6 +866,55 @@ class BillingService {
                 isActive: partyDetails.isActive,
                 taxDetails: Object.values(partyDetails.taxDetails as Object),
             });
+        });
+    };
+
+    addSaleReturn = async (
+        saleId: number,
+        companyId: number,
+        decimalRoundTo: number,
+        details: SaleReturnForm,
+        companyTimezone: string
+    ) => {
+
+        const items = Object.values(details.items).map((item) => {
+            return {
+                itemId: item.item?.itemId,
+                itemName: item.item?.itemName,
+                companyId: companyId,
+                unitId: item.item?.unitId,
+                unitName: item.item?.unitName,
+                unitsSold: Number(item.unitsReturned),
+                pricePerUnit: Number(item.pricePerUnit),
+                subtotal: Number(item.subtotal),
+                tax: Number(item.tax),
+                taxPercent: Number(item.taxPercent),
+                totalAfterTax: Number(item.totalAfterTax)
+            }
+        })
+        return await asyncHandler<AddSaleReturnResponse>(() => {
+            return axios.post<ApiResponse<AddSaleReturnResponse>>(
+                `${this.hostPath}/${this.addSaleReturnPath}`,
+                {
+                    createdAt: convertLocalUTCToTimezoneUTC(
+                        details.createdAt,
+                        dateTimeFormat24hr,
+                        companyTimezone
+                    ),
+                    saleId: saleId,
+                    saleReturnNumber: details.saleReturnNumber
+                        ? Number(details.saleReturnNumber)
+                        : null,
+                    companyId: companyId,
+                    subtotal: Number(details.subtotal),
+                    tax: Number(details.tax),
+                    taxPercent: Number(details.taxPercent),
+                    taxName: details.taxName,
+                    totalAfterTax: Number(details.totalAfterTax),
+                    decimalRoundTo: decimalRoundTo,
+                    items: items,
+                }
+            );
         });
     };
 }

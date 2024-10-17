@@ -22,7 +22,7 @@ import {
 } from "@/utils/common_utils";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { Href, router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Image,
@@ -38,9 +38,9 @@ import PrintPaper from "@/components/custom/widgets/PrintPaper";
 import { getSaleInvoiceHTML } from "@/utils/print_templates";
 import { CompanyWithTaxDetails } from "@/services/user/user_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
+import { AppRoutes } from "@/constants/routes";
 
 const GetSale = () => {
-
     /* Username */
     const username = useAppSelector((state) => state.auth.user?.fullName);
 
@@ -374,6 +374,11 @@ const GetSale = () => {
                     onAddUpdateSale={(values) =>
                         updateSaleMutation.mutate(values)
                     }
+                    onAddSaleReturn={() => {
+                        router.push(
+                            `${AppRoutes.addSaleReturn}/${saleId}` as Href
+                        );
+                    }}
                 />
             )}
             {printState.enabled && (

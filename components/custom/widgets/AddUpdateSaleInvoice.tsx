@@ -21,12 +21,17 @@ import {
     PurchaseInvoiceFormValidation,
     SaleInvoiceFormValidation,
 } from "@/utils/schema_validations";
-import { getInvoiceTaxDetails, getTaxIDForRegistrationNumberOnInvoice } from "@/utils/tax_helper";
+import {
+    getInvoiceTaxDetails,
+    getTaxIDForRegistrationNumberOnInvoice,
+} from "@/utils/tax_helper";
 import { useFormik } from "formik";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import DateTimePickerCombined from "../basic/DateTimePickerCombined";
 import SaleInvoiceListItem from "../business/SaleInvoiceListItem";
+import { router } from "expo-router";
+import { AppRoutes } from "@/constants/routes";
 
 interface AddUpdateSaleInvoiceProps {
     operation: "ADD" | "UPDATE";
@@ -35,6 +40,7 @@ interface AddUpdateSaleInvoiceProps {
 
     formValues?: SaleInvoiceForm;
     isUpdateEnabled?: boolean;
+    onAddSaleReturn?(): void;
 }
 const AddUpdateSaleInvoice = ({
     operation,
@@ -42,6 +48,7 @@ const AddUpdateSaleInvoice = ({
     apiErrorMessage,
     formValues,
     isUpdateEnabled,
+    onAddSaleReturn,
 }: AddUpdateSaleInvoiceProps) => {
     /* Company State from redux */
     const companyState = useAppSelector((state) => state.company);
@@ -82,7 +89,8 @@ const AddUpdateSaleInvoice = ({
     }, [operation, isUpdateEnabled]);
 
     /* Tax Percent, and tax name on invoice */
-    const { invoiceTaxPercent, invoiceTaxName, companyTaxNumber } = getInvoiceTaxDetails();
+    const { invoiceTaxPercent, invoiceTaxName, companyTaxNumber } =
+        getInvoiceTaxDetails();
 
     /* To store a selected invoice item if any */
     const selectedInvoiceItem = useRef<SaleInvoiceItem>();
@@ -283,6 +291,19 @@ const AddUpdateSaleInvoice = ({
         <ScrollView style={styles.mainContainer}>
             <View style={styles.container}>
                 <View style={styles.formContainer}>
+                    {typeof onAddSaleReturn === "function" && (
+                        <CustomButton
+                            onPress={onAddSaleReturn}
+                            text={i18n.t("addSaleReturn")}
+                            extraTextStyles={{fontSize: 10}}
+                            extraContainerStyles={{
+                                alignSelf: "flex-end",
+                                paddingHorizontal: 4,
+                                paddingVertical: 6,
+                            }}
+                            isSecondaryButton
+                        />
+                    )}
                     {apiErrorMessage && (
                         <ErrorMessage message={apiErrorMessage} />
                     )}
@@ -360,13 +381,22 @@ const AddUpdateSaleInvoice = ({
                                 formik.setFieldValue("party", party);
 
                                 /* Tax ID displayed on invoice according to country */
-                                const taxIdOnInvoice = getTaxIDForRegistrationNumberOnInvoice(party.countryId);
+                                const taxIdOnInvoice =
+                                    getTaxIDForRegistrationNumberOnInvoice(
+                                        party.countryId
+                                    );
 
                                 /* Tax registration number of the particular tax id */
-                                const partyTaxNumber = party?.taxDetails?.find((taxDetail) => taxDetail.taxId == taxIdOnInvoice);
-                                
+                                const partyTaxNumber = party?.taxDetails?.find(
+                                    (taxDetail) =>
+                                        taxDetail.taxId == taxIdOnInvoice
+                                );
+
                                 /* Setting the party tax number */
-                                formik.setFieldValue("partyTaxNumber", partyTaxNumber?.registrationNumber || "");
+                                formik.setFieldValue(
+                                    "partyTaxNumber",
+                                    partyTaxNumber?.registrationNumber || ""
+                                );
                             }}
                             errorMessage={
                                 formik.touched.party && formik.errors.party

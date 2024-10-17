@@ -17,12 +17,12 @@ const SaleLayout = () => {
     const navigator = useNavigation();
     const pathName = usePathname();
 
-    console.log("Pathname", pathName);
     useEffect(() => {
         /* Hiding the drawer header when pathname is add or get sale */
         if (
             pathName.includes(`${AppRoutes.addSale}`) ||
-            pathName.includes(`${AppRoutes.getSale}`)
+            pathName.includes(`${AppRoutes.getSale}`) ||
+            pathName.includes(`${AppRoutes.addSaleReturn}`)
         ) {
             navigator.setOptions({ headerShown: false });
         } else {
@@ -36,19 +36,23 @@ const SaleLayout = () => {
         the reset to sales needs to be done
     */
     const reset = useCallback(() => {
-        navigator.dispatch(CommonActions.reset({
-            index: 0,
-            routes: [{name: "sales"}]
-        }))
-    }, [])
+        navigator.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: "sales" }],
+            })
+        );
+    }, []);
     return (
         <Stack
             screenOptions={({ navigation }) => ({
                 headerLeft: () => (
-                    <TouchableOpacity onPress={() => {
-                        reset();
-                        navigation.goBack()
-                        }}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            reset();
+                            navigation.goBack();
+                        }}
+                    >
                         <Image
                             style={commonStyles.hamburgerBackIcon}
                             source={BackIcon}
@@ -71,7 +75,18 @@ const SaleLayout = () => {
                             mainHeading={i18n.t("addSale")}
                             subHeading={selectedCompany?.companyName || ""}
                         />
-                    )
+                    ),
+                }}
+            />
+            <Stack.Screen
+                name="add-sale-return/[saleId]"
+                options={{
+                    headerTitle: () => (
+                        <CustomNavHeader
+                            mainHeading={i18n.t("addSaleReturn")}
+                            subHeading={selectedCompany?.companyName || ""}
+                        />
+                    ),
                 }}
             />
 
