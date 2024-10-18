@@ -234,5 +234,6 @@ export default {
     enterSaleReturnNumber: "enter sale return number",
     addSaleReturn: "add sale return",
     errorUpdatingDetails: "error updating details",
-    saleReturnRecordedSuccessfully: "sale return recorded successfully"
+    saleReturnRecordedSuccessfully: "sale return recorded successfully",
+    getSaleReturns: "get sale returns"
 }

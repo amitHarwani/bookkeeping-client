@@ -174,4 +174,10 @@ export const commonStyles = StyleSheet.create({
         width: 24,
         height: 24,
     },
+
+    /* More Options Vertical Icon */
+    moreOptionsVertIcon: {
+        width: 24, 
+        height: 24
+    }
 });

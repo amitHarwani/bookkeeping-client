@@ -367,7 +367,7 @@ const AddSaleReturn = () => {
                 capitalizeText(`${i18n.t("saleReturnRecordedSuccessfully")}`),
                 ToastAndroid.LONG
             );
-
+            router.back();
             // router.replace(`${AppRoutes.getSaleReturn}/${saleId}` as Href);
         }
     }, [updateSaleMutation.isSuccess, addSaleReturnMutation.isSuccess]);

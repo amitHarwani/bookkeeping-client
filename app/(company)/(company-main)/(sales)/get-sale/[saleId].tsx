@@ -29,6 +29,7 @@ import {
     Pressable,
     Share,
     StyleSheet,
+    Text,
     ToastAndroid,
     View,
 } from "react-native";
@@ -39,6 +40,10 @@ import { getSaleInvoiceHTML } from "@/utils/print_templates";
 import { CompanyWithTaxDetails } from "@/services/user/user_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
 import { AppRoutes } from "@/constants/routes";
+import HeaderMoreOptions, {
+    HeaderOptionType,
+} from "@/components/custom/basic/HeaderMoreOptions";
+import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 
 const GetSale = () => {
     /* Username */
@@ -93,6 +98,9 @@ const GetSale = () => {
             ),
     });
 
+    /* Refresh on focus */
+    useRefreshOnFocus(fetchSaleDetails);
+
     /* To fetch party details */
     const {
         isFetching: fetchingPartyDetails,
@@ -122,6 +130,36 @@ const GetSale = () => {
                 Number(saleDetails?.data?.sale?.amountPaid) || 0
             ),
     });
+
+    /* Header Toolbar Options */
+    const moreHeaderOptions = useMemo(() => {
+        const extraOptions: Array<HeaderOptionType> = [];
+        if (isFeatureAccessible(PLATFORM_FEATURES.GET_SALE_RETURNS)) {
+            extraOptions.push({
+                optionId: 1,
+                optionLabel: i18n.t("getSaleReturns"),
+            });
+        }
+        if (isFeatureAccessible(PLATFORM_FEATURES.ADD_SALE_RETURN)) {
+            extraOptions.push({
+                optionId: 2,
+                optionLabel: i18n.t("addSaleReturn"),
+            });
+        }
+        return extraOptions;
+    }, []);
+
+    /* On click of toolbar in header */
+    const moreHeaderOptionHandler = (optionId: number) => {
+        switch (optionId) {
+            case 1:
+                return;
+            case 2: {
+                router.push(`${AppRoutes.addSaleReturn}/${saleId}` as Href);
+                return;
+            }
+        }
+    };
 
     /* Setting the header for the page */
     useEffect(() => {
@@ -190,6 +228,14 @@ const GetSale = () => {
                                             resizeMode="contain"
                                         />
                                     </Pressable>
+                                    {moreHeaderOptions?.length ? (
+                                        <HeaderMoreOptions
+                                            options={moreHeaderOptions}
+                                            onOptionClick={
+                                                moreHeaderOptionHandler
+                                            }
+                                        />
+                                    ) : <></>}
                                 </>
                             )
                     }
@@ -204,6 +250,7 @@ const GetSale = () => {
         fetchingPartyDetails,
         updateSaleMutation.isPending,
         isEditEnabled,
+        moreHeaderOptions,
     ]);
 
     /* Invoice form values from sale and party details fetched */
@@ -374,11 +421,6 @@ const GetSale = () => {
                     onAddUpdateSale={(values) =>
                         updateSaleMutation.mutate(values)
                     }
-                    onAddSaleReturn={() => {
-                        router.push(
-                            `${AppRoutes.addSaleReturn}/${saleId}` as Href
-                        );
-                    }}
                 />
             )}
             {printState.enabled && (

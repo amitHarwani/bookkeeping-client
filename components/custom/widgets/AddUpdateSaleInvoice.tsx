@@ -40,7 +40,6 @@ interface AddUpdateSaleInvoiceProps {
 
     formValues?: SaleInvoiceForm;
     isUpdateEnabled?: boolean;
-    onAddSaleReturn?(): void;
 }
 const AddUpdateSaleInvoice = ({
     operation,
@@ -48,7 +47,6 @@ const AddUpdateSaleInvoice = ({
     apiErrorMessage,
     formValues,
     isUpdateEnabled,
-    onAddSaleReturn,
 }: AddUpdateSaleInvoiceProps) => {
     /* Company State from redux */
     const companyState = useAppSelector((state) => state.company);
@@ -156,6 +154,7 @@ const AddUpdateSaleInvoice = ({
             onAddUpdateSale(values);
         },
         validationSchema: SaleInvoiceFormValidation,
+        enableReinitialize: true
     });
 
     /* On change of invoice item */
@@ -291,19 +290,6 @@ const AddUpdateSaleInvoice = ({
         <ScrollView style={styles.mainContainer}>
             <View style={styles.container}>
                 <View style={styles.formContainer}>
-                    {typeof onAddSaleReturn === "function" && (
-                        <CustomButton
-                            onPress={onAddSaleReturn}
-                            text={i18n.t("addSaleReturn")}
-                            extraTextStyles={{fontSize: 10}}
-                            extraContainerStyles={{
-                                alignSelf: "flex-end",
-                                paddingHorizontal: 4,
-                                paddingVertical: 6,
-                            }}
-                            isSecondaryButton
-                        />
-                    )}
                     {apiErrorMessage && (
                         <ErrorMessage message={apiErrorMessage} />
                     )}
