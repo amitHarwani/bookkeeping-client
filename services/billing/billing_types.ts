@@ -386,3 +386,10 @@ export class AddSaleReturnResponse {
 export class GetSaleReturnsOfSaleResponse {
     constructor(public saleReturns: Array<SaleReturn>) {}
 }
+
+export class GetSaleReturnResponse {
+    constructor(
+        public saleReturn: SaleReturn,
+        public saleReturnItems: Array<SaleReturnItem>
+    ) {}
+}

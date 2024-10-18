@@ -33,6 +33,7 @@ import {
     GetPurchaseResponse,
     GetQuotationResponse,
     GetSaleResponse,
+    GetSaleReturnResponse,
     GetSaleReturnsOfSaleResponse,
     GetTopSellersForCurrentMonthResponse,
     Purchase,
@@ -68,6 +69,7 @@ class BillingService {
 
     addSaleReturnPath = "sale-return/add-sale-return";
     getSaleReturnsOfSalePath = "sale-return/get-sale-returns-of-sale";
+    getSaleReturnPath = "sale-return/get-sale-return";
 
     getTopSellersForCurrentMonth = async (companyId: number) => {
         return await asyncHandler<GetTopSellersForCurrentMonthResponse>(() => {
@@ -932,6 +934,17 @@ class BillingService {
                     },
                 }
             );
+        });
+    };
+
+    getSaleReturn = async (companyId: number, saleReturnId: number) => {
+        return await asyncHandler<GetSaleReturnResponse>(async () => {
+            return axios.get(`${this.hostPath}/${this.getSaleReturnPath}`, {
+                params: {
+                    companyId,
+                    saleReturnId,
+                },
+            });
         });
     };
 }

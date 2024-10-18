@@ -2,10 +2,13 @@ import {
     GetPartyResponse,
     GetQuotationResponse,
     GetSaleResponse,
+    GetSaleReturnResponse,
     Quotation,
     QuotationItem,
     Sale,
     SaleItem,
+    SaleReturn,
+    SaleReturnItem,
 } from "@/services/billing/billing_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
 import { CompanyWithTaxDetails } from "@/services/user/user_types";
@@ -21,7 +24,7 @@ import {
 import moment from "moment";
 
 const linksAndStyles = `
-<link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
             href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
@@ -100,9 +103,7 @@ const getCompanyDetails = (
                     <p class="font-size-14">${capitalizeText(countryName)}</p>
                     ${
                         companyTaxNumber
-                            ? `<p class="font-size-14">${getTaxHeading(
-                                  countryId
-                              )} ${companyTaxNumber || ""}</p>`
+                            ? `<p class="font-size-14">${getTaxHeading(countryId)} ${companyTaxNumber || ""}</p>`
                             : ""
                     }
                 </div>`;
@@ -110,21 +111,17 @@ const getCompanyDetails = (
 
 const getPartyDetails = (
     countryId: number,
-    isQuotation: boolean,
+    salutation: string,
     partyName?: string,
     partyTaxNumber?: string
 ) => {
     return `
      <div style="display: flex; flex-direction: column; row-gap: 2px">
-                    <p class="font-size-14">${
-                        isQuotation ? `Quotation To: ` : `Bill To: `
-                    }${partyName || "Open"}</p>
+                    <p class="font-size-14">${salutation} ${partyName || "Open"}</p>
                     ${
                         partyTaxNumber
                             ? `
-                            <p class="font-size-14">${getTaxHeading(
-                                countryId
-                            )} ${partyTaxNumber}</p>`
+                            <p class="font-size-14">${getTaxHeading(countryId)} ${partyTaxNumber}</p>`
                             : ""
                     }
                    
@@ -138,19 +135,17 @@ const getCreatedAtTime = (
 ) => {
     return `
       <div style="display: flex; row-gap: 2px">
-                    <p class="font-size-14">${
-                        isQuotation ? `Quotation` : `Invoice`
-                    } Date: ${moment(
-        convertUTCStringToTimezonedDate(createdAt, dateTimeFormat24hr, timezone)
-    ).format(displayedDateTimeFormat)}</p>
-                </div>
+        <p class="font-size-14">${isQuotation ? `Quotation` : `Invoice`} Date: 
+        ${moment(convertUTCStringToTimezonedDate(createdAt, dateTimeFormat24hr, timezone)).format(displayedDateTimeFormat)}
+        </p>
+      </div>
                 `;
 };
 
 const getItemsData = (
     taxName: string,
     taxPercent: string,
-    items: Array<SaleItem> | Array<QuotationItem>,
+    items: Array<SaleItem> | Array<QuotationItem> | Array<SaleReturnItem>,
     decimalPoints: number
 ) => {
     let tempTaxTotal = 0;
@@ -172,15 +167,13 @@ const getItemsData = (
                             tempSubTotal += Number(item.totalAfterTax);
                             return `
                                 <tr>
-                            <td>${index + 1}</td>
-                            <td>${item.itemName}</td>
-                            <td>${item.unitsSold} ${item.unitName}</td>
-                            <td>${item.pricePerUnit}</td>
-                            <td>${Number(item.tax).toFixed(decimalPoints)}</td>
-                            <td>${Number(item.totalAfterTax).toFixed(
-                                decimalPoints
-                            )}</td>
-                        </tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.itemName}</td>
+                                    <td>${item.unitsSold} ${item.unitName}</td>
+                                    <td>${item.pricePerUnit}</td>
+                                    <td>${Number(item.tax).toFixed(decimalPoints)}</td>
+                                    <td>${Number(item.totalAfterTax).toFixed(decimalPoints)}</td>
+                                </tr>
                                 `;
                         })}
                         <tr
@@ -214,7 +207,7 @@ const getItemsData = (
                 </table>`;
 };
 
-const getAggregatedTotals = (currency: string, details: Sale | Quotation) => {
+const getAggregatedTotals = (currency: string, details: Sale | Quotation | SaleReturn) => {
     return `
             <div
                 style="
@@ -228,11 +221,13 @@ const getAggregatedTotals = (currency: string, details: Sale | Quotation) => {
             >
                 <div style="display: flex; flex-direction: column; row-gap: 6px">
                     <p class="font-size-14 font-weight-700">Subtotal</p>
-                    <p class="font-size-14 font-weight-700">Discount</p>
-                    <p class="font-size-14 font-weight-700">Total After Discount</p>
-                    <p class="font-size-14 font-weight-700">${details.taxName.toUpperCase()} (${
-        details.taxPercent
-    }%)
+                    ${
+                        "discount" in details && `<p class="font-size-14 font-weight-700">Discount</p>`
+                    }
+                    ${
+                        "totalAfterDiscount" in details && `<p class="font-size-14 font-weight-700">Total After Discount</p>`
+                    }
+                    <p class="font-size-14 font-weight-700">${details.taxName.toUpperCase()} (${details.taxPercent}%)
                     </p>
                     <p class="font-size-14 font-weight-700">Total</p>
                     ${
@@ -246,35 +241,27 @@ const getAggregatedTotals = (currency: string, details: Sale | Quotation) => {
                    
                 </div>
                 <div style="display: flex; flex-direction: column; row-gap: 6px">
-                    <p class="font-size-14">${currency} ${Number(
-        details.subtotal
-    ).toFixed(2)}</p>
-                    <p class="font-size-14">${currency} ${details.discount}</p>
-                    <p class="font-size-14">${currency} ${Number(
-        details.totalAfterDiscount
-    ).toFixed(2)}</p>
-                    <p class="font-size-14">${currency} ${Number(
-        details.tax
-    ).toFixed(2)}</p>
-                    <p class="font-size-14">${currency} ${Number(
-        details.totalAfterTax
-    ).toFixed(2)}</p>
-    ${
-        "amountPaid" in details
-            ? `<p class="font-size-14">${currency} ${Number(
-                  details.amountPaid
-              ).toFixed(2)}</p>`
-            : ``
-    }
-    ${
-        "amountDue" in details
-            ? `<p class="font-size-14">${currency} ${Number(
-                  details.amountDue
-              ).toFixed(2)}</p>`
-            : ``
-    }
-                    
-    
+                    <p class="font-size-14">${currency} ${Number(details.subtotal).toFixed(2)}</p>
+                    ${
+                        "discount" in details &&
+                        `<p class="font-size-14">${currency} ${details.discount}</p>`
+                    }
+                    ${
+                        "totalAfterDiscount" in details &&
+                        `<p class="font-size-14">${currency} ${Number(details.totalAfterDiscount).toFixed(2)}</p>`
+                    }
+                    <p class="font-size-14">${currency} ${Number(details.tax).toFixed(2)}</p>
+                    <p class="font-size-14">${currency} ${Number(details.totalAfterTax).toFixed(2)}</p>
+                    ${
+                        "amountPaid" in details
+                            ? `<p class="font-size-14">${currency} ${Number(details.amountPaid).toFixed(2)}</p>`
+                            : ``
+                    }
+                    ${
+                        "amountDue" in details
+                            ? `<p class="font-size-14">${currency} ${Number(details.amountDue).toFixed(2)}</p>`
+                            : ``
+                    }
                 </div>
             </div>
     `;
@@ -283,30 +270,29 @@ const getAggregatedTotals = (currency: string, details: Sale | Quotation) => {
 const getAuthorizedSignatory = (username: string) => {
     return `
      <div
+        style="
+            margin-top: 80px;
+            max-width: 250px;
+            margin-left: auto;
+            margin-right: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            row-gap: 8px;
+        ">
+            <div
                 style="
-                    margin-top: 80px;
-                    max-width: 250px;
-                    margin-left: auto;
-                    margin-right: 12px;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    row-gap: 8px;
-                "
-            >
-                <div
-                    style="
-                        border-bottom: 1px solid black;
-                        width: 250px;
-                        text-align: center;
-                    "
-                >
-                    <p class="font-size-14">${username}</p>
-                </div>
-                <p class="font-size-12">Authorized Signatory</p>
+                    border-bottom: 1px solid black;
+                    width: 250px;
+                    text-align: center;
+                ">
+                <p class="font-size-14">${username}</p>
             </div>
+                <p class="font-size-12">Authorized Signatory</p>
+    </div>
     `;
 };
+
 export const getSaleInvoiceHTML = (
     saleDetails: GetSaleResponse,
     companyDetails: CompanyWithTaxDetails,
@@ -348,7 +334,7 @@ export const getSaleInvoiceHTML = (
             >
                 ${getPartyDetails(
                     partyDetails?.party.countryId as number,
-                    false,
+                    "Bill To:",
                     partyDetails?.party?.partyName,
                     saleDetails.sale.partyTaxNumber
                 )}
@@ -417,7 +403,7 @@ export const getQuotationHTML = (
             >
                 ${getPartyDetails(
                     partyDetails.party.countryId,
-                    true,
+                    "Quotation To",
                     partyDetails.party.partyName,
                     quotationDetails.quotation.partyTaxNumber
                 )}
@@ -442,6 +428,73 @@ export const getQuotationHTML = (
                 countryDetails.currency,
                 quotationDetails.quotation
             )}
+            ${getAuthorizedSignatory(username)}
+        </body>
+    </html>`;
+};
+
+export const getSaleReturnHTML = (
+    saleReturnDetails: GetSaleReturnResponse,
+    sale: Sale,
+    companyDetails: CompanyWithTaxDetails,
+    countryDetails: Country,
+    username: string,
+    partyDetails?: GetPartyResponse
+) => {
+    /* Decimal points to round to */
+    const decimalPoints = companyDetails.decimalRoundTo;
+
+    return `<!DOCTYPE html>
+    <html lang="en">
+        ${linksAndStyles}
+        <body style="padding: 16px">
+            <div style="display: flex; justify-content: space-between">
+                ${getCompanyDetails(
+                    companyDetails.companyName,
+                    countryDetails.countryName,
+                    countryDetails.countryId,
+                    sale?.companyTaxNumber
+                )}
+    
+                <div style="display: flex; flex-direction: column">
+                    <p style="text-transform: uppercase" class="font-size-38">
+                        CREDIT NOTE
+                    </p>
+                    <p class="font-size-14 font-weight-600">Credit Note Number: ${saleReturnDetails.saleReturn.saleReturnNumber}</p>
+                </div>
+            </div>
+    
+            <div
+                style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 40px;
+                "
+            >
+                ${getPartyDetails(
+                    partyDetails?.party.countryId as number,
+                    "Note To",
+                    partyDetails?.party?.partyName,
+                    sale.partyTaxNumber
+                )}
+    
+                ${getCreatedAtTime(
+                    saleReturnDetails.saleReturn.createdAt,
+                    countryDetails.timezone,
+                    false
+                )}
+            </div>
+    
+            <div style="margin-top: 40px">  
+                ${getItemsData(
+                    saleReturnDetails.saleReturn.taxName,
+                    saleReturnDetails?.saleReturn?.taxPercent,
+                    saleReturnDetails.saleReturnItems,
+                    decimalPoints
+                )}
+            </div>
+    
+            ${getAggregatedTotals(countryDetails.currency, saleReturnDetails.saleReturn)}
             ${getAuthorizedSignatory(username)}
         </body>
     </html>`;

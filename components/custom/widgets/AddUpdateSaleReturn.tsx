@@ -3,17 +3,12 @@ import CustomButton from "@/components/custom/basic/CustomButton";
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import Input from "@/components/custom/basic/Input";
 import RadioButton from "@/components/custom/basic/RadioButton";
-import {
-    ReturnItemType,
-    SaleReturnForm
-} from "@/constants/types";
+import { ReturnItemType, SaleReturnForm } from "@/constants/types";
 import { Sale, SaleItem } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText } from "@/utils/common_utils";
-import {
-    SaleReturnFormValidation
-} from "@/utils/schema_validations";
+import { SaleReturnFormValidation } from "@/utils/schema_validations";
 import { useFormik } from "formik";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -22,14 +17,13 @@ import SaleReturnItemListItem from "../business/SaleReturnItemListItem";
 import AddReturnItem from "./AddReturnItem";
 
 interface AddUpdateSaleReturnProps {
-    operation: "ADD" | "UPDATE";
-    sale: Sale;
-    saleItems: {[itemId: number]: SaleItem};
+    operation: "ADD" | "GET";
+    sale?: Sale;
+    saleItems?: { [itemId: number]: SaleItem };
     onAddUpdateSaleReturn(values: SaleReturnForm): void;
     apiErrorMessage?: string | null;
 
     formValues?: SaleReturnForm;
-    isUpdateEnabled?: boolean;
 }
 const AddUpdateSaleReturn = ({
     operation,
@@ -38,9 +32,7 @@ const AddUpdateSaleReturn = ({
     onAddUpdateSaleReturn,
     apiErrorMessage,
     formValues,
-    isUpdateEnabled,
 }: AddUpdateSaleReturnProps) => {
-
     /* Company State from redux */
     const companyState = useAppSelector((state) => state.company);
 
@@ -58,13 +50,13 @@ const AddUpdateSaleReturn = ({
         []
     );
 
-    /* Disable all inputs only if operation is UPDATE and update is not enabled */
+    /* Disable all inputs if operation is get */
     const isInputsDisabled = useMemo(() => {
-        if (operation === "UPDATE" && !isUpdateEnabled) {
+        if (operation === "GET") {
             return true;
         }
         return false;
-    }, [operation, isUpdateEnabled]);
+    }, [operation]);
 
     /* To store a selected item if any */
     const selectedItem = useRef<ReturnItemType>();
@@ -92,21 +84,14 @@ const AddUpdateSaleReturn = ({
             subtotal: "0",
             tax: "0",
             totalAfterTax: "0",
-            taxName: sale.taxName,
-            taxPercent: Number(sale.taxPercent),
-        }
+            taxName: sale?.taxName as string,
+            taxPercent: Number(sale?.taxPercent),
+        };
         return values;
     }, [formValues]);
 
     /* Aggregated field displayed at the end */
-    const totalFields = useMemo(
-        () => [
-            "subtotal",
-            "tax",
-            "totalAfterTax",
-        ],
-        []
-    );
+    const totalFields = useMemo(() => ["subtotal", "tax", "totalAfterTax"], []);
 
     /* Form */
     const formik = useFormik({
@@ -149,9 +134,9 @@ const AddUpdateSaleReturn = ({
     };
 
     /* On Change of items or discount value */
-    const calculateAggregateValues = (
-        items: { [x: number]: ReturnItemType },
-    ) => {
+    const calculateAggregateValues = (items: {
+        [x: number]: ReturnItemType;
+    }) => {
         /* Aggregate values to calculate */
         let subtotal = 0;
         let tax = 0;
@@ -181,7 +166,7 @@ const AddUpdateSaleReturn = ({
                     {apiErrorMessage && (
                         <ErrorMessage message={apiErrorMessage} />
                     )}
-                
+
                     <DateTimePickerCombined
                         dateLabel={i18n.t("transactionDateTime")}
                         onChange={(selectedDateTime) => {
@@ -190,7 +175,7 @@ const AddUpdateSaleReturn = ({
                         }}
                         value={formik.values.createdAt}
                         timeLabel=""
-                        isDisabled={operation === "UPDATE"}
+                        isDisabled={isInputsDisabled}
                     />
 
                     {operation === "ADD" && (
@@ -232,7 +217,9 @@ const AddUpdateSaleReturn = ({
                             value={
                                 formik.values.saleReturnNumber?.toString() || ""
                             }
-                            onChangeText={formik.handleChange("saleReturnNumber")}
+                            onChangeText={formik.handleChange(
+                                "saleReturnNumber"
+                            )}
                             onBlur={formik.handleBlur("saleReturnNumber")}
                             errorMessage={
                                 formik.touched.saleReturnNumber &&
@@ -241,7 +228,7 @@ const AddUpdateSaleReturn = ({
                                     : null
                             }
                             keyboardType="number-pad"
-                            isDisabled={operation === "UPDATE"}
+                            isDisabled={isInputsDisabled}
                         />
                     )}
 
@@ -275,12 +262,14 @@ const AddUpdateSaleReturn = ({
                     />
 
                     <View style={styles.formContainer}>
-                        <CustomButton
-                            text={i18n.t("addItem")}
-                            onPress={toggleAddReturnItemModal}
-                            isSecondaryButton
-                            isDisabled={isInputsDisabled}
-                        />
+                        {operation === "ADD" && (
+                            <CustomButton
+                                text={i18n.t("addItem")}
+                                onPress={toggleAddReturnItemModal}
+                                isSecondaryButton
+                                isDisabled={isInputsDisabled}
+                            />
+                        )}
 
                         {totalFields.map((field) => (
                             <View style={styles.rowContainer} key={field}>
@@ -310,7 +299,6 @@ const AddUpdateSaleReturn = ({
                             </View>
                         ))}
 
-                        
                         {!isInputsDisabled && (
                             <CustomButton
                                 text={i18n.t("save")}
@@ -322,8 +310,10 @@ const AddUpdateSaleReturn = ({
                     {isAddReturnItemModalVisibile && (
                         <AddReturnItem
                             type="SALERETURN"
-                            saleTaxPercent={Number(sale.taxPercent)}
-                            itemsData={saleItems}
+                            saleTaxPercent={Number(sale?.taxPercent)}
+                            itemsData={
+                                saleItems as { [itemId: number]: SaleItem }
+                            }
                             isVisible={isAddReturnItemModalVisibile}
                             toggleVisibility={() => {
                                 selectedItem.current = undefined;

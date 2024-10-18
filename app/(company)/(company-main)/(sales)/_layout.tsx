@@ -93,6 +93,8 @@ const SaleLayout = () => {
 
             <Stack.Screen name="get-sale/[saleId]" />
             <Stack.Screen name="get-returns-of-sale/[saleId]" />
+            <Stack.Screen name="get-sale-return/[saleReturnId]" />
+
         </Stack>
     );
 };

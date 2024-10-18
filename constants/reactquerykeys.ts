@@ -29,5 +29,6 @@ export enum ReactQueryKeys {
     itemTransfers = "itemTransfers",
     getCompanyGroup = "getCompanyGroup",
     getTransfer = "getTransfer",
-    getReturnsOfSale = "getReturnsOfSale"
+    getReturnsOfSale = "getReturnsOfSale",
+    getSaleReturn = "getSaleReturn"
 }

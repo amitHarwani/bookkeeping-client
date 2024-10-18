@@ -97,7 +97,7 @@ const GetSaleReturn = () => {
                                 saleReturn={item}
                                 onPress={(saleReturn) =>
                                     router.push(
-                                        `${AppRoutes.getSaleReturn}/${item.saleReturnId}` as Href
+                                        `${AppRoutes.getSaleReturn}/${saleReturn.saleReturnId}` as Href
                                     )
                                 }
                             />
