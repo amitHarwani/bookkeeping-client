@@ -235,5 +235,7 @@ export default {
     addSaleReturn: "add sale return",
     errorUpdatingDetails: "error updating details",
     saleReturnRecordedSuccessfully: "sale return recorded successfully",
-    getSaleReturns: "get sale returns"
+    getSaleReturns: "get sale returns",
+    returns: "returns",
+    noSaleReturnsFound: "no sale returns found"
 }

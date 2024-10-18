@@ -148,7 +148,7 @@ const AddInvoiceItem = ({
                                     <Input
                                         label={i18n.t("units")}
                                         placeholder={capitalizeText(
-                                            "enterUnits"
+                                            i18n.t("enterUnits")
                                         )}
                                         value={
                                             formik.values.units?.toString() ||

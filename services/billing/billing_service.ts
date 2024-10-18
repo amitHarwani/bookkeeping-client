@@ -33,6 +33,7 @@ import {
     GetPurchaseResponse,
     GetQuotationResponse,
     GetSaleResponse,
+    GetSaleReturnsOfSaleResponse,
     GetTopSellersForCurrentMonthResponse,
     Purchase,
     PurchaseItem,
@@ -66,6 +67,7 @@ class BillingService {
         "summary/get-topsellers-for-current-month";
 
     addSaleReturnPath = "sale-return/add-sale-return";
+    getSaleReturnsOfSalePath = "sale-return/get-sale-returns-of-sale";
 
     getTopSellersForCurrentMonth = async (companyId: number) => {
         return await asyncHandler<GetTopSellersForCurrentMonthResponse>(() => {
@@ -877,7 +879,6 @@ class BillingService {
         details: SaleReturnForm,
         companyTimezone: string
     ) => {
-
         const items = Object.values(details.items).map((item) => {
             return {
                 itemId: item.item?.itemId,
@@ -890,9 +891,9 @@ class BillingService {
                 subtotal: Number(item.subtotal),
                 tax: Number(item.tax),
                 taxPercent: Number(item.taxPercent),
-                totalAfterTax: Number(item.totalAfterTax)
-            }
-        })
+                totalAfterTax: Number(item.totalAfterTax),
+            };
+        });
         return await asyncHandler<AddSaleReturnResponse>(() => {
             return axios.post<ApiResponse<AddSaleReturnResponse>>(
                 `${this.hostPath}/${this.addSaleReturnPath}`,
@@ -915,6 +916,20 @@ class BillingService {
                     totalAfterTax: Number(details.totalAfterTax),
                     decimalRoundTo: decimalRoundTo,
                     items: items,
+                }
+            );
+        });
+    };
+
+    getSaleReturnsOfSale = async (saleId: number, companyId: number) => {
+        return await asyncHandler<GetSaleReturnsOfSaleResponse>(async () => {
+            return axios.get(
+                `${this.hostPath}/${this.getSaleReturnsOfSalePath}`,
+                {
+                    params: {
+                        saleId,
+                        companyId,
+                    },
                 }
             );
         });

@@ -18,7 +18,7 @@ import { useFormik } from "formik";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import DateTimePickerCombined from "../basic/DateTimePickerCombined";
-import SaleReturnListItem from "../business/SaleReturnListItem";
+import SaleReturnItemListItem from "../business/SaleReturnItemListItem";
 import AddReturnItem from "./AddReturnItem";
 
 interface AddUpdateSaleReturnProps {
@@ -261,7 +261,7 @@ const AddUpdateSaleReturn = ({
                     <FlatList
                         data={Object.values(formik.values.items)}
                         renderItem={({ item }) => (
-                            <SaleReturnListItem
+                            <SaleReturnItemListItem
                                 item={item}
                                 removeItem={removeReturnItemHandler}
                                 onReturnItemSelected={onReturnItemSelected}

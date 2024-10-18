@@ -18,11 +18,12 @@ const SaleLayout = () => {
     const pathName = usePathname();
 
     useEffect(() => {
-        /* Hiding the drawer header when pathname is add or get sale */
+        /* Hiding the drawer header for certain paths*/
         if (
             pathName.includes(`${AppRoutes.addSale}`) ||
             pathName.includes(`${AppRoutes.getSale}`) ||
-            pathName.includes(`${AppRoutes.addSaleReturn}`)
+            pathName.includes(`${AppRoutes.addSaleReturn}`) || 
+            pathName.includes(`${AppRoutes.getReturnsOfSale}`)
         ) {
             navigator.setOptions({ headerShown: false });
         } else {
@@ -91,6 +92,7 @@ const SaleLayout = () => {
             />
 
             <Stack.Screen name="get-sale/[saleId]" />
+            <Stack.Screen name="get-returns-of-sale/[saleId]" />
         </Stack>
     );
 };

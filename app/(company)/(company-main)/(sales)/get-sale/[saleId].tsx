@@ -153,6 +153,7 @@ const GetSale = () => {
     const moreHeaderOptionHandler = (optionId: number) => {
         switch (optionId) {
             case 1:
+                router.push(`${AppRoutes.getReturnsOfSale}/${saleId}` as Href);
                 return;
             case 2: {
                 router.push(`${AppRoutes.addSaleReturn}/${saleId}` as Href);

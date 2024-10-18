@@ -170,7 +170,7 @@ const AddReturnItem = ({
                                                 : i18n.t("unitsPurchased")
                                         }
                                         placeholder={capitalizeText(
-                                            "enterUnits"
+                                            i18n.t("enterUnits")
                                         )}
                                         value={
                                             formik.values.unitsSoldOrPurchased?.toString() ||
@@ -204,7 +204,7 @@ const AddReturnItem = ({
                                     <Input
                                         label={i18n.t("unitsReturned")}
                                         placeholder={capitalizeText(
-                                            "enterUnits"
+                                            i18n.t("enterUnits")
                                         )}
                                         value={
                                             formik.values.unitsReturned?.toString() ||

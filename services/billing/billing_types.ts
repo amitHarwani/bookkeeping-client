@@ -83,8 +83,8 @@ export interface Sale {
     paymentCompletionDate: string | null;
     saleId: number;
     isNoPartyBill: boolean;
-    companyTaxNumber: string,
-    partyTaxNumber: string
+    companyTaxNumber: string;
+    partyTaxNumber: string;
 }
 
 export interface SaleItem {
@@ -121,8 +121,8 @@ export interface Quotation {
     quotationId: number;
     quotationNumber: number;
     saleId: number | null;
-    companyTaxNumber: string,
-    partyTaxNumber: string
+    companyTaxNumber: string;
+    partyTaxNumber: string;
 }
 
 export interface QuotationItem {
@@ -145,6 +145,7 @@ export interface QuotationItem {
 export interface SaleReturn {
     companyId: number;
     saleId: number;
+    invoiceNumber: number;
     createdAt: string;
     saleReturnId: number;
     saleReturnNumber: number;
@@ -379,5 +380,9 @@ export class AddSaleReturnResponse {
     constructor(
         public saleReturn: SaleReturn,
         public saleReturnItems: Array<SaleReturnItem>
-    ){}
+    ) {}
+}
+
+export class GetSaleReturnsOfSaleResponse {
+    constructor(public saleReturns: Array<SaleReturn>) {}
 }
