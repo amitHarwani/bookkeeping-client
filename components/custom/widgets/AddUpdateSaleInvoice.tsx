@@ -632,6 +632,7 @@ const AddUpdateSaleInvoice = ({
                             }}
                             onInvoiceItemChange={onInvoiceItemChanged}
                             value={selectedInvoiceItem.current}
+                            taxPercent={operation==="UPDATE" ? formValues?.taxPercent : undefined}
                         />
                     )}
                 </View>

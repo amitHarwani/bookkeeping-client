@@ -20,12 +20,14 @@ interface AddInvoiceItemProps {
     isVisible: boolean;
     toggleVisibility(): void;
     onInvoiceItemChange(invoiceItem: PurchaseInvoiceItem): void;
+    taxPercent?: number;
 }
 const AddInvoiceItem = ({
     value,
     isVisible,
     toggleVisibility,
     onInvoiceItemChange,
+    taxPercent
 }: AddInvoiceItemProps) => {
     /* Company State from redux */
     const companyState = useAppSelector((state) => state.company);
@@ -46,7 +48,7 @@ const AddInvoiceItem = ({
         subtotal: "",
         tax: "",
         totalAfterTax: "",
-        taxPercent: invoiceTaxPercent
+        taxPercent: taxPercent || invoiceTaxPercent
     });
 
     /* Formik initialization */
@@ -73,7 +75,7 @@ const AddInvoiceItem = ({
             const subtotal = units * pricePerUnit;
 
             /* Tax amount */
-            const tax = subtotal * (invoiceTaxPercent / 100);
+            const tax = subtotal * (formik.values.taxPercent / 100);
 
             /* Total */
             const total = subtotal + tax;
@@ -227,7 +229,7 @@ const AddInvoiceItem = ({
                                     <View style={styles.totalContainer}>
                                         <Text style={[commonStyles.textSmallBold, commonStyles.capitalize]}>
                                             {i18n.t("tax")}{" "}
-                                            {`(${invoiceTaxPercent}%)`}
+                                            {`(${formik.values.taxPercent}%)`}
                                         </Text>
                                         <Text style={[commonStyles.textMediumXLBold, commonStyles.textGray]}>
                                             {companyState.country?.currency}{" "}
