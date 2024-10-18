@@ -477,6 +477,7 @@ const GetQuotation = () => {
                         setPrintState({ enabled: false, isShareMode: false })
                     }
                     isShareMode={printState.isShareMode}
+                    fileName={`quotation_${quotationDetails?.data.quotation.quotationNumber}`}
                 />
             )}
         </>

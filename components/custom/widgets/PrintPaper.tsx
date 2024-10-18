@@ -7,13 +7,15 @@ import { Platform, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../basic/CustomButton";
 import CustomModal from "../basic/CustomModal";
 import LoadingSpinnerOverlay from "../basic/LoadingSpinnerOverlay";
+import * as FileSystem from "expo-file-system";
 
 interface PrintPaperProps {
     html: string;
     togglePrintModal(): void;
-    isShareMode?: boolean
+    isShareMode?: boolean;
+    fileName?: string
 }
-const PrintPaper = ({ html, togglePrintModal, isShareMode }: PrintPaperProps) => {
+const PrintPaper = ({ html, togglePrintModal, isShareMode, fileName = "" }: PrintPaperProps) => {
     const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
 
     const [selectedPrinter, setSelectedPrinter] = useState<
@@ -35,7 +37,18 @@ const PrintPaper = ({ html, togglePrintModal, isShareMode }: PrintPaperProps) =>
         setShowLoadingSpinner(true);
         // On iOS/android prints the given html. On web prints the HTML from the current page.
         const { uri } = await Print.printToFileAsync({ html });
-        await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+
+        let updatedUri = uri;
+        /* if file name is provided, Update file name and move the file to the new location */
+        if(fileName){
+            const index = uri.indexOf("Print/");
+            updatedUri = `${uri.substring(0, index)}/${fileName}`;
+            await FileSystem.moveAsync({
+                from: uri,
+                to: updatedUri
+            })
+        }
+        await shareAsync(updatedUri, { UTI: ".pdf", mimeType: "application/pdf" });
         setShowLoadingSpinner(false);
         togglePrintModal();
     };

@@ -304,6 +304,8 @@ const GetSaleReturn = () => {
                         setPrintState({ enabled: false, isShareMode: false })
                     }
                     isShareMode={printState.isShareMode}
+                    fileName={`creditnote_${saleReturnDetails?.data.saleReturn.saleReturnNumber}`}
+
                 />
             )}
         </>

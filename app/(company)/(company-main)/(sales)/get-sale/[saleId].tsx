@@ -437,6 +437,7 @@ const GetSale = () => {
                         setPrintState({ enabled: false, isShareMode: false })
                     }
                     isShareMode={printState.isShareMode}
+                    fileName={`invoice_${saleDetails?.data.sale.invoiceNumber}`}
                 />
             )}
         </>
