@@ -109,6 +109,7 @@ const AddSaleReturn = () => {
         mutationFn: (values: SaleReturnForm) =>
             billing_service.addSaleReturn(
                 saleId,
+                saleDetails?.data?.sale?.invoiceNumber as number,
                 companyId,
                 decimalPoints,
                 values,

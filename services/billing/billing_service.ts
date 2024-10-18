@@ -871,6 +871,7 @@ class BillingService {
 
     addSaleReturn = async (
         saleId: number,
+        saleInvoiceNumber: number,
         companyId: number,
         decimalRoundTo: number,
         details: SaleReturnForm,
@@ -902,6 +903,7 @@ class BillingService {
                         companyTimezone
                     ),
                     saleId: saleId,
+                    invoiceNumber: saleInvoiceNumber,
                     saleReturnNumber: details.saleReturnNumber
                         ? Number(details.saleReturnNumber)
                         : null,
