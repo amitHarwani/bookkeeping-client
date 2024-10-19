@@ -21,7 +21,10 @@ const PurchaseLayout = () => {
         /* Hiding the drawer header when pathname is add or get party */
         if (
             pathName.includes(`${AppRoutes.addPurchase}`) ||
-            pathName.includes(`${AppRoutes.getPurchase}`)
+            pathName.includes(`${AppRoutes.getPurchase}`) || 
+            pathName.includes(`${AppRoutes.addPurchaseReturn}`) ||
+            pathName.includes(`${AppRoutes.getPurchaseReturn}`) ||
+            pathName.includes(`${AppRoutes.getReturnsOfPurchase}`)
         ) {
             navigator.setOptions({ headerShown: false });
         } else {

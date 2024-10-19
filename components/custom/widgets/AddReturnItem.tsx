@@ -4,9 +4,7 @@ import { PurchaseItem, SaleItem } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText } from "@/utils/common_utils";
-import {
-    AddUpdateReturnItemValidation
-} from "@/utils/schema_validations";
+import { AddUpdateReturnItemValidation } from "@/utils/schema_validations";
 import { useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -17,7 +15,7 @@ import ReturnsItemSelector from "./ReturnsItemSelector";
 
 interface AddReturnItemProps {
     type: "SALERETURN" | "PURCHASERETURN";
-    taxPercent: number,
+    taxPercent: number;
     itemsData: { [itemId: number]: SaleItem | PurchaseItem };
     value?: ReturnItemType;
     isVisible: boolean;
@@ -106,19 +104,37 @@ const AddReturnItem = ({
     }, [formik.values.pricePerUnit, formik.values.unitsReturned]);
 
     const onReturnItemChangeHandler = (item: ReturnItemSelectorType) => {
-
-        const saleItem = itemsData[item.itemId] as SaleItem;
-
         formik.setFieldTouched("item", true);
         formik.setFieldValue("item", {
             itemName: item.itemName,
             itemId: item.itemId,
             unitId: item.unitId,
-            unitName: item.unitName
+            unitName: item.unitName,
         });
-        formik.setFieldValue("unitsSoldOrPurchased", Number(saleItem.unitsSold));
-        formik.setFieldValue("pricePerUnit", Number(saleItem.pricePerUnit));        
-    }
+
+        /* Setting units sold/purchased and price per unit depending on the 
+        type = Sale return or purchase return */
+        if (type === "SALERETURN") {
+            const saleItem = itemsData[item.itemId] as SaleItem;
+
+            formik.setFieldValue(
+                "unitsSoldOrPurchased",
+                Number(saleItem.unitsSold)
+            );
+            formik.setFieldValue("pricePerUnit", Number(saleItem.pricePerUnit));
+        } else {
+            const purchaseItem = itemsData[item.itemId] as PurchaseItem;
+
+            formik.setFieldValue(
+                "unitsSoldOrPurchased",
+                Number(purchaseItem.unitsPurchased)
+            );
+            formik.setFieldValue(
+                "pricePerUnit",
+                Number(purchaseItem.pricePerUnit)
+            );
+        }
+    };
 
     /* Default form values */
     useEffect(() => {
@@ -285,8 +301,7 @@ const AddReturnItem = ({
                                                 commonStyles.capitalize,
                                             ]}
                                         >
-                                            {i18n.t("tax")}{" "}
-                                            {`(${taxPercent}%)`}
+                                            {i18n.t("tax")} {`(${taxPercent}%)`}
                                         </Text>
                                         <Text
                                             style={[

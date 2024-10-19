@@ -128,6 +128,7 @@ const AddUpdatePurchaseInvoice = ({
     /* Form */
     const formik = useFormik({
         initialValues: initialFormValues,
+        enableReinitialize: true,
         onSubmit: (values) => {
             onAddUpdatePurchase(values);
         },

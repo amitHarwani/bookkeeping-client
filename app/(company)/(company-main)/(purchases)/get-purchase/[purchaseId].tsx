@@ -36,6 +36,7 @@ import HeaderMoreOptions, {
     HeaderOptionType,
 } from "@/components/custom/basic/HeaderMoreOptions";
 import { AppRoutes } from "@/constants/routes";
+import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 
 const GetPurchase = () => {
     /* Company State */
@@ -84,6 +85,8 @@ const GetPurchase = () => {
                 selectedCompany?.companyId as number
             ),
     });
+
+    useRefreshOnFocus(fetchPurchaseDetails);
 
     /* To fetch party details */
     const {
@@ -293,7 +296,7 @@ const GetPurchase = () => {
 
     /* Fetch party details once purchaseDetails are fetched */
     useEffect(() => {
-        if (purchaseDetails && purchaseDetails.success && !partyDetails) {
+        if (purchaseDetails && purchaseDetails.success) {
             fetchPartyDetails();
         }
     }, [purchaseDetails]);
