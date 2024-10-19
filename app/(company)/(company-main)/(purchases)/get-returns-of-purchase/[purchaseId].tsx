@@ -1,19 +1,19 @@
-import { FlatList, StyleSheet, Text, ToastAndroid, View } from "react-native";
-import React, { useEffect, useMemo } from "react";
-import { Href, router, useLocalSearchParams, useNavigation } from "expo-router";
-import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
-import { useQuery } from "@tanstack/react-query";
-import { ReactQueryKeys } from "@/constants/reactquerykeys";
-import { useAppSelector } from "@/store";
-import billing_service from "@/services/billing/billing_service";
 import { i18n } from "@/app/_layout";
-import { capitalizeText } from "@/utils/common_utils";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
-import SaleReturnListItem from "@/components/custom/business/SaleReturnListItem";
-import { AppRoutes } from "@/constants/routes";
+import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
 import ListEmptyComponent from "@/components/custom/business/ListEmptyComponent";
+import PurchaseReturnListItem from "@/components/custom/business/PurchaseReturnListItem";
+import { ReactQueryKeys } from "@/constants/reactquerykeys";
+import { AppRoutes } from "@/constants/routes";
+import billing_service from "@/services/billing/billing_service";
+import { useAppSelector } from "@/store";
+import { capitalizeText } from "@/utils/common_utils";
+import { useQuery } from "@tanstack/react-query";
+import { Href, router, useLocalSearchParams, useNavigation } from "expo-router";
+import React, { useEffect, useMemo } from "react";
+import { FlatList, StyleSheet, ToastAndroid, View } from "react-native";
 
-const GetReturnsOfSale = () => {
+const GetReturnsOfPurchase = () => {
     /* Selected company from redux */
     const selectedCompany = useAppSelector(
         (state) => state.company.selectedCompany
@@ -28,20 +28,21 @@ const GetReturnsOfSale = () => {
     /* Params */
     const params = useLocalSearchParams();
 
-    /* Sale ID */
-    const saleId = Number(params.saleId);
+    /* Purchase ID */
+    const purchaseId = Number(params.purchaseId);
 
     /* Stack Navigator */
     const navigation = useNavigation();
 
-    /* Fetching Sale Returns Of A Particular Sale Invoice */
+    /* Fetching Purchase Returns Of A Particular Purchase Invoice */
     const {
         isFetching: fetchingReturns,
         data: returnsData,
         error: errorFetchingReturns,
     } = useQuery({
-        queryKey: [ReactQueryKeys.getReturnsOfSale, saleId, companyId],
-        queryFn: () => billing_service.getSaleReturnsOfSale(saleId, companyId),
+        queryKey: [ReactQueryKeys.getReturnsOfPurchase, purchaseId, companyId],
+        queryFn: () =>
+            billing_service.getPurchaseReturnsOfPurchase(purchaseId, companyId),
     });
 
     /* Setting the header for the page */
@@ -49,19 +50,12 @@ const GetReturnsOfSale = () => {
         navigation.setOptions({
             headerTitle: () => (
                 <CustomNavHeader
-                    mainHeading={
-                        returnsData && returnsData?.data?.saleReturns?.length
-                            ? `${
-                                  returnsData?.data?.saleReturns?.[0]
-                                      ?.invoiceNumber
-                              } - ${i18n.t("returns")}`
-                            : i18n.t("returns")
-                    }
+                    mainHeading={i18n.t("returns")}
                     subHeading={selectedCompany?.companyName || ""}
                 />
             ),
         });
-    }, [navigation, returnsData]);
+    }, [navigation]);
 
     /* Loading spinner visibility */
     const showLoadingSpinner = useMemo(() => {
@@ -91,18 +85,20 @@ const GetReturnsOfSale = () => {
             {returnsData && (
                 <View style={styles.itemListContainer}>
                     <FlatList
-                        data={returnsData?.data?.saleReturns}
+                        data={returnsData?.data?.purchaseReturns}
                         renderItem={({ item }) => (
-                            <SaleReturnListItem
-                                saleReturn={item}
-                                onPress={(saleReturn) =>
+                            <PurchaseReturnListItem
+                                purchaseReturn={item}
+                                onPress={(purchaseReturn) =>
                                     router.push(
-                                        `${AppRoutes.getSaleReturn}/${saleReturn.saleReturnId}` as Href
+                                        `${AppRoutes.getPurchaseReturn}/${purchaseReturn.purchaseReturnId}` as Href
                                     )
                                 }
                             />
                         )}
-                        keyExtractor={(item) => item.saleReturnId.toString()}
+                        keyExtractor={(item) =>
+                            item.purchaseReturnId.toString()
+                        }
                         ItemSeparatorComponent={() => (
                             <View style={styles.itemSeparator} />
                         )}
@@ -110,7 +106,7 @@ const GetReturnsOfSale = () => {
                         contentContainerStyle={{ paddingBottom: 20 }}
                         ListEmptyComponent={() => (
                             <ListEmptyComponent
-                                message={i18n.t("noSaleReturnsFound")}
+                                message={i18n.t("noPurchaseReturnsFound")}
                             />
                         )}
                     />
@@ -120,7 +116,7 @@ const GetReturnsOfSale = () => {
     );
 };
 
-export default GetReturnsOfSale;
+export default GetReturnsOfPurchase;
 
 const styles = StyleSheet.create({
     container: {

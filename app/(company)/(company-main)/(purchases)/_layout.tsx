@@ -1,13 +1,13 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import React, { useCallback, useEffect } from "react";
-import { useAppSelector } from "@/store";
-import { Stack, useNavigation, usePathname } from "expo-router";
-import { AppRoutes } from "@/constants/routes";
-import BackIcon from "@/assets/images/back_icon.png";
-import { commonStyles } from "@/utils/common_styles";
-import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
 import { i18n } from "@/app/_layout";
+import BackIcon from "@/assets/images/back_icon.png";
+import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
+import { AppRoutes } from "@/constants/routes";
+import { useAppSelector } from "@/store";
+import { commonStyles } from "@/utils/common_styles";
 import { CommonActions } from "@react-navigation/native";
+import { Stack, useNavigation, usePathname } from "expo-router";
+import React, { useCallback, useEffect } from "react";
+import { Image, TouchableOpacity } from "react-native";
 
 const PurchaseLayout = () => {
     const selectedCompany = useAppSelector(
@@ -46,10 +46,12 @@ const PurchaseLayout = () => {
         <Stack
             screenOptions={({ navigation }) => ({
                 headerLeft: () => (
-                    <TouchableOpacity onPress={() => {
-                        reset();
-                        navigation.goBack()
-                    }}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            reset();
+                            navigation.goBack();
+                        }}
+                    >
                         <Image
                             style={commonStyles.hamburgerBackIcon}
                             source={BackIcon}
@@ -76,7 +78,21 @@ const PurchaseLayout = () => {
                 }}
             />
 
+            <Stack.Screen
+                name="add-purchase-return/[purchaseId]"
+                options={{
+                    headerTitle: () => (
+                        <CustomNavHeader
+                            mainHeading={i18n.t("addPurchaseReturn")}
+                            subHeading={selectedCompany?.companyName || ""}
+                        />
+                    ),
+                }}
+            />
+
             <Stack.Screen name="get-purchase/[purchaseId]" />
+            <Stack.Screen name="get-returns-of-purchase/[purchaseId]" />
+            <Stack.Screen name="get-purchase-return/[purchaseReturnId]" />
         </Stack>
     );
 };

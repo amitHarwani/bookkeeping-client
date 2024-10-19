@@ -171,6 +171,35 @@ export interface SaleReturnItem {
     unitsSold: string;
 }
 
+export interface PurchaseReturn {
+    companyId: number;
+    createdAt: string;
+    purchaseReturnId: number;
+    purchaseReturnNumber: number;
+    purchaseId: number;
+    subtotal: string;
+    tax: string;
+    taxPercent: string;
+    taxName: string;
+    totalAfterTax: string;
+}
+
+export interface PurchaseReturnItem {
+    companyId: number;
+    createdAt: string;
+    purchaseReturnId: number;
+    subtotal: string;
+    tax: string;
+    taxPercent: string;
+    totalAfterTax: string;
+    itemId: number;
+    itemName: string;
+    unitId: number;
+    unitName: string;
+    pricePerUnit: string;
+    unitsPurchased: string;
+}
+
 export interface FilterPartiesQuery {
     isActive?: boolean;
     partyNameSearchQuery?: string;
@@ -391,5 +420,24 @@ export class GetSaleReturnResponse {
     constructor(
         public saleReturn: SaleReturn,
         public saleReturnItems: Array<SaleReturnItem>
+    ) {}
+}
+
+
+export class AddPurchaseReturnResponse {
+    constructor(
+        public purchaseReturn: PurchaseReturn,
+        public purchaseReturnItems: Array<PurchaseReturnItem>
+    ) {}
+}
+
+export class GetPurchaseReturnsOfPurchaseResponse {
+    constructor(public purchaseReturns: Array<PurchaseReturn>) {}
+}
+
+export class GetPurchaseReturnResponse {
+    constructor(
+        public purchaseReturn: PurchaseReturn,
+        public purchaseReturnItems: Array<PurchaseReturnItem>
     ) {}
 }

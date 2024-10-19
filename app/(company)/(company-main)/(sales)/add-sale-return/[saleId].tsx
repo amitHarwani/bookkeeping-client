@@ -150,12 +150,8 @@ const AddSaleReturn = () => {
         const updatedSubtotal =
             Number(originalSale.subtotal) - Number(values.subtotal);
 
-        /* If new subtotal is 0, or the new subtotal is less than or equal to the discount, update discount to 0 */
-        const updatedDiscount =
-            updatedSubtotal === 0 ||
-            updatedSubtotal <= Number(originalSale.discount)
-                ? 0
-                : Number(originalSale.discount);
+        /* update discount to 0 */
+        const updatedDiscount = 0;
 
         /* Total After Discount: New Subtotal - New Discount */
         const updatedTotalAfterDiscount = updatedSubtotal - updatedDiscount;

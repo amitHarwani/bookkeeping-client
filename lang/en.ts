@@ -239,5 +239,13 @@ export default {
     returns: "returns",
     noSaleReturnsFound: "no sale returns found",
     saleReturn: "sale return",
-    saleReturns: "sale returns"
+    saleReturns: "sale returns",
+    autogeneratePurchaseReturnNumber: "autogenerate purchase return number",
+    purchaseReturnNumber: "purchase return number",
+    enterPurchaseReturnNumber: "enter purchase return number",
+    getPurchaseReturns: "get purchase returns",
+    addPurchaseReturn: "add purchase return",
+    purchaseReturnRecordedSuccessfully: "purchase return recorded successfully",
+    noPurchaseReturnsFound: "no purchase returns found",
+    purchaseReturn: "purchase return"
 }

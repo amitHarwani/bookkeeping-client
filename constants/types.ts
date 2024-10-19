@@ -367,3 +367,16 @@ export interface SaleReturnForm {
     taxPercent: number;
     taxName: string;
 }
+
+export interface PurchaseReturnForm {
+    createdAt: Date;
+    autogeneratePurchaseReturnNumber: boolean;
+    purchaseReturnNumber: number | null;
+    items: { [itemId: number]: ReturnItemType };
+    subtotal: string;
+    tax: string;
+    totalAfterTax: string;
+    taxPercent: number;
+    taxName: string;
+}
+

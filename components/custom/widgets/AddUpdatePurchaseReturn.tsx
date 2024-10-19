@@ -3,36 +3,44 @@ import CustomButton from "@/components/custom/basic/CustomButton";
 import ErrorMessage from "@/components/custom/basic/ErrorMessage";
 import Input from "@/components/custom/basic/Input";
 import RadioButton from "@/components/custom/basic/RadioButton";
-import { ReturnItemType, SaleReturnForm } from "@/constants/types";
-import { Sale, SaleItem } from "@/services/billing/billing_types";
+import {
+    PurchaseReturnForm,
+    ReturnItemType
+} from "@/constants/types";
+import {
+    Purchase,
+    PurchaseItem
+} from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText } from "@/utils/common_utils";
-import { SaleReturnFormValidation } from "@/utils/schema_validations";
+import {
+    PurchaseReturnFormValidation
+} from "@/utils/schema_validations";
 import { useFormik } from "formik";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import DateTimePickerCombined from "../basic/DateTimePickerCombined";
-import SaleReturnItemListItem from "../business/SaleReturnItemListItem";
+import PurchaseReturnItemListItem from "../business/PurchaseReturnItemListItem";
 import AddReturnItem from "./AddReturnItem";
 
-interface AddUpdateSaleReturnProps {
+interface AddUpdatePurchaseReturnProps {
     operation: "ADD" | "GET";
-    sale?: Sale;
-    saleItems?: { [itemId: number]: SaleItem };
-    onAddUpdateSaleReturn(values: SaleReturnForm): void;
+    purchase?: Purchase;
+    purchaseItems?: { [itemId: number]: PurchaseItem };
+    onAddUpdatePurchaseReturn(values: PurchaseReturnForm): void;
     apiErrorMessage?: string | null;
 
-    formValues?: SaleReturnForm;
+    formValues?: PurchaseReturnForm;
 }
-const AddUpdateSaleReturn = ({
+const AddUpdatePurchaseReturn = ({
     operation,
-    sale,
-    saleItems,
-    onAddUpdateSaleReturn,
+    purchase,
+    purchaseItems,
+    onAddUpdatePurchaseReturn,
     apiErrorMessage,
     formValues,
-}: AddUpdateSaleReturnProps) => {
+}: AddUpdatePurchaseReturnProps) => {
     /* Company State from redux */
     const companyState = useAppSelector((state) => state.company);
 
@@ -70,22 +78,22 @@ const AddUpdateSaleReturn = ({
         setIsAddReturnItemModalVisible((prev) => !prev);
     }, [isAddReturnItemModalVisibile]);
 
-    /* Initial Sale Return form */
-    const initialFormValues: SaleReturnForm = useMemo(() => {
+    /* Initial Purchase Return form */
+    const initialFormValues: PurchaseReturnForm = useMemo(() => {
         if (formValues) {
             return formValues;
         }
 
-        const values: SaleReturnForm = {
+        const values: PurchaseReturnForm = {
             createdAt: new Date(),
-            autogenerateSaleReturnNumber: true,
-            saleReturnNumber: null,
+            autogeneratePurchaseReturnNumber: true,
+            purchaseReturnNumber: null,
             items: {},
             subtotal: "0",
             tax: "0",
             totalAfterTax: "0",
-            taxName: sale?.taxName as string,
-            taxPercent: Number(sale?.taxPercent),
+            taxName: purchase?.taxName as string,
+            taxPercent: Number(purchase?.taxPercent),
         };
         return values;
     }, [formValues]);
@@ -97,12 +105,12 @@ const AddUpdateSaleReturn = ({
     const formik = useFormik({
         initialValues: initialFormValues,
         onSubmit: (values) => {
-            onAddUpdateSaleReturn(values);
+            onAddUpdatePurchaseReturn(values);
         },
-        validationSchema: SaleReturnFormValidation,
+        validationSchema: PurchaseReturnFormValidation,
     });
 
-    /* On change of sale return item */
+    /* On change of purchase return item */
     const onReturnItemChanged = (item: ReturnItemType) => {
         /* Update items field. value is stores as key value, where key is itemId and value is return item type */
         if (item && item.item) {
@@ -182,49 +190,55 @@ const AddUpdateSaleReturn = ({
                         <RadioButton
                             textKey="key"
                             data={yesNoRadioButtonData}
-                            label={i18n.t("autogenerateSaleReturnNumber")}
+                            label={i18n.t("autogeneratePurchaseReturnNumber")}
                             onChange={(selectedVal) => {
                                 formik.setFieldTouched(
-                                    "autogenerateSaleReturnNumber",
+                                    "autogeneratePurchaseReturnNumber",
                                     true
                                 );
                                 formik.setFieldValue(
-                                    "autogenerateSaleReturnNumber",
+                                    "autogeneratePurchaseReturnNumber",
                                     selectedVal.value
                                 );
-                                formik.setFieldValue("saleReturnNumber", null);
+                                formik.setFieldValue(
+                                    "purchaseReturnNumber",
+                                    null
+                                );
                             }}
                             value={
-                                formik.values.autogenerateSaleReturnNumber
+                                formik.values.autogeneratePurchaseReturnNumber
                                     ? yesNoRadioButtonData[0]
                                     : yesNoRadioButtonData[1]
                             }
                             isDisabled={isInputsDisabled}
                             errorMessage={
-                                formik.touched.autogenerateSaleReturnNumber &&
-                                formik.errors.autogenerateSaleReturnNumber
-                                    ? formik.errors.autogenerateSaleReturnNumber
+                                formik.touched
+                                    .autogeneratePurchaseReturnNumber &&
+                                formik.errors.autogeneratePurchaseReturnNumber
+                                    ? formik.errors
+                                          .autogeneratePurchaseReturnNumber
                                     : null
                             }
                         />
                     )}
-                    {!formik.values.autogenerateSaleReturnNumber && (
+                    {!formik.values.autogeneratePurchaseReturnNumber && (
                         <Input
-                            label={i18n.t("saleReturnNumber")}
+                            label={i18n.t("purchaseReturnNumber")}
                             placeholder={capitalizeText(
-                                i18n.t("enterSaleReturnNumber")
+                                i18n.t("enterPurchaseReturnNumber")
                             )}
                             value={
-                                formik.values.saleReturnNumber?.toString() || ""
+                                formik.values.purchaseReturnNumber?.toString() ||
+                                ""
                             }
                             onChangeText={formik.handleChange(
-                                "saleReturnNumber"
+                                "purchaseReturnNumber"
                             )}
-                            onBlur={formik.handleBlur("saleReturnNumber")}
+                            onBlur={formik.handleBlur("purchaseReturnNumber")}
                             errorMessage={
-                                formik.touched.saleReturnNumber &&
-                                formik.errors.saleReturnNumber
-                                    ? formik.errors.saleReturnNumber
+                                formik.touched.purchaseReturnNumber &&
+                                formik.errors.purchaseReturnNumber
+                                    ? formik.errors.purchaseReturnNumber
                                     : null
                             }
                             keyboardType="number-pad"
@@ -248,7 +262,7 @@ const AddUpdateSaleReturn = ({
                     <FlatList
                         data={Object.values(formik.values.items)}
                         renderItem={({ item }) => (
-                            <SaleReturnItemListItem
+                            <PurchaseReturnItemListItem
                                 item={item}
                                 removeItem={removeReturnItemHandler}
                                 onReturnItemSelected={onReturnItemSelected}
@@ -293,7 +307,7 @@ const AddUpdateSaleReturn = ({
                                     ]}
                                 >
                                     {formik.values?.[
-                                        field as keyof SaleReturnForm
+                                        field as keyof PurchaseReturnForm
                                     ]?.toString()}
                                 </Text>
                             </View>
@@ -309,10 +323,12 @@ const AddUpdateSaleReturn = ({
 
                     {isAddReturnItemModalVisibile && (
                         <AddReturnItem
-                            type="SALERETURN"
-                            taxPercent={Number(sale?.taxPercent)}
+                            type="PURCHASERETURN"
+                            taxPercent={Number(purchase?.taxPercent)}
                             itemsData={
-                                saleItems as { [itemId: number]: SaleItem }
+                                purchaseItems as {
+                                    [itemId: number]: PurchaseItem;
+                                }
                             }
                             isVisible={isAddReturnItemModalVisibile}
                             toggleVisibility={() => {
@@ -329,7 +345,7 @@ const AddUpdateSaleReturn = ({
     );
 };
 
-export default AddUpdateSaleReturn;
+export default AddUpdatePurchaseReturn;
 
 const styles = StyleSheet.create({
     mainContainer: {

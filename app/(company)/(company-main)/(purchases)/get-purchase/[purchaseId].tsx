@@ -7,12 +7,16 @@ import {
     View,
 } from "react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { Href, router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useAppSelector } from "@/store";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import billing_service from "@/services/billing/billing_service";
-import { capitalizeText, convertUTCStringToTimezonedDate, getApiErrorMessage } from "@/utils/common_utils";
+import {
+    capitalizeText,
+    convertUTCStringToTimezonedDate,
+    getApiErrorMessage,
+} from "@/utils/common_utils";
 import { i18n, queryClient } from "@/app/_layout";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
@@ -23,14 +27,23 @@ import { commonStyles } from "@/utils/common_styles";
 import { PurchaseInvoiceForm, PurchaseInvoiceItem } from "@/constants/types";
 import moment from "moment";
 import AddUpdatePurchaseInvoice from "@/components/custom/widgets/AddUpdatePurchaseInvoice";
-import { PurchaseItem } from "@/services/billing/billing_types";
+import {
+    PurchaseItem,
+    TaxDetailsOfThirdPartyType,
+} from "@/services/billing/billing_types";
 import { dateTimeFormat24hr } from "@/constants/datetimes";
+import HeaderMoreOptions, {
+    HeaderOptionType,
+} from "@/components/custom/basic/HeaderMoreOptions";
+import { AppRoutes } from "@/constants/routes";
 
 const GetPurchase = () => {
     /* Company State */
     const companyState = useAppSelector((state) => state.company);
 
-    const timezone = useMemo(() => {return companyState.country?.timezone}, [companyState])
+    const timezone = useMemo(() => {
+        return companyState.country?.timezone;
+    }, [companyState]);
 
     /* Selected company */
     const selectedCompany = useAppSelector(
@@ -105,6 +118,41 @@ const GetPurchase = () => {
             ),
     });
 
+    /* Header Toolbar Options */
+    const moreHeaderOptions = useMemo(() => {
+        const extraOptions: Array<HeaderOptionType> = [];
+        if (isFeatureAccessible(PLATFORM_FEATURES.GET_PURCHASE_RETURNS)) {
+            extraOptions.push({
+                optionId: 1,
+                optionLabel: i18n.t("getPurchaseReturns"),
+            });
+        }
+        if (isFeatureAccessible(PLATFORM_FEATURES.ADD_PURCHASE_RETURN)) {
+            extraOptions.push({
+                optionId: 2,
+                optionLabel: i18n.t("addPurchaseReturn"),
+            });
+        }
+        return extraOptions;
+    }, []);
+
+    /* On click of toolbar in header */
+    const moreHeaderOptionHandler = (optionId: number) => {
+        switch (optionId) {
+            case 1:
+                router.push(
+                    `${AppRoutes.getReturnsOfPurchase}/${purchaseId}` as Href
+                );
+                return;
+            case 2: {
+                router.push(
+                    `${AppRoutes.addPurchaseReturn}/${purchaseId}` as Href
+                );
+                return;
+            }
+        }
+    };
+
     /* Setting the header for the page */
     useEffect(() => {
         navigation.setOptions({
@@ -118,22 +166,37 @@ const GetPurchase = () => {
                     subHeading={selectedCompany?.companyName || ""}
                 />
             ),
-            headerRight: () =>
-                /* If edit is not enabled and the update feature is accessible */
-                !isEditEnabled &&
-                isFeatureAccessible(PLATFORM_FEATURES.ADD_UPDATE_PURCHASE) ? (
-                    <Pressable onPress={toggleEdit}>
-                        <Image
-                            source={EditIcon}
-                            style={commonStyles.editIcon}
-                            resizeMode="contain"
+            headerRight: () => (
+                <View style={styles.headerRightContainer}>
+                    {
+                        /* If edit is not enabled and the update feature is accessible */
+                        !isEditEnabled &&
+                        isFeatureAccessible(
+                            PLATFORM_FEATURES.ADD_UPDATE_PURCHASE
+                        ) ? (
+                            <Pressable onPress={toggleEdit}>
+                                <Image
+                                    source={EditIcon}
+                                    style={commonStyles.editIcon}
+                                    resizeMode="contain"
+                                />
+                            </Pressable>
+                        ) : (
+                            <></>
+                        )
+                    }
+                    {moreHeaderOptions?.length ? (
+                        <HeaderMoreOptions
+                            options={moreHeaderOptions}
+                            onOptionClick={moreHeaderOptionHandler}
                         />
-                    </Pressable>
-                ) : (
-                    <></>
-                ),
+                    ) : (
+                        <></>
+                    )}
+                </View>
+            ),
         });
-    }, [navigation, purchaseDetails, isEditEnabled]);
+    }, [navigation, purchaseDetails, isEditEnabled, moreHeaderOptions]);
 
     /* Invoice form values from purchase and party details fetched */
     const invoiceFormValues: PurchaseInvoiceForm | undefined = useMemo(() => {
@@ -176,16 +239,24 @@ const GetPurchase = () => {
                 };
             });
 
-            return {
-                createdAt: convertUTCStringToTimezonedDate(purchaseData.createdAt, dateTimeFormat24hr, timezone as string),
+            const values: PurchaseInvoiceForm = {
+                createdAt: convertUTCStringToTimezonedDate(
+                    purchaseData.createdAt,
+                    dateTimeFormat24hr,
+                    timezone as string
+                ),
                 invoiceNumber: purchaseData.invoiceNumber,
                 party: {
                     partyId: partyInfo.partyId,
                     partyName: partyInfo.partyName,
                     defaultPurchaseCreditAllowanceInDays:
                         partyInfo.defaultPurchaseCreditAllowanceInDays,
-                    defaultSaleCreditAllowanceInDays: partyInfo.defaultSaleCreditAllowanceInDays,
+                    defaultSaleCreditAllowanceInDays:
+                        partyInfo.defaultSaleCreditAllowanceInDays,
                     updatedAt: partyInfo.updatedAt,
+                    taxDetails:
+                        partyInfo.taxDetails as Array<TaxDetailsOfThirdPartyType> | null,
+                    countryId: partyInfo.countryId,
                 },
                 amountDue: Number(purchaseData.amountDue),
                 amountPaid: Number(purchaseData.amountPaid),
@@ -197,16 +268,25 @@ const GetPurchase = () => {
                 totalAfterDiscount: purchaseData.totalAfterDiscount,
                 totalAfterTax: purchaseData.totalAfterTax,
                 paymentCompletionDate: purchaseData.paymentCompletionDate
-                    ? convertUTCStringToTimezonedDate(purchaseData.paymentCompletionDate, dateTimeFormat24hr, timezone as string)
+                    ? convertUTCStringToTimezonedDate(
+                          purchaseData.paymentCompletionDate,
+                          dateTimeFormat24hr,
+                          timezone as string
+                      )
                     : null,
                 paymentDueDate: purchaseData.paymentDueDate
-                    ? convertUTCStringToTimezonedDate(purchaseData.paymentDueDate, dateTimeFormat24hr, timezone as string)
+                    ? convertUTCStringToTimezonedDate(
+                          purchaseData.paymentDueDate,
+                          dateTimeFormat24hr,
+                          timezone as string
+                      )
                     : null,
                 isFullyPaid: purchaseData.isFullyPaid,
                 isCredit: purchaseData.isCredit,
                 receiptNumber: purchaseData.receiptNumber,
                 items: itemsFormData,
             };
+            return values;
         }
         return undefined;
     }, [purchaseDetails, partyDetails]);
@@ -224,7 +304,10 @@ const GetPurchase = () => {
             updatePurchaseMutation.isSuccess &&
             updatePurchaseMutation.data.success
         ) {
-            ToastAndroid.show(capitalizeText(i18n.t("purchaseUpdatedSuccessfully")), ToastAndroid.LONG);
+            ToastAndroid.show(
+                capitalizeText(i18n.t("purchaseUpdatedSuccessfully")),
+                ToastAndroid.LONG
+            );
             fetchPurchaseDetails();
             toggleEdit();
         }
@@ -272,7 +355,9 @@ const GetPurchase = () => {
                             ? getApiErrorMessage(updatePurchaseMutation.error)
                             : null
                     }
-                    onAddUpdatePurchase={(values) => updatePurchaseMutation.mutate(values)}
+                    onAddUpdatePurchase={(values) =>
+                        updatePurchaseMutation.mutate(values)
+                    }
                 />
             )}
         </>
@@ -281,4 +366,9 @@ const GetPurchase = () => {
 
 export default GetPurchase;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    headerRightContainer: {
+        flexDirection: "row",
+        columnGap: 16,
+    },
+});

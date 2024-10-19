@@ -5,6 +5,7 @@ import {
     FilterQuotationForm,
     FilterSalesForm,
     PurchaseInvoiceForm,
+    PurchaseReturnForm,
     QuotationForm,
     SaleInvoiceForm,
     SaleReturnForm,
@@ -20,6 +21,7 @@ import { asyncHandler } from "../async_handler";
 import { Country } from "../sysadmin/sysadmin_types";
 import {
     AddPartyResponse,
+    AddPurchaseReturnResponse,
     AddSaleReturnResponse,
     AddUpdatePurchaseResponse,
     AddUpdateQuotationResponse,
@@ -31,6 +33,8 @@ import {
     GetCashFlowSummaryResponse,
     GetPartyResponse,
     GetPurchaseResponse,
+    GetPurchaseReturnResponse,
+    GetPurchaseReturnsOfPurchaseResponse,
     GetQuotationResponse,
     GetSaleResponse,
     GetSaleReturnResponse,
@@ -70,6 +74,10 @@ class BillingService {
     addSaleReturnPath = "sale-return/add-sale-return";
     getSaleReturnsOfSalePath = "sale-return/get-sale-returns-of-sale";
     getSaleReturnPath = "sale-return/get-sale-return";
+
+    addPurchaseReturnPath = "purchase-return/add-purchase-return";
+    getPurchaseReturnsOfPurchasePath = "purchase-return/get-purchase-returns-of-purchase";
+    getPurchaseReturnPath = "purchase-return/get-purchase-return";
 
     getTopSellersForCurrentMonth = async (companyId: number) => {
         return await asyncHandler<GetTopSellersForCurrentMonthResponse>(() => {
@@ -943,6 +951,79 @@ class BillingService {
                 params: {
                     companyId,
                     saleReturnId,
+                },
+            });
+        });
+    };
+
+    addPurchaseReturn = async (
+        purchaseId: number,
+        companyId: number,
+        decimalRoundTo: number,
+        details: PurchaseReturnForm,
+        companyTimezone: string
+    ) => {
+        const items = Object.values(details.items).map((item) => {
+            return {
+                itemId: item.item?.itemId,
+                itemName: item.item?.itemName,
+                companyId: companyId,
+                unitId: item.item?.unitId,
+                unitName: item.item?.unitName,
+                unitsPurchased: Number(item.unitsReturned),
+                pricePerUnit: Number(item.pricePerUnit),
+                subtotal: Number(item.subtotal),
+                tax: Number(item.tax),
+                taxPercent: Number(item.taxPercent),
+                totalAfterTax: Number(item.totalAfterTax),
+            };
+        });
+        return await asyncHandler<AddPurchaseReturnResponse>(() => {
+            return axios.post<ApiResponse<AddPurchaseReturnResponse>>(
+                `${this.hostPath}/${this.addPurchaseReturnPath}`,
+                {
+                    createdAt: convertLocalUTCToTimezoneUTC(
+                        details.createdAt,
+                        dateTimeFormat24hr,
+                        companyTimezone
+                    ),
+                    purchaseId: purchaseId,
+                    purchaseReturnNumber: details.purchaseReturnNumber
+                        ? Number(details.purchaseReturnNumber)
+                        : null,
+                    companyId: companyId,
+                    subtotal: Number(details.subtotal),
+                    tax: Number(details.tax),
+                    taxPercent: Number(details.taxPercent),
+                    taxName: details.taxName,
+                    totalAfterTax: Number(details.totalAfterTax),
+                    decimalRoundTo: decimalRoundTo,
+                    items: items,
+                }
+            );
+        });
+    };
+
+    getPurchaseReturnsOfPurchase = async (purchaseId: number, companyId: number) => {
+        return await asyncHandler<GetPurchaseReturnsOfPurchaseResponse>(async () => {
+            return axios.get<ApiResponse<GetPurchaseReturnsOfPurchaseResponse>>(
+                `${this.hostPath}/${this.getPurchaseReturnsOfPurchasePath}`,
+                {
+                    params: {
+                        purchaseId,
+                        companyId,
+                    },
+                }
+            );
+        });
+    };
+
+    getPurchaseReturn = async (companyId: number, purchaseReturnId: number) => {
+        return await asyncHandler<GetPurchaseReturnResponse>(async () => {
+            return axios.get(`${this.hostPath}/${this.getPurchaseReturnPath}`, {
+                params: {
+                    companyId,
+                    purchaseReturnId,
                 },
             });
         });

@@ -17,7 +17,7 @@ import ReturnsItemSelector from "./ReturnsItemSelector";
 
 interface AddReturnItemProps {
     type: "SALERETURN" | "PURCHASERETURN";
-    saleTaxPercent: number,
+    taxPercent: number,
     itemsData: { [itemId: number]: SaleItem | PurchaseItem };
     value?: ReturnItemType;
     isVisible: boolean;
@@ -26,7 +26,7 @@ interface AddReturnItemProps {
 }
 const AddReturnItem = ({
     type,
-    saleTaxPercent,
+    taxPercent,
     itemsData,
     value,
     isVisible,
@@ -50,7 +50,7 @@ const AddReturnItem = ({
         subtotal: "",
         tax: "",
         totalAfterTax: "",
-        taxPercent: saleTaxPercent,
+        taxPercent: taxPercent,
     });
 
     /* Formik initialization */
@@ -286,7 +286,7 @@ const AddReturnItem = ({
                                             ]}
                                         >
                                             {i18n.t("tax")}{" "}
-                                            {`(${saleTaxPercent}%)`}
+                                            {`(${taxPercent}%)`}
                                         </Text>
                                         <Text
                                             style={[

@@ -537,3 +537,29 @@ export const SaleReturnFormValidation = Yup.object().shape({
     })
 });
 
+export const PurchaseReturnFormValidation = Yup.object().shape({
+    purchaseReturnNumber: Yup.number()
+        .nullable()
+        .typeError("invalid purchase return number")
+        .test(
+            "purchaseReturnNumber",
+            "purchase return number is required",
+            (value, context) => {
+                const autogeneratePurchaseReturnNumber = Number(
+                    context?.options?.context?.autogeneratePurchaseReturnNumber
+                );
+                /* purchase return number is required when autogenerateSaleReturnNumber is false */
+                if (!autogeneratePurchaseReturnNumber && !value) {
+                    return false;
+                }
+                return true;
+            }
+        ),
+    items: Yup.object().test("items", "no items added", (value) => {
+        if (value && Object.values(value).length === 0) {
+            return false;
+        }
+        return true;
+    })
+});
+

@@ -94,8 +94,6 @@ const GetSaleReturn = () => {
         enabled: false,
     });
 
-    /* Refresh on focus */
-    useRefreshOnFocus(fetchSaleDetails);
 
     /* To fetch party details */
     const {

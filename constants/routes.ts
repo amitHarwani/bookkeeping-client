@@ -27,5 +27,8 @@ export enum AppRoutes {
     getTransfer = "get-transfer",
     addSaleReturn = "add-sale-return",
     getReturnsOfSale = "get-returns-of-sale",
-    getSaleReturn = "get-sale-return"
+    getSaleReturn = "get-sale-return",
+    addPurchaseReturn = "add-purchase-return",
+    getReturnsOfPurchase = "get-returns-of-purchase",
+    getPurchaseReturn = "get-purchase-return"
 }
