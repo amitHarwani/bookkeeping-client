@@ -28,3 +28,7 @@ export class GenerateReportResponse {
 export class GetReportResponse {
     constructor(public report: Report) {}
 }
+
+export class DeleteReportResponse {
+    constructor(public report: Report) {}
+}

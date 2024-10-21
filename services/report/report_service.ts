@@ -2,6 +2,7 @@ import axios from "axios";
 import { ApiResponse } from "../api_response";
 import { asyncHandler } from "../async_handler";
 import {
+    DeleteReportResponse,
     GenerateReportResponse,
     GetAllReportsResponse,
     GetReportResponse,
@@ -21,6 +22,7 @@ class ReportService {
     hostPath = process.env.EXPO_PUBLIC_REPORT_SERVICE;
     getAllReportsPath = "report/get-all-reports";
     getReportPath = "report/get-report";
+    deleteReportPath = "report/delete-report";
 
     getAllReports = async ({
         pageParam,
@@ -50,6 +52,20 @@ class ReportService {
         return await asyncHandler<GetReportResponse>(() => {
             return axios.get<ApiResponse<GetReportResponse>>(
                 `${this.hostPath}/${this.getReportPath}`,
+                {
+                    params: {
+                        companyId,
+                        reportId,
+                    },
+                }
+            );
+        });
+    };
+
+    deleteReport = async (companyId: number, reportId: number) => {
+        return await asyncHandler<DeleteReportResponse>(() => {
+            return axios.delete<ApiResponse<DeleteReportResponse>>(
+                `${this.hostPath}/${this.deleteReportPath}`,
                 {
                     params: {
                         companyId,

@@ -16,7 +16,7 @@ import { AppRoutes } from "@/constants/routes";
 import { FilterSalesForm } from "@/constants/types";
 import { useRefreshOnFocus } from "@/hooks/useRefreshOnFocus";
 import BillingService from "@/services/billing/billing_service";
-import { GetAllSalesForSalesListResponse } from "@/services/billing/billing_types";
+import { GetAllSalesForSalesListResponse, ThirdParty } from "@/services/billing/billing_types";
 import { useAppSelector } from "@/store";
 import { commonStyles } from "@/utils/common_styles";
 import {

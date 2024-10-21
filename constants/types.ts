@@ -137,7 +137,7 @@ export interface FilterPurchaseForm {
 }
 
 export interface FilterSalesForm {
-    party?: ThirdParty;
+    party?: PartyTypeInInvoicePartySelector;
     purchaseType?: "ALL" | "CASH" | "CREDIT";
     filterByDate?: boolean;
     fromTransactionDateTime?: Date;

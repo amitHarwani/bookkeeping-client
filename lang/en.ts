@@ -256,4 +256,10 @@ export default {
     reportIsBeingGenerated: "report is being generated",
     report: "report",
     DAY_END_SUMMARY_REPORT: "day end summary",
+    viewReport: "view report",
+    errorGeneratingReport: "error generating report, try again",
+    reportDeletedSuccessfully: "report deleted successfully",
+    deleteReport: "delete report",
+    delete: "delete",
+    areYouSureYouWantToDeleteTheReport: "are you sure you want to delete this report ?"
 }

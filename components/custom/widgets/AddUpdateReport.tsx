@@ -9,7 +9,7 @@ import {
 } from "@/constants/types";
 import { useAppSelector } from "@/store";
 import { capitalizeText, getDateAfterSubtracting } from "@/utils/common_utils";
-import { router } from "expo-router";
+import { Href, Link, router } from "expo-router";
 import { useFormik } from "formik";
 import React, { useEffect, useMemo } from "react";
 import { ScrollView, StyleSheet, ToastAndroid, View } from "react-native";
@@ -18,18 +18,23 @@ import { AddReportFormValidation } from "@/utils/schema_validations";
 import { REPORTS_CONFIG } from "@/constants/reportsconfig";
 import CustomDateTimePicker from "../basic/CustomDateTimePicker";
 import DateTimePickerCombined from "../basic/DateTimePickerCombined";
+import { Report } from "@/services/report/report_types";
+import { REPORT_STATUS_TYPES } from "@/services/report/report_service";
+import { commonStyles } from "@/utils/common_styles";
 
 interface AddUpdateReportProps {
     operation: "ADD" | "GET";
     onAddUpdateReport(values: AddReportForm): void;
     apiErrorMessage?: string | null;
     formValues?: AddReportForm;
+    reportDetails?: Report;
 }
 const AddUpdateReport = ({
     operation,
     onAddUpdateReport,
     apiErrorMessage,
     formValues,
+    reportDetails,
 }: AddUpdateReportProps) => {
     const enabledPlatformFeatures = useAppSelector(
         (state) => state.platformFeatures.platformFeatures
@@ -42,11 +47,12 @@ const AddUpdateReport = ({
 
         /* For each enabled platform feature */
         for (let feature of Object.values(enabledPlatformFeatures)) {
-            /* If the feature is dependent of GET_REPORTS feature: Means it is a report type
+            /* If the feature is dependent of GENERATE_REPORTS feature: Means it is a report type
                 and if the user has access to the feature, then push the report to the list
             */
             if (
-                feature.dependentFeatureId == PLATFORM_FEATURES.GET_REPORTS &&
+                feature.dependentFeatureId ==
+                    PLATFORM_FEATURES.GENERATE_REPORTS &&
                 userACL?.[feature.featureId]
             ) {
                 reports.push({
@@ -73,8 +79,8 @@ const AddUpdateReport = ({
         /* Default values */
         const values: AddReportForm = {
             reportType: undefined,
-            fromDateTime: undefined, 
-            toDateTime: undefined
+            fromDateTime: undefined,
+            toDateTime: undefined,
         };
         return values;
     }, [formValues]);
@@ -94,14 +100,17 @@ const AddUpdateReport = ({
 
     useEffect(() => {
         if (selectedReportConfig) {
-            if(selectedReportConfig.fromDateTime.required){
-                formik.setFieldValue("fromDateTime", getDateAfterSubtracting(7));
+            if (selectedReportConfig.fromDateTime.required) {
+                formik.setFieldValue(
+                    "fromDateTime",
+                    getDateAfterSubtracting(7)
+                );
             }
-            if(selectedReportConfig.toDateTime.required){
-                formik.setFieldValue("toDateTime", new Date())
+            if (selectedReportConfig.toDateTime.required) {
+                formik.setFieldValue("toDateTime", new Date());
             }
         }
-    }, [selectedReportConfig])
+    }, [selectedReportConfig]);
 
     useEffect(() => {
         /* If user doesn't have access to generate any report, display toast and go back */
@@ -260,6 +269,35 @@ const AddUpdateReport = ({
                             onPress={formik.handleSubmit}
                         />
                     )}
+
+                    {operation === "GET" && reportDetails && (
+                        <>
+                            {reportDetails.status ===
+                                REPORT_STATUS_TYPES.completed &&
+                                reportDetails.reportLink && (
+                                    <Link
+                                        style={[
+                                            styles.viewReportLink,
+                                            commonStyles.textMediumBold,
+                                            commonStyles.uppercase,
+                                            commonStyles.textBlue,
+                                        ]}
+                                        href={
+                                            reportDetails.reportLink as Href<string>
+                                        }
+                                    >
+                                        {i18n.t("viewReport")}
+                                    </Link>
+                                )}
+
+                            {reportDetails.status ===
+                                REPORT_STATUS_TYPES.error && (
+                                <ErrorMessage
+                                    message={i18n.t("errorGeneratingReport")}
+                                />
+                            )}
+                        </>
+                    )}
                 </View>
             </View>
         </ScrollView>
@@ -284,5 +322,13 @@ const styles = StyleSheet.create({
     rowContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
+    },
+    viewReportLink: {
+        paddingVertical: 16,
+        backgroundColor: "#FFFFFF",
+        borderRadius: 12,
+        borderWidth: 1.5,
+        borderColor: "#006FFD",
+        textAlign: "center",
     },
 });

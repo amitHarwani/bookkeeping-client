@@ -364,7 +364,7 @@ const CompanyMainLayout = () => {
                                 ),
                                 drawerItemStyle: {
                                     display: isFeatureAccessible(
-                                        PLATFORM_FEATURES.GET_REPORTS
+                                        PLATFORM_FEATURES.GENERATE_REPORTS
                                     )
                                         ? "flex"
                                         : "none",

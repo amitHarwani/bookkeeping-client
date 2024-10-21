@@ -134,6 +134,8 @@ const Reports = () => {
                             message={i18n.t("noReportsFound")}
                         />
                     )}
+                    onRefresh={refetchReports}
+                    refreshing={showLoadingSpinner}
                 />
                 {isFetchingNextPage && <ActivityIndicator size="large" />}
             </View>

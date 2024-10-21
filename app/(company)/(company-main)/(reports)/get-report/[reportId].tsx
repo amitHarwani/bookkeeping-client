@@ -10,11 +10,23 @@ import { useAppSelector } from "@/store";
 import {
     capitalizeText,
     convertUTCStringToTimezonedDate,
+    getApiErrorMessage,
 } from "@/utils/common_utils";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import React, { useEffect, useMemo } from "react";
-import { StyleSheet, ToastAndroid } from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    ToastAndroid,
+    View,
+} from "react-native";
+import DeleteIcon from "@/assets/images/delete_icon.png";
+import { commonStyles } from "@/utils/common_styles";
+import CustomModal from "@/components/custom/basic/CustomModal";
+import CustomButton from "@/components/custom/basic/CustomButton";
 
 const GetReport = () => {
     /* Company State from redux */
@@ -51,6 +63,17 @@ const GetReport = () => {
     /* Report ID from path params */
     const reportId = useMemo(() => Number(params.reportId), [params]);
 
+    /* Delete confirmation modal visibility */
+    const [
+        isDeleteConfirmationModalVisible,
+        setIsDeleteConfirmationModalVisible,
+    ] = useState(false);
+
+    /* Toggle delete confirmation modal  */
+    const toggleDeleteConfirmationModal = useCallback(() => {
+        setIsDeleteConfirmationModalVisible((prev) => !prev);
+    }, [isDeleteConfirmationModalVisible]);
+
     const {
         data: reportData,
         error: errorFetchingReport,
@@ -58,6 +81,10 @@ const GetReport = () => {
     } = useQuery({
         queryKey: [ReactQueryKeys.getReport, reportId, companyId],
         queryFn: () => report_service.getReport(companyId, reportId),
+    });
+
+    const deleteReportMutation = useMutation({
+        mutationFn: () => report_service.deleteReport(companyId, reportId),
     });
 
     /* Setting the header */
@@ -75,6 +102,19 @@ const GetReport = () => {
                     }
                     subHeading={selectedCompany?.companyName as string}
                 />
+            ),
+            headerRight: () => (
+                <>
+                    {reportData?.data?.report && (
+                        <Pressable onPress={toggleDeleteConfirmationModal}>
+                            <Image
+                                source={DeleteIcon}
+                                style={commonStyles.deleteIcon}
+                                resizeMode="contain"
+                            />
+                        </Pressable>
+                    )}
+                </>
             ),
         });
     }, [navigation, reportData]);
@@ -108,8 +148,8 @@ const GetReport = () => {
 
     /* Show loading spinner when report is being fetched */
     const showLoadingSpinner = useMemo(() => {
-        return fetchingReport ? true : false;
-    }, [fetchingReport]);
+        return fetchingReport || deleteReportMutation.isPending ? true : false;
+    }, [fetchingReport, deleteReportMutation.isPending]);
 
     /* API Error: Show toast message and go back */
     useEffect(() => {
@@ -126,6 +166,24 @@ const GetReport = () => {
         }
     }, [errorFetchingReport]);
 
+    /* On report deleted: Display toast message and go back */
+    useEffect(() => {
+        if (deleteReportMutation.isSuccess) {
+            ToastAndroid.show(
+                capitalizeText(`${i18n.t("reportDeletedSuccessfully")}`),
+                ToastAndroid.LONG
+            );
+            router.back();
+        }
+    }, [deleteReportMutation.isSuccess]);
+
+    /* Getting the message if there is an error when deleting the report */
+    const deleteReportApiErrorMessage = useMemo(() => {
+        if (deleteReportMutation.error) {
+            return getApiErrorMessage(deleteReportMutation.error);
+        }
+    }, [deleteReportMutation.error]);
+
     return (
         <>
             {showLoadingSpinner && <LoadingSpinnerOverlay />}
@@ -135,8 +193,48 @@ const GetReport = () => {
                     operation="GET"
                     formValues={formValues}
                     onAddUpdateReport={() => {}}
+                    reportDetails={reportData?.data.report}
+                    apiErrorMessage={
+                        deleteReportApiErrorMessage
+                            ? deleteReportApiErrorMessage
+                            : null
+                    }
                 />
             )}
+
+            <CustomModal
+                visible={isDeleteConfirmationModalVisible}
+                onRequestClose={toggleDeleteConfirmationModal}
+                extraModalStyles={{ justifyContent: "flex-end" }}
+                children={
+                    <View style={commonStyles.modalEndMenuContainer}>
+                        <Text style={commonStyles.modalEndMenuHeading}>
+                            {i18n.t("deleteReport")}
+                        </Text>
+                        <Text
+                        style={[commonStyles.capitalize, commonStyles.textMedium]}
+                        >
+                            {i18n.t("areYouSureYouWantToDeleteTheReport")}
+                        </Text>
+                        <View style={commonStyles.modalEndActionsContainer}>
+                            <CustomButton
+                                text={i18n.t("cancel")}
+                                onPress={toggleDeleteConfirmationModal}
+                                isSecondaryButton
+                                extraContainerStyles={{ flex: 1 }}
+                            />
+                            <CustomButton
+                                text={i18n.t("delete")}
+                                onPress={() => {
+                                    toggleDeleteConfirmationModal();
+                                    deleteReportMutation.mutate()
+                                }}
+                                extraContainerStyles={{ flex: 1 }}
+                            />
+                        </View>
+                    </View>
+                }
+            />
         </>
     );
 };
