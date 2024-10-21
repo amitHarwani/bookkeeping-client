@@ -4,11 +4,6 @@ import {
 } from "@/services/billing/billing_types";
 import { Item, Unit } from "@/services/inventory/inventory_types";
 import { Country } from "@/services/sysadmin/sysadmin_types";
-import {
-    Company,
-    CompanyWithTaxDetails,
-    GetAllRolesForRolesListResponse,
-} from "@/services/user/user_types";
 
 export type GenericObject = {
     [key: string]: any;
@@ -380,3 +375,12 @@ export interface PurchaseReturnForm {
     taxName: string;
 }
 
+export interface ReportSelectorType {
+    key: string,
+    displayedText: string
+}
+export interface AddReportForm {
+    reportType?: ReportSelectorType,
+    fromDateTime?: Date,
+    toDateTime?: Date
+}

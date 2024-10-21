@@ -30,5 +30,7 @@ export enum AppRoutes {
     getSaleReturn = "get-sale-return",
     addPurchaseReturn = "add-purchase-return",
     getReturnsOfPurchase = "get-returns-of-purchase",
-    getPurchaseReturn = "get-purchase-return"
+    getPurchaseReturn = "get-purchase-return",
+    addReport = "add-report",
+    getReport = "get-report"
 }

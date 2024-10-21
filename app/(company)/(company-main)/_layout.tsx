@@ -349,6 +349,29 @@ const CompanyMainLayout = () => {
                                 },
                             }}
                         />
+
+                        <Drawer.Screen
+                            name="(reports)"
+                            options={{
+                                drawerLabel: capitalizeText(i18n.t("reports")),
+                                headerTitle: () => (
+                                    <CustomNavHeader
+                                        mainHeading={i18n.t("reports")}
+                                        subHeading={
+                                            selectedCompany?.companyName || ""
+                                        }
+                                    />
+                                ),
+                                drawerItemStyle: {
+                                    display: isFeatureAccessible(
+                                        PLATFORM_FEATURES.GET_REPORTS
+                                    )
+                                        ? "flex"
+                                        : "none",
+                                    marginTop: -10,
+                                },
+                            }}
+                        />
                     </Drawer>
                 </GestureHandlerRootView>
             )}

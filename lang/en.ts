@@ -247,5 +247,13 @@ export default {
     addPurchaseReturn: "add purchase return",
     purchaseReturnRecordedSuccessfully: "purchase return recorded successfully",
     noPurchaseReturnsFound: "no purchase returns found",
-    purchaseReturn: "purchase return"
+    purchaseReturn: "purchase return",
+    reports: "reports",
+    addReport: "add report",
+    noReportsFound: "no reports found",
+    reportType: "report type",
+    requestReport: "request report",
+    reportIsBeingGenerated: "report is being generated",
+    report: "report",
+    DAY_END_SUMMARY_REPORT: "day end summary",
 }

@@ -1,6 +1,7 @@
 import { GenericObject } from "@/constants/types";
 import * as Yup from "yup";
 import moment from "moment";
+import { REPORTS_CONFIG } from "@/constants/reportsconfig";
 
 export const LoginFormValidation = Yup.object().shape({
     email: Yup.string()
@@ -562,4 +563,45 @@ export const PurchaseReturnFormValidation = Yup.object().shape({
         return true;
     })
 });
+
+export const AddReportFormValidation = Yup.object().shape({
+    reportType: Yup.object().required("report type is required"),
+    fromDateTime: Yup.date().optional().test("fromDateTime", "this field is required",  (value, context) => {
+        const reportType =  context?.options?.context?.reportType;
+        /* if report type is not selected, don't throw an error */
+        if (!reportType) {
+            return true;
+        }
+        /* If from date time is required in report config, and fromDateTime is not selected throw an error */
+        if(REPORTS_CONFIG[reportType.key].fromDateTime.required && !value){
+            return false;
+        }
+
+        return true;
+    }).test("fromBeforeTo", "from date time cannot be after to date time", (value, context) => {
+        /* Report type */
+        const reportType = context?.options?.context?.reportType;
+        /* To Date Time Value */
+        const to = context?.options?.context?.toDateTime;
+
+        /* If from date time is entered, toDateTime is required and from date time is after to date time, return false */
+        if(value && REPORTS_CONFIG[reportType.key].toDateTime.required && to && moment(value).isAfter(moment(to))){
+            return false;
+        }
+        return true;
+    }),
+    toDateTime: Yup.date().optional().test("toDateTime", "this field is required",  (value, context) => {
+        const reportType =  context?.options?.context?.reportType;
+        /* if report type is not selected, don't throw an error */
+        if (!reportType) {
+            return true;
+        }
+        /* If to date time is required in report config, and toDateTime is not selected throw an error */
+        if(REPORTS_CONFIG[reportType.key].toDateTime.required && !value){
+            return false;
+        }
+
+        return true;
+    })
+})
 

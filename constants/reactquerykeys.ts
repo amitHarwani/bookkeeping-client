@@ -32,5 +32,7 @@ export enum ReactQueryKeys {
     getReturnsOfSale = "getReturnsOfSale",
     getSaleReturn = "getSaleReturn",
     getReturnsOfPurchase = "getReturnsOfPurchase",
-    getPurchaseReturn ="getPurchaseReturn"
+    getPurchaseReturn ="getPurchaseReturn",
+    reports = "reports",
+    getReport = "getReport"
 }
