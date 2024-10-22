@@ -260,6 +260,7 @@ export default {
     SALE_REPORT: "sale report",
     PURCHASE_REPORT: "purchase report",
     SALE_RETURN_REPORT: "sale return report",
+    PURCHASE_RETURN_REPORT: "purchase return report",
     viewReport: "view report",
     errorGeneratingReport: "error generating report, try again",
     reportDeletedSuccessfully: "report deleted successfully",

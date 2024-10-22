@@ -13,7 +13,8 @@ export const REPORT_END_POINTS: { [reportType: string]: string } = {
     DAY_END_DETAILED_REPORT: "report/get-day-end-detailed",
     SALE_REPORT: "report/get-sale-report",
     PURCHASE_REPORT: "report/get-purchase-report",
-    SALE_RETURN_REPORT: "report/get-sale-return-report"
+    SALE_RETURN_REPORT: "report/get-sale-return-report",
+    PURCHASE_RETURN_REPORT: "report/get-purchase-return-report"
 };
 
 export enum REPORT_STATUS_TYPES {
