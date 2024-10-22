@@ -257,6 +257,7 @@ export default {
     report: "report",
     DAY_END_SUMMARY_REPORT: "day end summary",
     DAY_END_DETAILED_REPORT: "day end detailed",
+    SALE_REPORT: "sale report",
     viewReport: "view report",
     errorGeneratingReport: "error generating report, try again",
     reportDeletedSuccessfully: "report deleted successfully",

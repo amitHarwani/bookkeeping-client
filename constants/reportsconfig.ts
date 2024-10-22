@@ -30,6 +30,17 @@ export const REPORTS_CONFIG: REPORTS_CONFIG_TYPE = {
             type: "DATE",
             label: i18n.t("to")
         },
-        
-    }
+    },
+    SALE_REPORT: {
+        fromDateTime: {
+            required: true,
+            type: "DATETIME",
+            label: i18n.t("date")
+        },
+        toDateTime: {
+            required: true,
+            type: "DATETIME",
+            label: i18n.t("to")
+        },
+    },
 }
