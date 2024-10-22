@@ -11,7 +11,8 @@ import {
 export const REPORT_END_POINTS: { [reportType: string]: string } = {
     DAY_END_SUMMARY_REPORT: "report/get-day-end-summary",
     DAY_END_DETAILED_REPORT: "report/get-day-end-detailed",
-    SALE_REPORT: "report/get-sale-report"
+    SALE_REPORT: "report/get-sale-report",
+    PURCHASE_REPORT: "report/get-purchase-report"
 };
 
 export enum REPORT_STATUS_TYPES {
