@@ -92,14 +92,18 @@ const AddUpdateReport = ({
         onSubmit: (values) => onAddUpdateReport(values),
     });
 
+    /* Report Config based upon selected report type */
     const selectedReportConfig = useMemo(() => {
         if (formik.values?.reportType) {
             return REPORTS_CONFIG[formik.values.reportType.key];
         }
     }, [formik.values?.reportType]);
 
+    /* On change of report type/config, set the default from and to date times if they are not initialized
+        To: Current Date Time, From: To - 1 week
+    */
     useEffect(() => {
-        if (selectedReportConfig) {
+        if (selectedReportConfig && !formik.values.fromDateTime && !formik.values.toDateTime) {
             if (selectedReportConfig.fromDateTime.required) {
                 formik.setFieldValue(
                     "fromDateTime",
@@ -154,111 +158,122 @@ const AddUpdateReport = ({
 
                     {selectedReportConfig && (
                         <>
-                            {selectedReportConfig.fromDateTime.required &&
-                            selectedReportConfig.fromDateTime.type ===
+                            {selectedReportConfig.fromDateTime.required ? (
+                                selectedReportConfig.fromDateTime.type ===
                                 "DATE" ? (
-                                <CustomDateTimePicker
-                                    label={
-                                        selectedReportConfig.fromDateTime.label
-                                    }
-                                    mode="date"
-                                    onChange={(_, date) => {
-                                        formik.setFieldTouched(
-                                            "fromDateTime",
-                                            true
-                                        );
-                                        formik.setFieldValue(
-                                            "fromDateTime",
-                                            date
-                                        );
-                                    }}
-                                    value={formik.values.fromDateTime}
-                                    isDisabled={isInputsDisabled}
-                                    errorMessage={
-                                        formik.touched.fromDateTime &&
-                                        formik.errors.fromDateTime
-                                            ? formik.errors.fromDateTime
-                                            : null
-                                    }
-                                />
+                                    <CustomDateTimePicker
+                                        label={
+                                            selectedReportConfig.fromDateTime
+                                                .label
+                                        }
+                                        mode="date"
+                                        onChange={(_, date) => {
+                                            formik.setFieldTouched(
+                                                "fromDateTime",
+                                                true
+                                            );
+                                            formik.setFieldValue(
+                                                "fromDateTime",
+                                                date
+                                            );
+                                        }}
+                                        value={formik.values.fromDateTime}
+                                        isDisabled={isInputsDisabled}
+                                        errorMessage={
+                                            formik.touched.fromDateTime &&
+                                            formik.errors.fromDateTime
+                                                ? formik.errors.fromDateTime
+                                                : null
+                                        }
+                                    />
+                                ) : (
+                                    <DateTimePickerCombined
+                                        dateLabel={
+                                            selectedReportConfig.fromDateTime
+                                                .label
+                                        }
+                                        onChange={(date) => {
+                                            formik.setFieldTouched(
+                                                "fromDateTime",
+                                                true
+                                            );
+                                            formik.setFieldValue(
+                                                "fromDateTime",
+                                                date
+                                            );
+                                        }}
+                                        timeLabel=""
+                                        value={formik.values.fromDateTime}
+                                        isDisabled={isInputsDisabled}
+                                        errorMessage={
+                                            formik.touched.fromDateTime &&
+                                            formik.errors.fromDateTime
+                                                ? formik.errors.fromDateTime
+                                                : null
+                                        }
+                                    />
+                                )
                             ) : (
-                                <DateTimePickerCombined
-                                    dateLabel={
-                                        selectedReportConfig.fromDateTime.label
-                                    }
-                                    onChange={(date) => {
-                                        formik.setFieldTouched(
-                                            "fromDateTime",
-                                            true
-                                        );
-                                        formik.setFieldValue(
-                                            "fromDateTime",
-                                            date
-                                        );
-                                    }}
-                                    timeLabel=""
-                                    value={formik.values.fromDateTime}
-                                    isDisabled={isInputsDisabled}
-                                    errorMessage={
-                                        formik.touched.fromDateTime &&
-                                        formik.errors.fromDateTime
-                                            ? formik.errors.fromDateTime
-                                            : null
-                                    }
-                                />
+                                <></>
                             )}
 
-                            {selectedReportConfig.toDateTime.required &&
-                            selectedReportConfig.toDateTime.type === "DATE" ? (
-                                <CustomDateTimePicker
-                                    label={
-                                        selectedReportConfig.toDateTime.label
-                                    }
-                                    mode="date"
-                                    onChange={(_, date) => {
-                                        formik.setFieldTouched(
-                                            "toDateTime",
-                                            true
-                                        );
-                                        formik.setFieldValue(
-                                            "toDateTime",
-                                            date
-                                        );
-                                    }}
-                                    value={formik.values.toDateTime}
-                                    isDisabled={isInputsDisabled}
-                                    errorMessage={
-                                        formik.touched.toDateTime &&
-                                        formik.errors.toDateTime
-                                            ? formik.errors.toDateTime
-                                            : null
-                                    }
-                                />
+                            {selectedReportConfig.toDateTime.required ? (
+                                selectedReportConfig.toDateTime.type ===
+                                "DATE" ? (
+                                    <CustomDateTimePicker
+                                        label={
+                                            selectedReportConfig.toDateTime
+                                                .label
+                                        }
+                                        mode="date"
+                                        onChange={(_, date) => {
+                                            formik.setFieldTouched(
+                                                "toDateTime",
+                                                true
+                                            );
+                                            formik.setFieldValue(
+                                                "toDateTime",
+                                                date
+                                            );
+                                        }}
+                                        value={formik.values.toDateTime}
+                                        isDisabled={isInputsDisabled}
+                                        errorMessage={
+                                            formik.touched.toDateTime &&
+                                            formik.errors.toDateTime
+                                                ? formik.errors.toDateTime
+                                                : null
+                                        }
+                                    />
+                                ) : (
+                                    <DateTimePickerCombined
+                                        dateLabel={
+                                            selectedReportConfig.toDateTime
+                                                .label
+                                        }
+                                        onChange={(date) => {
+                                            formik.setFieldTouched(
+                                                "toDateTime",
+                                                true
+                                            );
+                                            formik.setFieldValue(
+                                                "toDateTime",
+                                                date
+                                            );
+                                        }}
+                                        timeLabel=""
+                                        value={formik.values.toDateTime}
+                                        isDisabled={isInputsDisabled}
+                                        errorMessage={
+                                            formik.touched.toDateTime &&
+                                            formik.errors.toDateTime
+                                                ? formik.errors.toDateTime
+                                                : null
+                                        }
+                                    />
+                                )
                             ) : (
-                                <DateTimePickerCombined
-                                    dateLabel={
-                                        selectedReportConfig.toDateTime.label
-                                    }
-                                    onChange={(date) => {
-                                        formik.setFieldTouched(
-                                            "toDateTime",
-                                            true
-                                        );
-                                        formik.setFieldValue(
-                                            "toDateTime",
-                                            date
-                                        );
-                                    }}
-                                    timeLabel=""
-                                    value={formik.values.toDateTime}
-                                    isDisabled={isInputsDisabled}
-                                    errorMessage={
-                                        formik.touched.toDateTime &&
-                                        formik.errors.toDateTime
-                                            ? formik.errors.toDateTime
-                                            : null
-                                    }
-                                />
+                                <></>
                             )}
                         </>
                     )}

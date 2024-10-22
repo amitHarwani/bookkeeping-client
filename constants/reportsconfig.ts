@@ -18,5 +18,18 @@ export const REPORTS_CONFIG: REPORTS_CONFIG_TYPE = {
             type: "DATE",
             label: i18n.t("to")
         }
+    },
+    DAY_END_DETAILED_REPORT: {
+        fromDateTime: {
+            required: true,
+            type: "DATE",
+            label: i18n.t("date")
+        },
+        toDateTime: {
+            required: false,
+            type: "DATE",
+            label: i18n.t("to")
+        },
+        
     }
 }
