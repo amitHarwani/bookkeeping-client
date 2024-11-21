@@ -9,12 +9,12 @@ import {
 } from "./report_types";
 
 export const REPORT_END_POINTS: { [reportType: string]: string } = {
-    DAY_END_SUMMARY_REPORT: "report/get-day-end-summary",
-    DAY_END_DETAILED_REPORT: "report/get-day-end-detailed",
-    SALE_REPORT: "report/get-sale-report",
-    PURCHASE_REPORT: "report/get-purchase-report",
-    SALE_RETURN_REPORT: "report/get-sale-return-report",
-    PURCHASE_RETURN_REPORT: "report/get-purchase-return-report"
+    DAY_END_SUMMARY_REPORT: "get-day-end-summary",
+    DAY_END_DETAILED_REPORT: "get-day-end-detailed",
+    SALE_REPORT: "get-sale-report",
+    PURCHASE_REPORT: "get-purchase-report",
+    SALE_RETURN_REPORT: "get-sale-return-report",
+    PURCHASE_RETURN_REPORT: "get-purchase-return-report"
 };
 
 export enum REPORT_STATUS_TYPES {
@@ -25,9 +25,9 @@ export enum REPORT_STATUS_TYPES {
 
 class ReportService {
     hostPath = process.env.EXPO_PUBLIC_REPORT_SERVICE;
-    getAllReportsPath = "report/get-all-reports";
-    getReportPath = "report/get-report";
-    deleteReportPath = "report/delete-report";
+    getAllReportsPath = "get-all-reports";
+    getReportPath = "get-report";
+    deleteReportPath = "delete-report";
 
     getAllReports = async ({
         pageParam,
