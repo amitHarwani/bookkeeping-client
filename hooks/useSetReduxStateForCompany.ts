@@ -48,6 +48,7 @@ export const useSetReduxStateForCompany = () => {
     } = useQuery({
         queryKey: [
             ReactQueryKeys.taxDetailsOfCountry,
+            ReactQueryKeys.dashboardAPICall,
             selectedCompany?.countryId,
         ],
         queryFn: () =>

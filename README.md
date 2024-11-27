@@ -1,50 +1,90 @@
-# Welcome to your Expo app 👋
+# Bookkeeping Application Client (Mobile)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+#### Supported Features
+* User Registration & Login
+* Add Company, Branches to the company
+* Company Management
+   - Update Company Config & Details
+   - Add Role (ACL)
+   - Edit Role
+   - Add User
+   - Update User
+* Dashboard
+   - Quick Actions (Add Sale, Add Purchase, View Inventory)
+   - Cash In, Cash Out for the day
+   - Total Payments Due, Total Collections Due until today
+   - Top Selling Items for this month
+   - Low stock items
+* Items
+   - View all Items
+   - Add Item
+   - Search Item
+   - Update Item
+   - Filter by active/inactive items, low stock items.
+   - Adjust Item Stock
+* Parties
+   - View all parties
+   - Add Party
+   - Search Party
+   - Update Party 
+   - Filter party by active/inactive
+* Purchases
+   - View all purchases
+   - Search by invoice number
+   - Add purchase
+   - Update purchase
+   - View Purchase
+      - Get Purchase Returns
+      - Add Purchase Return
+   - Filters
+      - By Party
+      - Transaction Type: All/Cash/Credit
+      - Transaction Date Time
+      - By Overdue Payments
+* Sales
+   - View All Sales
+   - Search by invoice number
+   - Add Sale
+   - Update Sale
+   - View Sale
+      - Get Sale Returns
+      - Add Sale Return
+      - Print Sale
+      - Share Sale
+   - Filter Sales
+      - By Party
+      - By Transaction Type: All/Cash/Credit
+      - By Transaction Date Time
+      - By Overdue Payments
+* Quotations
+   - View All Quotations
+   - Search by Quotation Number
+   - Add Quotation
+   - Update Quotation
+   - View Quotation
+      - Print Quotation
+      - Share Quotation
+   - Convert to Invoice
+   - Filter Quotation
+      - By Party
+      - By Quotation Date Time
+* Item Transfers
+   - View All Transfers To & From Company Branch
+   - Add Transfer
+   - Filter Transfers
+      - By Type: All/Received/Sent
+      - By Date Time
+* Reports
+   - Add Report
+      - Day end summary report
+      - Day end detailed report
+      - Sale report
+      - Purchase report
+      - Sale return report
+      - Purchase return report
+   - View Report
+   - Delete Report
 
-## Get started
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
 
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

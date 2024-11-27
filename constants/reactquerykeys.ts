@@ -1,4 +1,5 @@
 export enum ReactQueryKeys {
+    dashboardAPICall = "dashboardAPICall",
     allCountries = "allCountries",
     allCompanies = "allCompanies",
     company = "company",
