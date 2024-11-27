@@ -1,9 +1,8 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import CheckMarkIcon from "@/assets/images/checkmark_icon.png";
-import React, { useCallback, useEffect, useState } from "react";
 import { GenericObject } from "@/constants/types";
-import { fonts } from "@/constants/fonts";
 import { commonStyles } from "@/utils/common_styles";
+import React, { useEffect, useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface CheckboxProps {
     data: GenericObject;

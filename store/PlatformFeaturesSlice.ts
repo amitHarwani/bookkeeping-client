@@ -1,6 +1,5 @@
 import { PlatformFeature } from "@/services/sysadmin/sysadmin_types";
 import { createSlice } from "@reduxjs/toolkit";
-import { number } from "yup";
 
 interface PlatformFeaturesSliceType {
     platformFeatures: { [featureId: number]: PlatformFeature };

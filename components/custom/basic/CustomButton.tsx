@@ -1,7 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { fonts } from "@/constants/fonts";
 import { commonStyles } from "@/utils/common_styles";
+import React from "react";
+import { Pressable, StyleSheet, Text } from "react-native";
 
 interface CustomButtonProps {
     onPress(): void;

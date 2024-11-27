@@ -3,8 +3,7 @@ import { SecureStoreKeys } from "@/constants/securestorekeys";
 import { useAppDispatch } from "@/store";
 import { logIn } from "@/store/AuthSlice";
 import { getValueFromSecureStore } from "@/utils/securestore";
-import { Href, Redirect, router } from "expo-router";
-import { deleteItemAsync } from "expo-secure-store";
+import { Href, Redirect } from "expo-router";
 import { useMemo } from "react";
 
 const App = () => {

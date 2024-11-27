@@ -1,11 +1,10 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { CompanyWithTaxDetails } from "@/services/user/user_types";
-import SettingsIcon from "@/assets/images/settings_icon.png";
-import { fonts } from "@/constants/fonts";
-import { commonStyles } from "@/utils/common_styles";
-import { useAppSelector } from "@/store";
 import { i18n } from "@/app/_layout";
+import SettingsIcon from "@/assets/images/settings_icon.png";
+import { CompanyWithTaxDetails } from "@/services/user/user_types";
+import { useAppSelector } from "@/store";
+import { commonStyles } from "@/utils/common_styles";
+import React from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface CompanyListItemProps {
     companyDetails: CompanyWithTaxDetails;

@@ -1,6 +1,5 @@
-import { View, Text } from 'react-native'
+import { Stack } from 'expo-router'
 import React from 'react'
-import { Slot, Stack } from 'expo-router'
 
 const CompanyLayout = () => {
   return (

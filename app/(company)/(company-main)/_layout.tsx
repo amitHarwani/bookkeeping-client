@@ -5,22 +5,12 @@ import CustomButton from "@/components/custom/basic/CustomButton";
 import LoadingSpinnerOverlay from "@/components/custom/basic/LoadingSpinnerOverlay";
 import CustomNavHeader from "@/components/custom/business/CustomNavHeader";
 import { PLATFORM_FEATURES } from "@/constants/features";
-import { fonts } from "@/constants/fonts";
-import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import { AppRoutes } from "@/constants/routes";
 import { SecureStoreKeys } from "@/constants/securestorekeys";
 import { useSetReduxStateForCompany } from "@/hooks/useSetReduxStateForCompany";
-import SystemAdminService from "@/services/sysadmin/sysadmin_service";
-import { PlatformFeature, TaxDetail } from "@/services/sysadmin/sysadmin_types";
 import UserService from "@/services/user/user_service";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logOut } from "@/store/AuthSlice";
-import {
-    setCountryDetails,
-    setTaxDetailsOfCountry,
-    setUserACL,
-} from "@/store/CompanySlice";
-import { setPlatformFeatures } from "@/store/PlatformFeaturesSlice";
 import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
 import { isFeatureAccessible } from "@/utils/feature_access_helper";
@@ -29,7 +19,7 @@ import {
     DrawerContentScrollView,
     DrawerItemList,
 } from "@react-navigation/drawer";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Href, router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import React, { useEffect, useMemo } from "react";
@@ -44,7 +34,7 @@ import {
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const CustomDrawer = (props) => {
+const CustomDrawer = (props: any) => {
     const dispatch = useAppDispatch();
 
     /* Current user & selected company */

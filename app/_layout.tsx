@@ -1,4 +1,3 @@
-import { AppRoutes } from "@/constants/routes";
 import {
     Inter_100Thin,
     Inter_400Regular,

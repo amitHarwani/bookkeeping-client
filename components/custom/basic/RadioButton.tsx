@@ -1,3 +1,8 @@
+import RadioButtonSelected from "@/assets/images/radio_button_selected.png";
+import RadioButtonUnSelected from "@/assets/images/radio_button_unselected.png";
+import { GenericObject } from "@/constants/types";
+import { commonStyles } from "@/utils/common_styles";
+import React, { useEffect, useState } from "react";
 import {
     FlatList,
     Image,
@@ -6,12 +11,6 @@ import {
     Text,
     View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { GenericObject } from "@/constants/types";
-import { fonts } from "@/constants/fonts";
-import RadioButtonSelected from "@/assets/images/radio_button_selected.png";
-import RadioButtonUnSelected from "@/assets/images/radio_button_unselected.png";
-import { commonStyles } from "@/utils/common_styles";
 
 interface RadioButtonProps {
     label?: string;

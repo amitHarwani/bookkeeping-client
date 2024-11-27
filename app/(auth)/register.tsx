@@ -25,7 +25,6 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { i18n } from "../_layout";
 import Checkbox from "@/components/custom/basic/Checkbox";
-import { fonts } from "@/constants/fonts";
 
 const Register = () => {
     const dispatch = useAppDispatch();

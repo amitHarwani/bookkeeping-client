@@ -27,7 +27,7 @@ export const getInvoiceTaxDetails = () => {
     let invoiceTaxName = "";
 
     /* Getting the tax id of the tax whose registration number must be displayed on invoice */
-    const taxIdOfTaxRegNumberDispayedOnInvoice = getTaxIDForRegistrationNumberOnInvoice(selectedCompany?.companyId as number);
+    const taxIdOfTaxRegNumberDispayedOnInvoice = getTaxIDForRegistrationNumberOnInvoice(selectedCompany?.countryId as number);
     let companyTaxNumber = "";
 
     if (selectedCompany?.taxDetails) {

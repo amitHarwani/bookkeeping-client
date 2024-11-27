@@ -1,30 +1,25 @@
-import {
-    ActivityIndicator,
-    Button,
-    FlatList,
-    Image,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
-} from "react-native";
+import { i18n } from "@/app/_layout";
+import dropdownIcon from "@/assets/images/dropdown_icon.png";
+import { GenericObject } from "@/constants/types";
+import { commonStyles } from "@/utils/common_styles";
+import { capitalizeText } from "@/utils/common_utils";
 import React, {
-    ChangeEvent,
     useCallback,
     useEffect,
     useMemo,
-    useState,
+    useState
 } from "react";
-import { i18n } from "@/app/_layout";
-import { fonts } from "@/constants/fonts";
-import dropdownIcon from "@/assets/images/dropdown_icon.png";
-import CustomModal from "./CustomModal";
+import {
+    ActivityIndicator,
+    FlatList,
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    View
+} from "react-native";
 import CustomButton from "./CustomButton";
-import { commonStyles } from "@/utils/common_styles";
-import { GenericObject } from "@/constants/types";
-import { capitalizeText } from "@/utils/common_utils";
+import CustomModal from "./CustomModal";
 import Input from "./Input";
 
 interface DropdownProps {

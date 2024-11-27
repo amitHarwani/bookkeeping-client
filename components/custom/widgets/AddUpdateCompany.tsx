@@ -3,20 +3,19 @@ import { ReactQueryKeys } from "@/constants/reactquerykeys";
 import { AddUpdateCompanyForm } from "@/constants/types";
 import SysAdminService from "@/services/sysadmin/sysadmin_service";
 import { Country } from "@/services/sysadmin/sysadmin_types";
-import { commonStyles } from "@/utils/common_styles";
 import { capitalizeText, getApiErrorMessage } from "@/utils/common_utils";
 import { AddUpdateCompanyFormValidation } from "@/utils/schema_validations";
 import { useQuery } from "@tanstack/react-query";
 import { Formik } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import CustomButton from "../basic/CustomButton";
+import CustomDateTimePicker from "../basic/CustomDateTimePicker";
 import Dropdown from "../basic/Dropdown";
 import ErrorMessage from "../basic/ErrorMessage";
 import Input from "../basic/Input";
 import LoadingSpinnerOverlay from "../basic/LoadingSpinnerOverlay";
-import CustomDateTimePicker from "../basic/CustomDateTimePicker";
 import TaxInputItem from "../business/TaxInputItem";
-import CustomButton from "../basic/CustomButton";
 
 interface AddUpdateCompanyProps {
     operation?: "ADD" | "UPDATE";
