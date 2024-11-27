@@ -320,8 +320,8 @@ const AddUpdateQuotation = ({
                             value={
                                 formik.values.quotationNumber?.toString() || ""
                             }
-                            onChangeText={formik.handleChange("invoiceNumber")}
-                            onBlur={formik.handleBlur("invoiceNumber")}
+                            onChangeText={formik.handleChange("quotationNumber")}
+                            onBlur={formik.handleBlur("quotationNumber")}
                             errorMessage={
                                 formik.touched.quotationNumber &&
                                 formik.errors.quotationNumber
