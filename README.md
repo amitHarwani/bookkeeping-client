@@ -1,6 +1,11 @@
 # Bookkeeping Application Client (Mobile)
 
-#### Supported Features
+## Overview
+
+This bookkeeping application is designed to streamline business financial operations. It provides tools for managing companies, users, inventory, sales, purchases, and reports. The application supports multi-branch setups and role-based access control to ensure secure and efficient operations. With features like dashboards for daily summaries, detailed reports, and filters for quick data retrieval, it is built to meet the needs of businesses of various scales.
+
+## Supported Features
+
 * User Registration & Login
 * Add Company, Branches to the company
 * Company Management
@@ -15,7 +20,7 @@
    - Total Payments Due, Total Collections Due until today
    - Top Selling Items for this month
    - Low stock items
-* Items
+* Inventory
    - View all Items
    - Add Item
    - Search Item
