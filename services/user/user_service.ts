@@ -34,7 +34,7 @@ import { convertLocalUTCToTimezoneUTC } from "@/utils/common_utils";
 import { Role } from "react-native";
 
 export class UserService {
-    private hostPath = process.env.EXPO_PUBLIC_USER_SERVICE;
+    private hostPath = process.env.EXPO_PUBLIC_USER_SERVICE || process.env?.["EXPO_PUBLIC_USER_SERVICE"];
     public registerUserPath = "auth/register";
     public loginPath = "auth/login";
     public logoutPath = "auth/logout";

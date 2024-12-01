@@ -31,6 +31,8 @@ const CustomButton = ({
                 extraContainerStyles,
                 isLoading && styles.containerWhenLoading,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel={text}
         >
             <Text
                 style={[
