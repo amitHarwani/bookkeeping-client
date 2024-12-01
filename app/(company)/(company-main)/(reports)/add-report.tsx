@@ -87,7 +87,8 @@ const AddReport = () => {
                 .utc(
                     `${values.fromDateTime?.getFullYear()}-${
                         (values.fromDateTime?.getMonth() as number) + 1
-                    }-${values.fromDateTime?.getDate()} 00:00:00`
+                    }-${values.fromDateTime?.getDate()} 00:00:00`,
+                    "YYYY-MM-DD HH:mm:ss"
                 )
                 .format(dateFormat);
         } else if (reportConfig.fromDateTime.type === "DATETIME") {
@@ -107,7 +108,8 @@ const AddReport = () => {
                     .utc(
                         `${values.toDateTime?.getFullYear()}-${
                             (values.toDateTime?.getMonth() as number) + 1
-                        }-${values.toDateTime?.getDate()} 00:00:00`
+                        }-${values.toDateTime?.getDate()} 00:00:00`,
+                        "YYYY-MM-DD HH:mm:ss"
                     )
                     .format(dateFormat);
             } else if (reportConfig.toDateTime.type === "DATETIME") {
@@ -118,11 +120,11 @@ const AddReport = () => {
                 );
             }
         }
-
+        console.log("From Date Time", fromDateTime, "to date time", toDateTime);
         /* Generating report */
         generateReportMutation.mutate({
-            values: {reportEndPoint, fromDateTime, toDateTime}
-        })
+            values: { reportEndPoint, fromDateTime, toDateTime },
+        });
     };
 
     /* Show loading spinner when report is being requested */
